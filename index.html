@@ -84,7 +84,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 #banner button{padding:.45rem .75rem;font-size:.85rem}
 .url-line{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;word-break:break-all;color:var(--ink-soft)}
 .roster{list-style:none;margin:1.5rem 0 0 2.1rem;padding:0;border-top:1px solid var(--line)}
-.roster.peek{margin-top:.5rem}
 .peek-head{color:var(--ink-soft);font-size:.9rem;margin:1.5rem 0 0 2.1rem}
 #peek > p:last-child{margin-left:2.1rem}
 .roster li{display:flex;align-items:baseline;gap:.75rem;padding:.7rem .15rem;border-bottom:1px solid var(--line)}
@@ -124,7 +123,7 @@ footer a{color:var(--ink-soft)}
 <section class="step">
   <div class="step-head"><span class="step-num" id="num1">1</span><h2 class="step-title">Add your handle</h2>
     <button type="button" class="info" data-info="note1" aria-expanded="false" aria-label="What this step needs">i</button></div>
-  <p class="step-note" id="note1" hidden>The form asks for three things: your name exactly as it appears on TBCD, your professional Instagram handle, and an email address in case verification needs a follow-up. Your email is never shown on this page.</p>
+  <p class="step-note" id="note1" hidden>The form asks for three things: your name exactly as it appears on TBCD, your professional Instagram handle, and an email address in case verification needs a follow-up. Your email is never shown on this page. Every submission is checked by hand against the TBCD roster, and this is a volunteer effort run between clinic days, so please be patient waiting to appear on the list.</p>
   <div class="card" id="step1"></div>
 </section>
 
@@ -254,20 +253,13 @@ function renderStep2(){
 
 /* ---------- social proof + collapsed full list ---------- */
 let listOpen=false;
-function sample(n){
-  const pool=people.slice();
-  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
-  return pool.slice(0,n);
-}
 function renderPeek(){
   const box=document.getElementById("peek"); if(!box) return;
   if(!listOpen){
-    const few=sample(Math.min(5,people.length));
-    box.innerHTML = `<p class="peek-head">${people.length} verified dermatologist${people.length===1?"":"s"} listed, including:</p>
-      <ul class="roster peek">${few.map(p=>`<li><span class="who"><span class="ig">@${esc(p.handle)}</span></span></li>`).join("")}</ul>
-      <p><button type="button" id="showList" class="ghost">Show the full list</button></p>`;
+    box.innerHTML = `<p class="peek-head">${people.length} dermatologist${people.length===1?" has":"s have"} already signed up!</p>
+      <p><button type="button" id="showList" class="ghost">Show full list</button></p>`;
   } else {
-    box.innerHTML = `<p><button type="button" id="hideList" class="ghost">Hide the full list</button></p>
+    box.innerHTML = `<p><button type="button" id="hideList" class="ghost">Hide full list</button></p>
       <input type="search" id="filter" placeholder="Search by name or handle" aria-label="Search by name or handle">
       <ul class="roster" id="roster"></ul>`;
     renderRoster("");
