@@ -206,6 +206,7 @@ function renderStep1(){
 
 /* ---------- step 2 ---------- */
 let sessionCount=0;
+let started=false;
 function mark(handle,value){
   if(!state.marks[handle]) sessionCount++;
   state.marks[handle]=value;
@@ -233,6 +234,13 @@ function renderStep2(){
   }
   if(queue.length===0){
     html += `<div class="empty">You've been through everyone. Come back after the next round of sign-ups.</div>`;
+  } else if(!started){
+    const isReturning = done>0;
+    html += `<div class="card">
+      ${isReturning?`<p class="counter">${done} of ${people.length} done<span class="bar"><i style="width:${Math.round(done/people.length*100)}%"></i></span></p>`:""}
+      <div class="actions" style="margin-top:${isReturning?"1.15rem":"0"}">
+        <a class="primary" href="#" id="startQueue">${isReturning?`Continue &mdash; ${queue.length} left`:`Start following colleagues`}</a>
+      </div></div>`;
   } else {
     queue.sort((a,b)=>(fresh.includes(b.handle)?1:0)-(fresh.includes(a.handle)?1:0));
     const p=queue[0];
@@ -296,6 +304,7 @@ document.addEventListener("click", e=>{
     info.setAttribute("aria-expanded", open?"true":"false");
     return;
   }
+  if(e.target.id==="startQueue"){ e.preventDefault(); started=true; renderStep2(); return; }
   if(e.target.id==="showList"){ listOpen=true; renderPeek(); return; }
   if(e.target.id==="hideList"){ listOpen=false; renderPeek(); return; }
   const btn=e.target.closest("[data-mark]");
