@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BCD Instagram Directory</title>
+<meta name="description" content="A directory of board-certified dermatologists on Instagram, verified against the TBCD roster. Add your handle, then follow your colleagues.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ig.dermatolo.gy/">
+<meta property="og:title" content="BCD Instagram Directory">
+<meta property="og:description" content="Verified against the TBCD roster. Add your handle, then follow your colleagues a tap at a time.">
+<meta property="og:image" content="https://ig.dermatolo.gy/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BCD Instagram Directory">
+<meta property="og:site_name" content="BCD Instagram Directory">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F1F7;
+  --surface:#FFFFFF;
+  --ink:#1B1725;
+  --ink-soft:#5A5468;
+  --line:#DCD7E6;
+  --accent:#5B3A94;
+  --accent-soft:#EDE5F8;
+  --done:#2E6B4F;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#151320;--surface:#1E1B2B;--ink:#EFECF6;--ink-soft:#A49CBA;
+    --line:#332E45;--accent:#C3A7F0;--accent-soft:#2A2340;--done:#7FC3A1;
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:38rem;margin:0 auto;padding:2rem 1.15rem 4rem}
+h1{font-family:"Newsreader",Georgia,serif;font-weight:400;font-size:1.9rem;line-height:1.15;margin:0 0 .4rem;letter-spacing:-.01em}
+.sub{color:var(--ink-soft);margin:0 0 2.25rem;font-size:.95rem}
+.step{margin-bottom:2.25rem}
+.step-head{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.6rem}
+.step-num{width:1.5rem;height:1.5rem;flex:0 0 auto;border-radius:50%;background:var(--accent);color:#fff;
+  font-size:.82rem;line-height:1.5rem;text-align:center;align-self:center}
+.step-num.is-done{background:var(--done)}
+.step-title{font-family:"Newsreader",Georgia,serif;font-size:1.25rem;margin:0}
+.step-note{color:var(--ink-soft);font-size:.9rem;margin:.1rem 0 .9rem 2.1rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.25rem;margin-left:2.1rem}
+.person-name{font-family:"Newsreader",Georgia,serif;font-size:1.45rem;line-height:1.2;margin:.9rem 0 0}
+.handle{color:var(--ink-soft);font-size:.95rem;margin:.15rem 0 0}
+.counter{font-size:.82rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.bar{display:block;height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:.5rem}
+.bar i{display:block;height:100%;background:var(--accent);width:0}
+.actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.15rem}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink);padding:.6rem .9rem}
+button:hover{background:var(--accent-soft)}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.primary{background:var(--accent);border-color:var(--accent);color:#fff;text-align:center;text-decoration:none;
+  display:block;padding:.8rem 1rem;font-weight:500;border-radius:8px;flex:1 1 100%}
+.primary:hover{background:var(--accent);filter:brightness(1.08)}
+.ghost{color:var(--ink-soft)}
+.done-line{display:flex;align-items:center;gap:.5rem;color:var(--done);font-size:.92rem}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:1.5rem;text-align:center;
+  color:var(--ink-soft);margin-left:2.1rem}
+.note{background:var(--accent-soft);border-radius:10px;padding:.85rem 1rem;margin:0 0 1rem 2.1rem;font-size:.9rem}
+#banner:not(:empty){background:var(--accent-soft);border-radius:10px;padding:.9rem 1.05rem;margin:0 0 2rem;font-size:.9rem}
+#banner p{margin:0}
+#banner p + p{margin-top:.6rem}
+#banner button{padding:.45rem .75rem;font-size:.85rem}
+.url-line{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;word-break:break-all;color:var(--ink-soft)}
+.roster{list-style:none;margin:1.5rem 0 0 2.1rem;padding:0;border-top:1px solid var(--line)}
+.roster li{display:flex;align-items:baseline;gap:.75rem;padding:.7rem .15rem;border-bottom:1px solid var(--line)}
+.roster a{color:var(--ink);text-decoration:none;font-weight:500}
+.roster a:hover{text-decoration:underline}
+.roster .who{flex:1 1 auto;min-width:0}
+.roster .ig{display:block;color:var(--ink-soft);font-size:.85rem}
+.state{font-size:.78rem;color:var(--ink-soft);white-space:nowrap}
+.state.is-done{color:var(--done)}
+.new-dot{display:inline-block;width:.4rem;height:.4rem;border-radius:50%;background:var(--accent);vertical-align:middle;margin-left:.4rem}
+input[type=search]{width:100%;padding:.6rem .75rem;border:1px solid var(--line);border-radius:8px;background:var(--surface);
+  color:var(--ink);font:inherit;margin-left:2.1rem;max-width:calc(100% - 2.1rem)}
+footer{margin-top:3rem;color:var(--ink-soft);font-size:.82rem;line-height:1.7}
+footer button{padding:.35rem .6rem;font-size:.82rem}
+footer a{color:var(--ink-soft)}
+@media (max-width:30rem){
+  .card,.empty,.note,.roster{margin-left:0}
+  input[type=search]{margin-left:0;max-width:100%}
+  .step-note{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>BCD Instagram Directory</h1>
+<p class="sub">A directory of board-certified dermatologists on Instagram, open to TBCD members. Add yourself, then follow the colleagues already listed.</p>
+
+<div id="banner"></div>
+
+<section class="step">
+  <div class="step-head"><span class="step-num" id="num1">1</span><h2 class="step-title">Add your handle</h2></div>
+  <p class="step-note">Name as it appears on TBCD, your professional Instagram, and an email in case verification needs a follow-up.</p>
+  <div class="card" id="step1"></div>
+</section>
+
+<section class="step">
+  <div class="step-head"><span class="step-num" id="num2">2</span><h2 class="step-title">Follow your colleagues</h2></div>
+  <p class="step-note">Tap to open a profile, follow on Instagram, come back. The next colleague is already waiting. Everyone listed has been matched to the TBCD roster.</p>
+  <div id="step2"><div class="empty">Loading the list…</div></div>
+</section>
+
+<footer>
+  <p id="progress-note"></p>
+  <p>Your progress is saved in this browser on this device. Switching phones or clearing your browser starts you over, so if you want to carry it across:
+    <button type="button" id="copyProgress">Copy a link that remembers your progress</button></p>
+  <p><button id="reset" type="button">Start the list over</button></p>
+</footer>
+
+</div>
+
+<script>
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXPbcdgNQ-braX_b5buC8Gelg3AChvIjMVPzFRvSRmIJIGYWdlP4ix0HoCgN9WsP-irE98m2wvNIGQ/pub?gid=1301603971&single=true&output=csv";
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfFJiF-DKfzUjJ8FhZyINnhWqTgXHlJfewICdFI4sKDafTkGg/viewform";
+const STORE_KEY = "derm-follow-v1";
+
+function load(){
+  try{ return Object.assign({marks:{},seen:[],visited:false,submitted:false}, JSON.parse(localStorage.getItem(STORE_KEY))||{}); }
+  catch(e){ return {marks:{},seen:[],visited:false,submitted:false}; }
+}
+function save(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){} }
+let state = load();
+let people = [];
+
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function parseCSV(text){
+  const rows=[]; let row=[], field="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){ field+='"'; i++; } else q=false; } else field+=c; }
+    else if(c==='"'){ q=true; }
+    else if(c===','){ row.push(field); field=""; }
+    else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=""; }
+    else if(c!=='\r'){ field+=c; }
+  }
+  if(field.length||row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r=>r.some(v=>v.trim()!==""));
+}
+function cleanHandle(raw){
+  let h=String(raw||"").trim().replace(/^.*instagram\.com\//i,"").replace(/^@/,"");
+  h=h.split(/[/?#\s]/)[0];
+  return h.replace(/[^A-Za-z0-9._]/g,"").toLowerCase();
+}
+function findCol(headers,cands){
+  for(let i=0;i<headers.length;i++){
+    const h=headers[i].trim().toLowerCase();
+    if(cands.some(c=>h.includes(c))) return i;
+  }
+  return -1;
+}
+
+/* ---------- step 1 ---------- */
+function renderStep1(){
+  const box=document.getElementById("step1");
+  document.getElementById("num1").className = "step-num" + (state.submitted?" is-done":"");
+  if(state.submitted){
+    box.innerHTML = `<p class="done-line">✓ You've submitted your handle.</p>
+      <p class="step-note" style="margin:.6rem 0 0">Verification is manual, so give it a day or two before you appear below.
+      <a href="${FORM_URL}" target="_blank" rel="noopener" id="again">Submit again</a> if something needs fixing.</p>`;
+  } else {
+    box.innerHTML = `<div class="actions" style="margin-top:0">
+        <a class="primary" href="${FORM_URL}" target="_blank" rel="noopener" id="openform">Open the sign-up form</a>
+        <button type="button" id="markSubmitted" class="ghost">I've already submitted</button>
+      </div>`;
+  }
+}
+
+/* ---------- step 2 ---------- */
+function mark(handle,value){
+  state.marks[handle]=value;
+  if(!state.seen.includes(handle)) state.seen.push(handle);
+  save(state); renderStep2();
+}
+
+function renderStep2(){
+  const box=document.getElementById("step2");
+  if(!people.length){
+    box.innerHTML = `<div class="empty">Nobody's been verified yet. Check back once the first handles are approved.</div>`;
+    return;
+  }
+  const queue=people.filter(p=>!state.marks[p.handle]);
+  const fresh=state.visited?people.filter(p=>!state.seen.includes(p.handle)).map(p=>p.handle):[];
+  const done=people.length-queue.length;
+  document.getElementById("num2").className = "step-num" + (queue.length===0?" is-done":"");
+
+  let html="";
+  if(fresh.length && queue.length){
+    html += `<div class="note">${fresh.length} new ${fresh.length===1?"colleague has":"colleagues have"} been added since your last visit. They're first in line.</div>`;
+  }
+  if(queue.length===0){
+    html += `<div class="empty">You've been through everyone. Come back after the next round of sign-ups.</div>`;
+  } else {
+    queue.sort((a,b)=>(fresh.includes(b.handle)?1:0)-(fresh.includes(a.handle)?1:0));
+    const p=queue[0];
+    html += `<div class="card">
+      <p class="counter">${done} of ${people.length} done<span class="bar"><i style="width:${Math.round(done/people.length*100)}%"></i></span></p>
+      <p class="person-name">${esc(p.name)}</p>
+      <p class="handle">@${esc(p.handle)}</p>
+      <div class="actions">
+        <a class="primary" href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener" data-open="${esc(p.handle)}">Open @${esc(p.handle)} on Instagram</a>
+        <button type="button" data-mark="already" data-handle="${esc(p.handle)}">Already following</button>
+      </div></div>`;
+  }
+  html += `<input type="search" id="filter" placeholder="Search the full list" aria-label="Search the full list">
+           <ul class="roster" id="roster"></ul>`;
+  box.innerHTML=html;
+  renderRoster("");
+  const f=document.getElementById("filter");
+  if(f) f.addEventListener("input",e=>renderRoster(e.target.value));
+  document.getElementById("progress-note").textContent = `${done} of ${people.length} handled on this device.`;
+}
+
+function renderRoster(q){
+  const list=document.getElementById("roster"); if(!list) return;
+  const needle=q.trim().toLowerCase();
+  const rows=people.filter(p=>!needle||p.name.toLowerCase().includes(needle)||p.handle.includes(needle));
+  if(!rows.length){ list.innerHTML=`<li><span class="who">Nobody by that name yet.</span></li>`; return; }
+  list.innerHTML=rows.map(p=>{
+    const m=state.marks[p.handle];
+    const label=m==="followed"?"Done":m==="already"?"Already following":"";
+    const isNew=state.visited&&!state.seen.includes(p.handle);
+    return `<li><span class="who">
+      <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(p.name)}</a>${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
+      <span class="ig">@${esc(p.handle)}</span></span>
+      <span class="state ${m==='followed'||m==='already'?'is-done':''}">${label}</span></li>`;
+  }).join("");
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", e=>{
+  const btn=e.target.closest("[data-mark]");
+  if(btn){ mark(btn.dataset.handle,btn.dataset.mark); return; }
+  const prof=e.target.closest("[data-open]");
+  if(prof){ const h=prof.dataset.open; setTimeout(()=>mark(h,"followed"),400); }
+  if(e.target.id==="markSubmitted"||e.target.id==="openform"){
+    state.submitted=true; save(state);
+    if(e.target.id==="markSubmitted") renderStep1(); else setTimeout(renderStep1,400);
+  }
+});
+document.getElementById("reset").addEventListener("click",()=>{
+  if(!confirm("This clears which colleagues you've marked. Your Instagram follows aren't touched.")) return;
+  state={marks:{},seen:people.map(p=>p.handle),visited:true,submitted:state.submitted};
+  save(state); renderStep2();
+});
+
+/* ---------- environment banner ---------- */
+const UA = navigator.userAgent || "";
+const inAppBrowser = /FBAN|FBAV|FB_IAB|Instagram|LinkedInApp|Twitter/i.test(UA);
+const isPhone = /iPhone|iPod|Android.*Mobile/i.test(UA);
+
+function renderBanner(){
+  const b=document.getElementById("banner");
+  if(inAppBrowser){
+    b.innerHTML = `<p><strong>Open this in your real browser first.</strong> You're in an app's built-in browser, which forgets your progress and won't hand off cleanly to Instagram.</p>
+      <p>Tap the menu in the corner and choose Open in Safari or Open in Chrome.</p>`;
+  } else if(!isPhone){
+    b.innerHTML = `<p><strong>This works best on your phone.</strong> Profile links open straight in the Instagram app, so following takes one tap instead of a login.</p>
+      <p class="url-line">${location.origin+location.pathname}</p>
+      <p><button type="button" id="copyUrl">Copy this link</button></p>`;
+  } else {
+    b.innerHTML = "";
+  }
+}
+
+/* ---------- carrying progress between devices ---------- */
+const CODES={followed:"f",already:"a"};
+const UNCODE={f:"followed",a:"already"};
+function progressLink(){
+  const code=Object.entries(state.marks).map(([h,v])=>CODES[v]+"~"+h).join(",");
+  return location.origin+location.pathname+"#p="+encodeURIComponent(code);
+}
+function applyProgressCode(code){
+  code.split(",").forEach(pair=>{
+    const [v,h]=pair.split("~");
+    if(!h||!UNCODE[v]) return;
+    if(!state.marks[h]) state.marks[h]=UNCODE[v];
+    if(!state.seen.includes(h)) state.seen.push(h);
+  });
+  save(state);
+}
+
+document.addEventListener("click", async e=>{
+  if(e.target.id==="copyUrl"||e.target.id==="copyProgress"){
+    const text = e.target.id==="copyUrl" ? location.origin+location.pathname : progressLink();
+    try{ await navigator.clipboard.writeText(text); e.target.textContent="Copied"; }
+    catch(err){ e.target.textContent="Press and hold the link above to copy"; }
+  }
+});
+
+/* ---------- boot ---------- */
+const hashCode=(location.hash.match(/p=([^&]*)/)||[])[1];
+if(hashCode){
+  applyProgressCode(decodeURIComponent(hashCode));
+  history.replaceState(null,"",location.pathname);
+}
+if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+renderBanner();
+renderStep1();
+(async function(){
+  try{
+    const res=await fetch(SHEET_CSV_URL,{cache:"no-store"});
+    if(!res.ok) throw new Error(res.status);
+    const rows=parseCSV(await res.text());
+    const headers=rows.shift()||[];
+    const iName=findCol(headers,["name"]);
+    const iIG=findCol(headers,["instagram","handle"]);
+    const iOK=findCol(headers,["approved","verified"]);
+    const seen=new Set();
+    people=rows.map(r=>({
+      name:(r[iName]||"").trim(),
+      handle:cleanHandle(r[iIG]),
+      ok:iOK===-1?true:["yes","y","true","1","x"].includes(String(r[iOK]).trim().toLowerCase())
+    })).filter(p=>{
+      if(!p.name||!p.handle||!p.ok||seen.has(p.handle)) return false;
+      seen.add(p.handle); return true;
+    }).sort((a,b)=>a.name.localeCompare(b.name));
+    renderStep2();
+    if(!state.visited){ state.visited=true; state.seen=people.map(p=>p.handle); save(state); }
+  }catch(err){
+    document.getElementById("step2").innerHTML=`<div class="empty">The list didn't load. Try again in a moment.</div>`;
+  }
+})();
+</script>
+</body>
+</html>
