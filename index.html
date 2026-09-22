@@ -52,6 +52,11 @@ h1{font-family:"Newsreader",Georgia,serif;font-weight:400;font-size:1.9rem;line-
 .step-num.is-done{background:var(--done)}
 .step-title{font-family:"Newsreader",Georgia,serif;font-size:1.25rem;margin:0}
 .step-note{color:var(--ink-soft);font-size:.9rem;margin:.1rem 0 .9rem 2.1rem}
+.step-lead{color:var(--ink-soft);font-size:.95rem;margin:.1rem 0 .9rem 2.1rem}
+.info{width:1.6rem;height:1.6rem;flex:0 0 auto;align-self:center;border-radius:50%;border:1px solid var(--line);
+  background:transparent;color:var(--ink-soft);font-size:.85rem;font-style:italic;font-family:Georgia,serif;
+  line-height:1;padding:0;display:flex;align-items:center;justify-content:center}
+.info:hover,.info[aria-expanded="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.25rem;margin-left:2.1rem}
 .person-name{font-family:"Newsreader",Georgia,serif;font-size:1.45rem;line-height:1.2;margin:.9rem 0 0}
 .handle{color:var(--ink-soft);font-size:.95rem;margin:.15rem 0 0}
@@ -73,6 +78,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .note{background:var(--accent-soft);border-radius:10px;padding:.85rem 1rem;margin:0 0 1rem 2.1rem;font-size:.9rem}
 #banner:not(:empty){background:var(--accent-soft);border-radius:10px;padding:.9rem 1.05rem;margin:0 0 2rem;font-size:.9rem}
 #banner p{margin:0}
+.banner-head{display:flex;align-items:center;gap:.6rem}
+.banner-head .info{width:1.4rem;height:1.4rem;font-size:.8rem}
 #banner p + p{margin-top:.6rem}
 #banner button{padding:.45rem .75rem;font-size:.85rem}
 .url-line{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;word-break:break-all;color:var(--ink-soft)}
@@ -91,13 +98,17 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 input[type=search]{width:100%;padding:.6rem .75rem;border:1px solid var(--line);border-radius:8px;background:var(--surface);
   color:var(--ink);font:inherit;margin-left:2.1rem;max-width:calc(100% - 2.1rem)}
 footer{margin-top:3rem;color:var(--ink-soft);font-size:.82rem;line-height:1.7}
-footer button{padding:.35rem .6rem;font-size:.82rem}
+footer button{padding:.45rem .7rem;font-size:.85rem}
+.save-row{display:flex;align-items:center;gap:.5rem}
+.save-row button{display:inline-flex;align-items:center;gap:.45rem}
+.save-row .info{width:1.5rem;height:1.5rem;font-size:.8rem}
 footer a{color:var(--ink-soft)}
 @media (max-width:30rem){
   .card,.empty,.note,.roster{margin-left:0}
   .peek-head,#peek > p:last-child{margin-left:0}
   input[type=search]{margin-left:0;max-width:100%}
   .step-note{margin-left:0}
+  .step-lead{margin-left:0}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -111,21 +122,27 @@ footer a{color:var(--ink-soft)}
 <div id="banner"></div>
 
 <section class="step">
-  <div class="step-head"><span class="step-num" id="num1">1</span><h2 class="step-title">Add your handle</h2></div>
-  <p class="step-note">Name as it appears on TBCD, your professional Instagram, and an email in case verification needs a follow-up.</p>
+  <div class="step-head"><span class="step-num" id="num1">1</span><h2 class="step-title">Add your handle</h2>
+    <button type="button" class="info" data-info="note1" aria-expanded="false" aria-label="What this step needs">i</button></div>
+  <p class="step-note" id="note1" hidden>The form asks for three things: your name exactly as it appears on TBCD, your professional Instagram handle, and an email address in case verification needs a follow-up. Your email is never shown on this page.</p>
   <div class="card" id="step1"></div>
 </section>
 
 <section class="step">
-  <div class="step-head"><span class="step-num" id="num2">2</span><h2 class="step-title">Follow your colleagues</h2></div>
-  <p class="step-note">Tap to open a profile, follow on Instagram, come back. The next colleague is already waiting. Instagram flags accounts that follow too many people at once, so stop around 50 in a sitting and pick it up tomorrow. The page keeps your place.</p>
+  <div class="step-head"><span class="step-num" id="num2">2</span><h2 class="step-title">Follow your colleagues</h2>
+    <button type="button" class="info" data-info="note2" aria-expanded="false" aria-label="How this step works">i</button></div>
+  <p class="step-lead">One colleague at a time. Stop around 50 a day.</p>
+  <p class="step-note" id="note2" hidden>Tap the purple button to open that dermatologist's profile, follow them on Instagram, then come back here. The next colleague is already waiting, and nobody you've handled comes up twice. Instagram temporarily blocks accounts that follow too many people at once, so stop around 50 in a sitting and pick it up another day. This page remembers your place.</p>
   <div id="step2"><div class="empty">Loading the list…</div></div>
 </section>
 
 <footer>
   <p id="progress-note"></p>
-  <p>Your progress is saved in this browser on this device. Switching phones or clearing your browser starts you over, so if you want to carry it across:
-    <button type="button" id="copyProgress">Copy a link that remembers your progress</button></p>
+  <p class="save-row">
+    <button type="button" id="copyProgress"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M2 1h9.5L15 4.5V14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm2 1v4h7V2H4zm5 1h1.5v2H9V3zM4 9h8v4H4V9z"/></svg> Save my progress</button>
+    <button type="button" class="info" data-info="whySave" aria-expanded="false" aria-label="What this does">i</button>
+  </p>
+  <p class="step-note" id="whySave" hidden style="margin:.5rem 0 0">Your progress already saves automatically in this browser, so you can close the page and come back. This button copies a link that carries your progress to another device. Paste it into a note or text it to yourself, and opening it on your other phone or computer picks up where you left off.</p>
   <p><button id="reset" type="button">Start the list over</button></p>
 </footer>
 
@@ -279,6 +296,14 @@ function renderRoster(q){
 
 /* ---------- events ---------- */
 document.addEventListener("click", e=>{
+  const info=e.target.closest(".info");
+  if(info){
+    const note=document.getElementById(info.dataset.info);
+    const open=note.hasAttribute("hidden");
+    if(open) note.removeAttribute("hidden"); else note.setAttribute("hidden","");
+    info.setAttribute("aria-expanded", open?"true":"false");
+    return;
+  }
   if(e.target.id==="showList"){ listOpen=true; renderPeek(); return; }
   if(e.target.id==="hideList"){ listOpen=false; renderPeek(); return; }
   const btn=e.target.closest("[data-mark]");
@@ -304,12 +329,15 @@ const isPhone = /iPhone|iPod|Android.*Mobile/i.test(UA);
 function renderBanner(){
   const b=document.getElementById("banner");
   if(inAppBrowser){
-    b.innerHTML = `<p><strong>Open this in your real browser first.</strong> You're in an app's built-in browser, which forgets your progress and won't hand off cleanly to Instagram.</p>
-      <p>Tap the menu in the corner and choose Open in Safari or Open in Chrome.</p>`;
+    b.innerHTML = `<p class="banner-head"><strong>Open this in Safari or Chrome first.</strong>
+        <button type="button" class="info" data-info="whyBrowser" aria-expanded="false" aria-label="Why">i</button></p>
+      <p class="step-note" id="whyBrowser" hidden style="margin:.6rem 0 0">You're in an app's built-in browser. It forgets your progress when you close it and doesn't hand off cleanly to Instagram. Tap the menu in the corner of this screen and choose Open in Safari or Open in Chrome.</p>`;
   } else if(!isPhone){
-    b.innerHTML = `<p><strong>This works best on your phone.</strong> Profile links open straight in the Instagram app, so following takes one tap instead of a login.</p>
+    b.innerHTML = `<p class="banner-head"><strong>This works best on your phone.</strong>
+        <button type="button" class="info" data-info="whyPhone" aria-expanded="false" aria-label="Why">i</button></p>
       <p class="url-line">${location.origin+location.pathname}</p>
-      <p><button type="button" id="copyUrl">Copy this link</button></p>`;
+      <p><button type="button" id="copyUrl">Copy this link</button></p>
+      <p class="step-note" id="whyPhone" hidden style="margin:.6rem 0 0">On a phone, tapping a colleague's name opens their profile directly in the Instagram app, so following is one tap. On a computer you'd have to log in to Instagram in the browser first, and every profile opens in a new tab.</p>`;
   } else {
     b.innerHTML = "";
   }
@@ -333,10 +361,16 @@ function applyProgressCode(code){
 }
 
 document.addEventListener("click", async e=>{
-  if(e.target.id==="copyUrl"||e.target.id==="copyProgress"){
-    const text = e.target.id==="copyUrl" ? location.origin+location.pathname : progressLink();
-    try{ await navigator.clipboard.writeText(text); e.target.textContent="Copied"; }
-    catch(err){ e.target.textContent="Press and hold the link above to copy"; }
+  const copyBtn = e.target.closest("#copyUrl, #copyProgress");
+  if(copyBtn){
+    const isUrl = copyBtn.id==="copyUrl";
+    const text = isUrl ? location.origin+location.pathname : progressLink();
+    try{
+      await navigator.clipboard.writeText(text);
+      copyBtn.textContent = isUrl ? "Copied" : "Copied. Paste it somewhere safe.";
+    }catch(err){
+      copyBtn.textContent = "Couldn't copy. Try again.";
+    }
   }
 });
 
