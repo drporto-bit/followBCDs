@@ -77,6 +77,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 #banner button{padding:.45rem .75rem;font-size:.85rem}
 .url-line{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;word-break:break-all;color:var(--ink-soft)}
 .roster{list-style:none;margin:1.5rem 0 0 2.1rem;padding:0;border-top:1px solid var(--line)}
+.roster.peek{margin-top:.5rem}
+.peek-head{color:var(--ink-soft);font-size:.9rem;margin:1.5rem 0 0 2.1rem}
+#peek > p:last-child{margin-left:2.1rem}
 .roster li{display:flex;align-items:baseline;gap:.75rem;padding:.7rem .15rem;border-bottom:1px solid var(--line)}
 .roster a{color:var(--ink);text-decoration:none;font-weight:500}
 .roster a:hover{text-decoration:underline}
@@ -92,6 +95,7 @@ footer button{padding:.35rem .6rem;font-size:.82rem}
 footer a{color:var(--ink-soft)}
 @media (max-width:30rem){
   .card,.empty,.note,.roster{margin-left:0}
+  .peek-head,#peek > p:last-child{margin-left:0}
   input[type=search]{margin-left:0;max-width:100%}
   .step-note{margin-left:0}
 }
@@ -114,7 +118,7 @@ footer a{color:var(--ink-soft)}
 
 <section class="step">
   <div class="step-head"><span class="step-num" id="num2">2</span><h2 class="step-title">Follow your colleagues</h2></div>
-  <p class="step-note">Tap to open a profile, follow on Instagram, come back. The next colleague is already waiting. Everyone listed has been matched to the TBCD roster.</p>
+  <p class="step-note">Tap to open a profile, follow on Instagram, come back. The next colleague is already waiting. Instagram flags accounts that follow too many people at once, so stop around 50 in a sitting and pick it up tomorrow. The page keeps your place.</p>
   <div id="step2"><div class="empty">Loading the list…</div></div>
 </section>
 
@@ -185,7 +189,9 @@ function renderStep1(){
 }
 
 /* ---------- step 2 ---------- */
+let sessionCount=0;
 function mark(handle,value){
+  if(!state.marks[handle]) sessionCount++;
   state.marks[handle]=value;
   if(!state.seen.includes(handle)) state.seen.push(handle);
   save(state); renderStep2();
@@ -203,6 +209,9 @@ function renderStep2(){
   document.getElementById("num2").className = "step-num" + (queue.length===0?" is-done":"");
 
   let html="";
+  if(sessionCount>=50){
+    html += `<div class="note"><strong>That's ${sessionCount} in one sitting.</strong> Instagram starts blocking follows past roughly this many in a day. Worth stopping here and coming back tomorrow. Your place is saved.</div>`;
+  }
   if(fresh.length && queue.length){
     html += `<div class="note">${fresh.length} new ${fresh.length===1?"colleague has":"colleagues have"} been added since your last visit. They're first in line.</div>`;
   }
@@ -220,21 +229,44 @@ function renderStep2(){
         <button type="button" data-mark="already" data-handle="${esc(p.handle)}">Already following</button>
       </div></div>`;
   }
-  html += `<input type="search" id="filter" placeholder="Search the full list" aria-label="Search the full list">
-           <ul class="roster" id="roster"></ul>`;
+  html += `<div id="peek"></div>`;
   box.innerHTML=html;
-  renderRoster("");
-  const f=document.getElementById("filter");
-  if(f) f.addEventListener("input",e=>renderRoster(e.target.value));
+  renderPeek();
   document.getElementById("progress-note").textContent = `${done} of ${people.length} handled on this device.`;
 }
 
+/* ---------- social proof + collapsed full list ---------- */
+let listOpen=false;
+function sample(n){
+  const pool=people.slice();
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  return pool.slice(0,n);
+}
+function renderPeek(){
+  const box=document.getElementById("peek"); if(!box) return;
+  if(!listOpen){
+    const few=sample(Math.min(5,people.length));
+    box.innerHTML = `<p class="peek-head">${people.length} verified dermatologist${people.length===1?"":"s"} listed, including:</p>
+      <ul class="roster peek">${few.map(p=>`<li><span class="who"><span class="ig">@${esc(p.handle)}</span></span></li>`).join("")}</ul>
+      <p><button type="button" id="showList" class="ghost">Show the full list</button></p>`;
+  } else {
+    box.innerHTML = `<p><button type="button" id="hideList" class="ghost">Hide the full list</button></p>
+      <input type="search" id="filter" placeholder="Search by name or handle" aria-label="Search by name or handle">
+      <ul class="roster" id="roster"></ul>`;
+    renderRoster("");
+    const f=document.getElementById("filter");
+    if(f) f.addEventListener("input",e=>renderRoster(e.target.value));
+  }
+}
+
+const ROSTER_CAP=60;
 function renderRoster(q){
   const list=document.getElementById("roster"); if(!list) return;
   const needle=q.trim().toLowerCase();
   const rows=people.filter(p=>!needle||p.name.toLowerCase().includes(needle)||p.handle.includes(needle));
   if(!rows.length){ list.innerHTML=`<li><span class="who">Nobody by that name yet.</span></li>`; return; }
-  list.innerHTML=rows.map(p=>{
+  const shown=rows.slice(0,ROSTER_CAP);
+  list.innerHTML=shown.map(p=>{
     const m=state.marks[p.handle];
     const label=m==="followed"?"Done":m==="already"?"Already following":"";
     const isNew=state.visited&&!state.seen.includes(p.handle);
@@ -242,11 +274,13 @@ function renderRoster(q){
       <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(p.name)}</a>${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
       <span class="ig">@${esc(p.handle)}</span></span>
       <span class="state ${m==='followed'||m==='already'?'is-done':''}">${label}</span></li>`;
-  }).join("");
+  }).join("") + (rows.length>ROSTER_CAP?`<li><span class="who state">${rows.length-ROSTER_CAP} more. Search to narrow it down.</span></li>`:"");
 }
 
 /* ---------- events ---------- */
 document.addEventListener("click", e=>{
+  if(e.target.id==="showList"){ listOpen=true; renderPeek(); return; }
+  if(e.target.id==="hideList"){ listOpen=false; renderPeek(); return; }
   const btn=e.target.closest("[data-mark]");
   if(btn){ mark(btn.dataset.handle,btn.dataset.mark); return; }
   const prof=e.target.closest("[data-open]");
