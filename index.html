@@ -161,6 +161,14 @@ footer a{color:var(--ink-soft)}
   <div id="step2"><div class="empty">Loading the list…</div></div>
 </section>
 
+<section class="step">
+  <div class="step-head"><span class="step-num" id="num3">3</span><h2 class="step-title">Earn your badge</h2>
+    <button type="button" class="info" data-info="note3" aria-expanded="false" aria-label="What the badge gets you">i</button></div>
+  <p class="step-lead">Follow everyone on the list to get a badge, a check mark by your name, and a spot at the front of the list so you get the most followers.</p>
+  <p class="step-note" id="note3" hidden>Once you've been through every colleague, find yourself on the list to create your badge, then save it or share it to Instagram. Your name gets a purple check, and you move to the front of everyone else's follow queue, most recent badges first, so you pick up follows from colleagues working through the list. When new colleagues are verified, follow them to earn a fresh badge with a new date and move back to the front.</p>
+  <div id="step3"></div>
+</section>
+
 <footer>
   <p id="progress-note"></p>
   <p><button type="button" id="gear" aria-expanded="false" aria-controls="tools">
@@ -274,6 +282,7 @@ function renderStep2(){
   const box=document.getElementById("step2");
   if(!people.length){
     box.innerHTML = `<div class="empty">Nobody's been verified yet. Check back once the first handles are approved.</div>`;
+    renderStep3(0);
     return;
   }
   const queue=people.filter(p=>!state.marks[p.handle]);
@@ -290,7 +299,7 @@ function renderStep2(){
     html += `<div class="note">${fresh.length} new ${fresh.length===1?"colleague has":"colleagues have"} been added since your last visit.</div>`;
   }
   if(queue.length===0){
-    html += badgeHTML();
+    html += `<div class="empty">You've been through everyone. Your badge is ready in Step 3.</div>`;
   } else if(!started){
     const isReturning = done>0;
     html += `<div class="card">
@@ -312,14 +321,27 @@ function renderStep2(){
   }
   html += `<div id="peek"></div>`;
   box.innerHTML=html;
-  if(queue.length===0) drawBadge();
   renderPeek();
+  renderStep3(queue.length);
   document.getElementById("progress-note").textContent = `${done} of ${people.length} handled on this device.`;
 }
 
 /* ---------- completion badge ---------- */
 let editingBadge=false;
 let badgeBlob=null;
+
+function renderStep3(left){
+  const box=document.getElementById("step3");
+  const earned=people.length>0 && left===0;
+  document.getElementById("num3").className = "step-num" + (earned&&badgePerson()?" is-done":"");
+  if(!people.length){ box.innerHTML=`<div class="empty">Your badge unlocks once there are colleagues to follow.</div>`; return; }
+  if(!earned){
+    box.innerHTML=`<div class="empty">${left} ${left===1?"colleague":"colleagues"} to go. Your badge unlocks once you've been through everyone.</div>`;
+    return;
+  }
+  box.innerHTML=badgeHTML();
+  drawBadge();
+}
 
 function badgeMark(){
   return `<span class="badge-mark" role="img" aria-label="Badge holder" title="Followed everyone on the list"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.8 6.3l2.1 2.1 4.3-4.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
@@ -334,7 +356,7 @@ function badgeHTML(){
   if(!me||editingBadge){
     return `<div class="card">
       <p class="person-name" style="margin-top:0">You've followed everyone on the list.</p>
-      <p class="handle">Find yourself on the list to get your badge. Badge holders are shown first to everyone else, so it earns you follows.</p>
+      <p class="handle">Find yourself below to create your badge.</p>
       <div class="actions">
         <input type="text" id="badgeSearch" class="text-in" placeholder="Search by name or handle"
           aria-label="Find yourself on the list" autocomplete="off" enterkeyhint="search">
@@ -350,7 +372,7 @@ function badgeHTML(){
         <button type="button" class="primary" id="shareBadge">Save or share badge</button>
         <button type="button" class="ghost" id="editBadge">Not you? Pick again</button>
       </div>
-      <p class="step-note" style="margin:.9rem 0 0">Your badge puts you at the front of the list for everyone else. New colleagues join after each round of sign-ups, so come back to earn a fresh one.</p>
+      <p class="step-note" style="margin:.9rem 0 0">You're at the front of the list for everyone else. New colleagues join after each round of sign-ups, so come back to earn a fresh badge and stay there.</p>
     </div>`;
 }
 
