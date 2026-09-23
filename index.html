@@ -645,10 +645,12 @@ renderStep1();
     const iName=findCol(headers,["name"]);
     const iIG=findCol(headers,["instagram","handle"]);
     const iOK=findCol(headers,["approved","verified"]);
+    const iSigned=findCol(headers,["timestamp"]);
     const seen=new Set();
     people=rows.map(r=>({
       name:(r[iName]||"").trim(),
       handle:cleanHandle(r[iIG]),
+      signedAt:iSigned===-1?0:parseSheetDate(r[iSigned]),
       ok:iOK===-1?true:["yes","y","true","1","x"].includes(String(r[iOK]).trim().toLowerCase())
     })).filter(p=>{
       if(!p.name||!p.handle||!p.ok||seen.has(p.handle)) return false;
@@ -657,7 +659,8 @@ renderStep1();
     const badges=await badgesP;
     people=people
       .map((p,i)=>Object.assign(p,{badgeAt:badges[p.handle]||0,order:i}))
-      .sort((a,b)=>(b.badgeAt-a.badgeAt)||(a.order-b.order));
+      /* newest badges first, then everyone else newest sign-up first; sheet row order stands in when there's no timestamp */
+      .sort((a,b)=>(b.badgeAt-a.badgeAt)||(b.signedAt-a.signedAt)||(b.order-a.order));
     renderStep2();
     if(!state.visited){ state.visited=true; state.seen=people.map(p=>p.handle); save(state); }
   }catch(err){
