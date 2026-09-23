@@ -58,6 +58,14 @@ h1{font-family:"Newsreader",Georgia,serif;font-weight:400;font-size:1.9rem;line-
   line-height:1;padding:0;display:flex;align-items:center;justify-content:center}
 .info:hover,.info[aria-expanded="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.25rem;margin-left:2.1rem}
+.who-row{display:flex;align-items:center;gap:.9rem;margin-top:1rem}
+.who-row .person-name{margin:0}
+.who-row .handle{margin:.1rem 0 0}
+.avatar{flex:0 0 auto;width:3.5rem;height:3.5rem;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-family:"Newsreader",Georgia,serif;font-size:1.35rem;letter-spacing:.02em}
+.just{margin:0 0 .75rem 2.1rem}
+@keyframes cardIn{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+.card-in{animation:cardIn .38s cubic-bezier(.2,.7,.3,1)}
 .person-name{font-family:"Newsreader",Georgia,serif;font-size:1.45rem;line-height:1.2;margin:.9rem 0 0}
 .handle{color:var(--ink-soft);font-size:.95rem;margin:.15rem 0 0}
 .counter{font-size:.82rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
@@ -131,8 +139,9 @@ footer a{color:var(--ink-soft)}
   .step-note{margin-left:0}
   .step-lead{margin-left:0}
   .legend{margin-left:0}
+  .just{margin-left:0}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebSite","name":"BCD Instagram Directory","url":"https://ig.dermatolo.gy/",
@@ -272,7 +281,29 @@ function followsToday(){
 
 /* ---------- step 2 ---------- */
 let started=false;
+let lastDone=null;       /* {name, value} of the colleague just handled */
+let animateNext=false;   /* slide the next card in when the person is looking */
+let shown={handle:null,color:-1};
+
+const AVATAR_COLORS=["#5B3A94","#2E6B4F","#B4541F","#1F5F8B","#8A2D5B","#2F7F7A","#9A3B3B","#6B5A1E"];
+function initials(name){
+  const parts=String(name).replace(/^(dr\.?|doctor|prof\.?)\s+/i,"").trim().split(/\s+/).filter(Boolean);
+  if(!parts.length) return "?";
+  return (parts[0][0]+(parts.length>1?parts[parts.length-1][0]:"")).toUpperCase();
+}
+function colorFor(handle){
+  if(handle===shown.handle) return shown.color;      /* re-renders keep the same color */
+  let h=0; for(const ch of handle) h=(h*31+ch.charCodeAt(0))>>>0;
+  let i=h%AVATAR_COLORS.length;
+  if(i===shown.color) i=(i+1)%AVATAR_COLORS.length;  /* never the same color twice in a row */
+  shown={handle,color:i};
+  return i;
+}
+
 function mark(handle,value){
+  const who=people.find(p=>p.handle===handle);
+  if(who) lastDone={name:withTitle(who.name),value};
+  animateNext=true;
   if(!state.marks[handle] && value==="followed"){ followsToday(); state.dayCount++; }
   state.marks[handle]=value;
   if(!state.seen.includes(handle)) state.seen.push(handle);
@@ -310,10 +341,21 @@ function renderStep2(){
       </div></div>`;
   } else {
     const p=queue[0];
-    html += `<div class="card">
+    if(lastDone){
+      html += `<p class="done-line just">✓ ${lastDone.value==="already"
+        ?`${esc(lastDone.name)} marked as already following`
+        :`Followed ${esc(lastDone.name)}`}</p>`;
+    }
+    const ci=colorFor(p.handle);
+    const slide=animateNext && document.visibilityState==="visible";
+    if(slide) animateNext=false;
+    html += `<div class="card${slide?" card-in":""}">
       <p class="counter">${done} of ${people.length} done<span class="bar"><i style="width:${Math.round(done/people.length*100)}%"></i></span></p>
-      <p class="person-name">${esc(withTitle(p.name))}${p.badgeAt?badgeMark():""}</p>
-      <p class="handle">@${esc(p.handle)}</p>
+      <div class="who-row">
+        <span class="avatar" style="background:${AVATAR_COLORS[ci]}" aria-hidden="true">${esc(initials(p.name))}</span>
+        <div><p class="person-name">${esc(withTitle(p.name))}${p.badgeAt?badgeMark():""}</p>
+        <p class="handle">@${esc(p.handle)}</p></div>
+      </div>
       ${p.badgeAt?`<p class="badge-line">${badgeMark()}Followed everyone on the list</p>`:""}
       <div class="actions">
         <a class="primary" href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener" data-open="${esc(p.handle)}">Open @${esc(p.handle)} on Instagram</a>
@@ -551,6 +593,9 @@ function renderRoster(q){
 }
 
 /* ---------- events ---------- */
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState==="visible" && animateNext && started) renderStep2();
+});
 document.addEventListener("input", e=>{
   if(e.target.id==="badgeSearch") renderPick(e.target.value);
 });
