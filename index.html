@@ -95,6 +95,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .roster a:hover{text-decoration:underline}
 .roster .who{flex:1 1 auto;min-width:0}
 .roster .ig{display:block;color:var(--ink-soft);font-size:.85rem}
+.roster .when{display:block;color:var(--ink-soft);font-size:.78rem;font-variant-numeric:tabular-nums}
 .state{font-size:.78rem;color:var(--ink-soft);white-space:nowrap}
 .state.is-done{color:var(--done)}
 .new-dot{display:inline-block;width:.4rem;height:.4rem;border-radius:50%;background:var(--accent);vertical-align:middle;margin-left:.4rem}
@@ -507,6 +508,13 @@ function renderPeek(){
 }
 
 const ROSTER_CAP=60;
+function fmtWhen(t){
+  return new Date(t).toLocaleString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"});
+}
+function whenLine(p){
+  if(p.badgeAt) return `<span class="when">Badge earned ${fmtWhen(p.badgeAt)}</span>`;
+  return "";
+}
 function renderRoster(q){
   const list=document.getElementById("roster"); if(!list) return;
   const needle=q.trim().toLowerCase();
@@ -519,7 +527,7 @@ function renderRoster(q){
     const isNew=state.visited&&!state.seen.includes(p.handle);
     return `<li><span class="who">
       <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
-      <span class="ig">@${esc(p.handle)}</span></span>
+      <span class="ig">@${esc(p.handle)}</span>${whenLine(p)}</span>
       <span class="state ${m==='followed'||m==='already'?'is-done':''}">${label}</span></li>`;
   }).join("") + (rows.length>ROSTER_CAP?`<li><span class="who state">${rows.length-ROSTER_CAP} more. Search to narrow it down.</span></li>`:"");
 }
