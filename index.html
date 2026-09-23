@@ -282,7 +282,7 @@ let listOpen=false;
 function renderPeek(){
   const box=document.getElementById("peek"); if(!box) return;
   if(!listOpen){
-    box.innerHTML = `<p class="peek-head">${people.length} dermatologist${people.length===1?" has":"s have"} already signed up!</p>
+    box.innerHTML = `<p class="peek-head">${people.length} dermatologist${people.length===1?" has":"s have"} started following each other!</p>
       <p><button type="button" id="showList" class="ghost">Show full list</button></p>`;
   } else {
     box.innerHTML = `<p><button type="button" id="hideList" class="ghost">Hide full list</button></p>
