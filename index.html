@@ -390,7 +390,13 @@ function renderPick(q){
 function logBadge(){
   const me=badgePerson();
   if(!me||!badgeLogReady(BADGE_FORM_URL)) return;
-  const key=`${me.handle}|${state.badgeDate}`;
+  /* one log entry per earning: a new earning (list grew, caught up again) gets a new key, even on the same day */
+  if(!state.badgeEarnedAt){
+    state.badgeEarnedAt=Date.now();
+    if(state.badgeLogged) state.badgeLogged=`${me.handle}|${state.badgeEarnedAt}`; /* badge already logged under the old scheme */
+    save(state);
+  }
+  const key=`${me.handle}|${state.badgeEarnedAt}`;
   if(state.badgeLogged===key) return;
   fetch(BADGE_FORM_URL,{method:"POST",mode:"no-cors",body:new URLSearchParams({[BADGE_FORM_ENTRY]:me.handle})})
     .then(()=>{ state.badgeLogged=key; save(state); })
@@ -430,9 +436,21 @@ function roundRectPath(x,X,Y,w,h,r){
 async function drawBadge(){
   const c=document.getElementById("badge"); if(!c) return;
   badgeBlob=null;
-  if(state.badgeCount!==people.length||!state.badgeDate||!/,/.test(state.badgeDate)){
+  /* A new earning happens only when someone is on the list who wasn't when the last badge was earned.
+     Refreshing, revisiting, or a colleague being removed never counts. */
+  const handlesNow=people.map(p=>p.handle);
+  const today=()=>new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  if(!state.badgeHandles && state.badgeDate && state.badgeCount===people.length) state.badgeHandles=handlesNow;
+  const covered=new Set(state.badgeHandles||[]);
+  if(!state.badgeDate || handlesNow.some(h=>!covered.has(h))){
+    state.badgeHandles=handlesNow;
     state.badgeCount=people.length;
-    state.badgeDate=new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+    state.badgeEarnedAt=Date.now();
+    state.badgeDate=today();
+    save(state);
+  } else {
+    if(state.badgeCount!==people.length) state.badgeCount=people.length;
+    if(!/,/.test(state.badgeDate)) state.badgeDate=today();
     save(state);
   }
   logBadge();
@@ -608,7 +626,11 @@ const CODES={followed:"f",already:"a"};
 const UNCODE={f:"followed",a:"already"};
 function progressLink(){
   const code=Object.entries(state.marks).map(([h,v])=>CODES[v]+"~"+h).join(",");
-  return location.origin+location.pathname+"#p="+encodeURIComponent(code);
+  let link=location.origin+location.pathname+"#p="+encodeURIComponent(code);
+  if(state.badgeHandle&&state.badgeEarnedAt){
+    link+="&b="+encodeURIComponent([state.badgeHandle,state.badgeEarnedAt,state.badgeCount,state.badgeDate].join("~"));
+  }
+  return link;
 }
 function applyProgressCode(code){
   code.split(",").forEach(pair=>{
@@ -635,11 +657,19 @@ document.addEventListener("click", async e=>{
 });
 
 /* ---------- boot ---------- */
-const hashCode=(location.hash.match(/p=([^&]*)/)||[])[1];
-if(hashCode){
-  applyProgressCode(decodeURIComponent(hashCode));
-  history.replaceState(null,"",location.pathname);
+const hashCode=(location.hash.match(/[#&]p=([^&]*)/)||[])[1];
+const badgeCode=(location.hash.match(/[#&]b=([^&]*)/)||[])[1];
+if(hashCode) applyProgressCode(decodeURIComponent(hashCode));
+if(badgeCode){
+  /* carry an existing badge to another device so it isn't logged again as a new one */
+  const [h,t,c,...d]=decodeURIComponent(badgeCode).split("~");
+  if(h && +t>(state.badgeEarnedAt||0)){
+    Object.assign(state,{badgeHandle:h,badgeEarnedAt:+t,badgeCount:+c,badgeDate:d.join("~"),badgeLogged:`${h}|${+t}`});
+    delete state.badgeHandles;
+    save(state);
+  }
 }
+if(hashCode||badgeCode) history.replaceState(null,"",location.pathname);
 if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
 renderBanner();
 renderStep1();
