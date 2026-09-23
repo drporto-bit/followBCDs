@@ -211,7 +211,7 @@ function renderStep1(){
   } else {
     const ok=state.agreed;
     box.innerHTML = `<label class="agree"><input type="checkbox" id="agree" ${ok?"checked":""}>
-        <span>I'll follow my colleagues on this list, not just add myself. <em>(required)</em></span></label>
+        <span>I agree to follow my colleagues on this list, not just add myself. <em>(required)</em></span></label>
       <div class="actions">
         <a class="primary ${ok?"":"is-off"}" href="${FORM_URL}" target="_blank" rel="noopener" id="openform" ${ok?"":'aria-disabled="true"'}>Open the sign-up form</a>
         <button type="button" id="markSubmitted" class="ghost">I've already submitted</button>
