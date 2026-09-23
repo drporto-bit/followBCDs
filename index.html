@@ -110,6 +110,13 @@ footer button{padding:.45rem .7rem;font-size:.85rem}
 .save-row .info{width:1.5rem;height:1.5rem;font-size:.8rem}
 footer a{color:var(--ink-soft)}
 .credit{margin-top:1.5rem}
+.text-in{flex:1 1 100%;width:100%;padding:.7rem .8rem;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface);color:var(--ink);font:inherit}
+.pick{list-style:none;margin:.5rem 0 0;padding:0}
+.pick li + li{border-top:1px solid var(--line)}
+.pick button{display:block;width:100%;text-align:left;border:0;border-radius:6px;background:transparent;padding:.65rem .5rem}
+.pick .ig{display:block;color:var(--ink-soft);font-size:.85rem}
+.badge{display:block;width:100%;max-width:22rem;height:auto;margin:0 auto;border-radius:12px;border:1px solid var(--line)}
 @media (max-width:30rem){
   .card,.empty,.note,.roster{margin-left:0}
   .peek-head,#peek > p:last-child{margin-left:0}
@@ -269,7 +276,7 @@ function renderStep2(){
     html += `<div class="note">${fresh.length} new ${fresh.length===1?"colleague has":"colleagues have"} been added since your last visit.</div>`;
   }
   if(queue.length===0){
-    html += `<div class="empty">You've been through everyone. Come back after the next round of sign-ups.</div>`;
+    html += badgeHTML();
   } else if(!started){
     const isReturning = done>0;
     html += `<div class="card">
@@ -290,8 +297,117 @@ function renderStep2(){
   }
   html += `<div id="peek"></div>`;
   box.innerHTML=html;
+  if(queue.length===0) drawBadge();
   renderPeek();
   document.getElementById("progress-note").textContent = `${done} of ${people.length} handled on this device.`;
+}
+
+/* ---------- completion badge ---------- */
+let editingBadge=false;
+let badgeBlob=null;
+
+function badgePerson(){
+  return people.find(p=>p.handle===state.badgeHandle)||null;
+}
+
+function badgeHTML(){
+  const me=badgePerson();
+  if(!me||editingBadge){
+    return `<div class="card">
+      <p class="person-name" style="margin-top:0">You've followed everyone on the list.</p>
+      <p class="handle">Find yourself on the list to get your badge.</p>
+      <div class="actions">
+        <input type="text" id="badgeSearch" class="text-in" placeholder="Search by name or handle"
+          aria-label="Find yourself on the list" autocomplete="off" enterkeyhint="search">
+      </div>
+      <ul class="pick" id="badgePick"></ul>
+      <p class="step-note" style="margin:.75rem 0 0">Not on the list yet? You'll be able to pick yourself once your TBCD membership is verified.</p>
+    </div>`;
+  }
+  return `<div class="card">
+      <canvas id="badge" class="badge" width="1080" height="1080" role="img"
+        aria-label="${esc(withTitle(me.name))} followed every colleague in the BCD Instagram Directory"></canvas>
+      <div class="actions">
+        <button type="button" class="primary" id="shareBadge">Save or share badge</button>
+        <button type="button" class="ghost" id="editBadge">Not you? Pick again</button>
+      </div>
+      <p class="step-note" style="margin:.9rem 0 0">New colleagues join after each round of sign-ups. Come back to keep your badge current.</p>
+    </div>`;
+}
+
+function renderPick(q){
+  const list=document.getElementById("badgePick"); if(!list) return;
+  const needle=q.trim().toLowerCase().replace(/^@/,"");
+  if(!needle){ list.innerHTML=""; return; }
+  const rows=people.filter(p=>p.name.toLowerCase().includes(needle)||p.handle.includes(needle)).slice(0,6);
+  list.innerHTML = rows.length
+    ? rows.map(p=>`<li><button type="button" data-pick="${esc(p.handle)}">${esc(withTitle(p.name))}<span class="ig">@${esc(p.handle)}</span></button></li>`).join("")
+    : `<li><p class="handle" style="padding:.65rem .5rem;margin:0">Nobody by that name on the list yet.</p></li>`;
+}
+
+function roundRectPath(x,X,Y,w,h,r){
+  x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+w,Y,X+w,Y+h,r); x.arcTo(X+w,Y+h,X,Y+h,r);
+  x.arcTo(X,Y+h,X,Y,r); x.arcTo(X,Y,X+w,Y,r); x.closePath();
+}
+
+async function drawBadge(){
+  const c=document.getElementById("badge"); if(!c) return;
+  badgeBlob=null;
+  if(state.badgeCount!==people.length||!state.badgeDate||!/,/.test(state.badgeDate)){
+    state.badgeCount=people.length;
+    state.badgeDate=new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+    save(state);
+  }
+  try{ await document.fonts.load('500 80px "Newsreader"'); }catch(e){}
+  const x=c.getContext("2d");
+  const P={paper:"#F3F1F7",card:"#FFFFFF",ink:"#1B1725",soft:"#5A5468",line:"#DCD7E6",accent:"#5B3A94"};
+  const serif='"Newsreader", Georgia, serif';
+  const sans='ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+
+  x.fillStyle=P.paper; x.fillRect(0,0,1080,1080);
+  roundRectPath(x,60,60,960,960,36); x.fillStyle=P.card; x.fill();
+  x.lineWidth=3; x.strokeStyle=P.line; x.stroke();
+
+  x.beginPath(); x.arc(540,320,150,0,Math.PI*2); x.lineWidth=4; x.strokeStyle=P.accent; x.stroke();
+  x.beginPath(); x.arc(540,320,128,0,Math.PI*2); x.fillStyle=P.accent; x.fill();
+  x.beginPath(); x.moveTo(478,322); x.lineTo(522,366); x.lineTo(606,276);
+  x.strokeStyle="#FFFFFF"; x.lineWidth=20; x.lineCap="round"; x.lineJoin="round"; x.stroke();
+
+  x.textAlign="center"; x.textBaseline="alphabetic";
+  const me=badgePerson(); if(!me) return;
+  const name=withTitle(me.name);
+  let size=84;
+  x.font=`500 ${size}px ${serif}`;
+  while(x.measureText(name).width>840 && size>36){ size-=2; x.font=`500 ${size}px ${serif}`; }
+  x.fillStyle=P.ink; x.fillText(name,540,580);
+
+  x.font=`400 38px ${sans}`; x.fillStyle=P.soft;
+  x.fillText("followed every colleague in the",540,660);
+  x.fillText("BCD Instagram Directory",540,710);
+
+  const n=state.badgeCount;
+  x.font=`500 32px ${sans}`; x.fillStyle=P.accent;
+  x.fillText(`${n} board-certified dermatologist${n===1?"":"s"}`,540,820);
+  x.font=`500 40px ${serif}`; x.fillStyle=P.ink;
+  x.fillText(`As of ${state.badgeDate}`,540,878);
+
+  x.font=`500 30px ${sans}`; x.fillStyle=P.accent;
+  x.fillText("ig.dermatolo.gy",540,960);
+
+  c.toBlob(b=>{ badgeBlob=b; },"image/png");
+}
+
+async function shareBadge(){
+  if(!badgeBlob) return;
+  const file=new File([badgeBlob],"bcd-badge.png",{type:"image/png"});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file]}); }catch(e){}
+    return;
+  }
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(badgeBlob); a.download="bcd-badge.png";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
 }
 
 /* ---------- social proof + collapsed full list ---------- */
@@ -330,6 +446,9 @@ function renderRoster(q){
 }
 
 /* ---------- events ---------- */
+document.addEventListener("input", e=>{
+  if(e.target.id==="badgeSearch") renderPick(e.target.value);
+});
 document.addEventListener("change", e=>{
   if(e.target.id==="agree"){
     state.agreed=e.target.checked; save(state); renderStep1();
@@ -353,6 +472,10 @@ document.addEventListener("click", e=>{
     gear.setAttribute("aria-expanded", open?"true":"false");
     return;
   }
+  const pick=e.target.closest("[data-pick]");
+  if(pick){ state.badgeHandle=pick.dataset.pick; editingBadge=false; save(state); renderStep2(); return; }
+  if(e.target.id==="editBadge"){ editingBadge=true; renderStep2(); return; }
+  if(e.target.id==="shareBadge"){ shareBadge(); return; }
   if(e.target.id==="startQueue"){ e.preventDefault(); started=true; renderStep2(); return; }
   if(e.target.id==="showList"){ listOpen=true; renderPeek(); return; }
   if(e.target.id==="hideList"){ listOpen=false; renderPeek(); return; }
