@@ -173,6 +173,10 @@ let state = load();
 let people = [];
 
 function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function withTitle(name){
+  const n=String(name||"").trim();
+  return /^(dr\.?|doctor|prof\.?)\b/i.test(n) ? n : "Dr. "+n;
+}
 
 function parseCSV(text){
   const rows=[]; let row=[], field="", q=false;
@@ -260,7 +264,7 @@ function renderStep2(){
     const p=queue[0];
     html += `<div class="card">
       <p class="counter">${done} of ${people.length} done<span class="bar"><i style="width:${Math.round(done/people.length*100)}%"></i></span></p>
-      <p class="person-name">${esc(p.name)}</p>
+      <p class="person-name">${esc(withTitle(p.name))}</p>
       <p class="handle">@${esc(p.handle)}</p>
       <div class="actions">
         <a class="primary" href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener" data-open="${esc(p.handle)}">Open @${esc(p.handle)} on Instagram</a>
@@ -302,7 +306,7 @@ function renderRoster(q){
     const label=m==="followed"?"Done":m==="already"?"Already following":"";
     const isNew=state.visited&&!state.seen.includes(p.handle);
     return `<li><span class="who">
-      <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(p.name)}</a>${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
+      <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
       <span class="ig">@${esc(p.handle)}</span></span>
       <span class="state ${m==='followed'||m==='already'?'is-done':''}">${label}</span></li>`;
   }).join("") + (rows.length>ROSTER_CAP?`<li><span class="who state">${rows.length-ROSTER_CAP} more. Search to narrow it down.</span></li>`:"");
