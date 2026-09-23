@@ -178,6 +178,13 @@ const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfFJiF-DKfzUjJ8FhZyIN
 const STORE_KEY = "derm-follow-v1";
 const DAILY_LIMIT = 50;
 
+/* Badge log: Google Form "BCD badge log" (one "Handle" question), responses in the sheet
+   "BCD badge log (Responses)", whose response tab is published as CSV. */
+const BADGE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR5k5wm2jpU0ovCKR7IK5hMo6Kztzs8a9531LM2vemJyiBRlMfpxYR_Qx8oF4_zAO3Wh8WHOudZVRLY/pub?gid=1123417389&single=true&output=csv";
+const BADGE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScQVEeM6Mmmma6-GzoVPI_xCUGx54_dzhONwYJ-MPKxgnvxuw/formResponse";
+const BADGE_FORM_ENTRY = "entry.514113407";
+const badgeLogReady = u => !u.includes("PASTE");
+
 function load(){
   try{ return Object.assign({marks:{},seen:[],visited:false,submitted:false,agreed:false}, JSON.parse(localStorage.getItem(STORE_KEY))||{}); }
   catch(e){ return {marks:{},seen:[],visited:false,submitted:false,agreed:false}; }
@@ -315,7 +322,7 @@ function badgeHTML(){
   if(!me||editingBadge){
     return `<div class="card">
       <p class="person-name" style="margin-top:0">You've followed everyone on the list.</p>
-      <p class="handle">Find yourself on the list to get your badge.</p>
+      <p class="handle">Find yourself on the list to get your badge. Badge holders are shown first to everyone else, so it earns you follows.</p>
       <div class="actions">
         <input type="text" id="badgeSearch" class="text-in" placeholder="Search by name or handle"
           aria-label="Find yourself on the list" autocomplete="off" enterkeyhint="search">
@@ -331,7 +338,7 @@ function badgeHTML(){
         <button type="button" class="primary" id="shareBadge">Save or share badge</button>
         <button type="button" class="ghost" id="editBadge">Not you? Pick again</button>
       </div>
-      <p class="step-note" style="margin:.9rem 0 0">New colleagues join after each round of sign-ups. Come back to keep your badge current.</p>
+      <p class="step-note" style="margin:.9rem 0 0">Your badge puts you at the front of the list for everyone else. New colleagues join after each round of sign-ups, so come back to earn a fresh one.</p>
     </div>`;
 }
 
@@ -343,6 +350,41 @@ function renderPick(q){
   list.innerHTML = rows.length
     ? rows.map(p=>`<li><button type="button" data-pick="${esc(p.handle)}">${esc(withTitle(p.name))}<span class="ig">@${esc(p.handle)}</span></button></li>`).join("")
     : `<li><p class="handle" style="padding:.65rem .5rem;margin:0">Nobody by that name on the list yet.</p></li>`;
+}
+
+function logBadge(){
+  const me=badgePerson();
+  if(!me||!badgeLogReady(BADGE_FORM_URL)) return;
+  const key=`${me.handle}|${state.badgeDate}`;
+  if(state.badgeLogged===key) return;
+  fetch(BADGE_FORM_URL,{method:"POST",mode:"no-cors",body:new URLSearchParams({[BADGE_FORM_ENTRY]:me.handle})})
+    .then(()=>{ state.badgeLogged=key; save(state); })
+    .catch(()=>{});
+}
+
+function parseSheetDate(str){
+  const m=String(str||"").trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+  if(m) return new Date(+m[3],+m[1]-1,+m[2],+(m[4]||0),+(m[5]||0),+(m[6]||0)).getTime();
+  const t=Date.parse(str); return isNaN(t)?0:t;
+}
+
+async function loadBadges(){
+  const latest={};
+  if(!badgeLogReady(BADGE_CSV_URL)) return latest;
+  try{
+    const res=await fetch(BADGE_CSV_URL,{cache:"no-store"});
+    if(!res.ok) return latest;
+    const rows=parseCSV(await res.text());
+    const headers=rows.shift()||[];
+    const iTime=findCol(headers,["timestamp"]);
+    const iH=findCol(headers,["handle","instagram"]);
+    if(iTime===-1||iH===-1) return latest;
+    rows.forEach(r=>{
+      const h=cleanHandle(r[iH]); const t=parseSheetDate(r[iTime]);
+      if(h&&t&&(!latest[h]||t>latest[h])) latest[h]=t;
+    });
+  }catch(e){}
+  return latest;
 }
 
 function roundRectPath(x,X,Y,w,h,r){
@@ -358,6 +400,7 @@ async function drawBadge(){
     state.badgeDate=new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
     save(state);
   }
+  logBadge();
   try{ await document.fonts.load('500 80px "Newsreader"'); }catch(e){}
   const x=c.getContext("2d");
   const P={paper:"#F3F1F7",card:"#FFFFFF",ink:"#1B1725",soft:"#5A5468",line:"#DCD7E6",accent:"#5B3A94"};
@@ -558,6 +601,7 @@ renderBanner();
 renderStep1();
 (async function(){
   try{
+    const badgesP=loadBadges();
     const res=await fetch(SHEET_CSV_URL,{cache:"no-store"});
     if(!res.ok) throw new Error(res.status);
     const rows=parseCSV(await res.text());
@@ -574,6 +618,10 @@ renderStep1();
       if(!p.name||!p.handle||!p.ok||seen.has(p.handle)) return false;
       seen.add(p.handle); return true;
     });
+    const badges=await badgesP;
+    people=people
+      .map((p,i)=>Object.assign(p,{badgeAt:badges[p.handle]||0,order:i}))
+      .sort((a,b)=>(b.badgeAt-a.badgeAt)||(a.order-b.order));
     renderStep2();
     if(!state.visited){ state.visited=true; state.seen=people.map(p=>p.handle); save(state); }
   }catch(err){
