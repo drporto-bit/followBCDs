@@ -109,6 +109,7 @@ footer button{padding:.45rem .7rem;font-size:.85rem}
 .save-row button{display:inline-flex;align-items:center;gap:.45rem}
 .save-row .info{width:1.5rem;height:1.5rem;font-size:.8rem}
 footer a{color:var(--ink-soft)}
+.credit{margin-top:1.5rem}
 @media (max-width:30rem){
   .card,.empty,.note,.roster{margin-left:0}
   .peek-head,#peek > p:last-child{margin-left:0}
@@ -118,6 +119,10 @@ footer a{color:var(--ink-soft)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"BCD Instagram Directory","url":"https://ig.dermatolo.gy/",
+ "creator":{"@type":"Person","name":"Dennis Porto, MD","jobTitle":"Board-certified dermatologist","url":"https://www.skincare.md/"}}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -154,6 +159,7 @@ footer a{color:var(--ink-soft)}
     </p>
     <p class="step-note" id="whySave" hidden style="margin:.5rem 0 0">Your progress already saves automatically in this browser, so you can close the page and come back. This button copies a link that carries your progress to another device. Paste it into a note or text it to yourself, and opening it on your other phone or computer picks up where you left off.</p>
     <p><button id="reset" type="button">Start the list over</button></p>
+    <p class="credit">Made by Dr. Dennis Porto of <a href="https://www.skincare.md/">skincare.md</a></p>
   </div>
 </footer>
 
