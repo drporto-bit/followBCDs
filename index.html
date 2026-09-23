@@ -163,6 +163,7 @@ footer a{color:var(--ink-soft)}
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXPbcdgNQ-braX_b5buC8Gelg3AChvIjMVPzFRvSRmIJIGYWdlP4ix0HoCgN9WsP-irE98m2wvNIGQ/pub?gid=1301603971&single=true&output=csv";
 const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfFJiF-DKfzUjJ8FhZyINnhWqTgXHlJfewICdFI4sKDafTkGg/viewform";
 const STORE_KEY = "derm-follow-v1";
+const DAILY_LIMIT = 50;
 
 function load(){
   try{ return Object.assign({marks:{},seen:[],visited:false,submitted:false,agreed:false}, JSON.parse(localStorage.getItem(STORE_KEY))||{}); }
@@ -223,11 +224,20 @@ function renderStep1(){
   }
 }
 
+/* ---------- daily follow count (persists across reloads, resets at local midnight) ---------- */
+function todayKey(){
+  const d=new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+function followsToday(){
+  if(state.day!==todayKey()){ state.day=todayKey(); state.dayCount=0; }
+  return state.dayCount||0;
+}
+
 /* ---------- step 2 ---------- */
-let sessionCount=0;
 let started=false;
 function mark(handle,value){
-  if(!state.marks[handle]) sessionCount++;
+  if(!state.marks[handle] && value==="followed"){ followsToday(); state.dayCount++; }
   state.marks[handle]=value;
   if(!state.seen.includes(handle)) state.seen.push(handle);
   save(state); renderStep2();
@@ -245,8 +255,9 @@ function renderStep2(){
   document.getElementById("num2").className = "step-num" + (queue.length===0?" is-done":"");
 
   let html="";
-  if(sessionCount>=50){
-    html += `<div class="note"><strong>That's ${sessionCount} in one sitting.</strong> Instagram starts blocking follows past roughly this many in a day. Worth stopping here and coming back tomorrow. Your place is saved.</div>`;
+  const today=followsToday();
+  if(today>=DAILY_LIMIT){
+    html += `<div class="note"><strong>That's ${today} follows today.</strong> Instagram starts blocking follows past roughly this many in a day. Worth stopping here and coming back tomorrow. Your place is saved.</div>`;
   }
   if(fresh.length && queue.length){
     html += `<div class="note">${fresh.length} new ${fresh.length===1?"colleague has":"colleagues have"} been added since your last visit.</div>`;
