@@ -116,6 +116,12 @@ footer a{color:var(--ink-soft)}
 .pick li + li{border-top:1px solid var(--line)}
 .pick button{display:block;width:100%;text-align:left;border:0;border-radius:6px;background:transparent;padding:.65rem .5rem}
 .pick .ig{display:block;color:var(--ink-soft);font-size:.85rem}
+.badge-mark{display:inline-flex;align-items:center;justify-content:center;width:.8em;height:.8em;min-width:14px;min-height:14px;
+  border-radius:50%;background:var(--accent);color:#fff;margin-left:.35em;vertical-align:.02em}
+.badge-mark svg{width:70%;height:70%}
+.badge-line{display:flex;align-items:center;gap:.4rem;color:var(--accent);font-size:.85rem;margin:.35rem 0 0}
+.badge-line .badge-mark{margin-left:0}
+.legend{margin:0 0 .75rem 2.1rem}
 .badge{display:block;width:100%;max-width:22rem;height:auto;margin:0 auto;border-radius:12px;border:1px solid var(--line)}
 @media (max-width:30rem){
   .card,.empty,.note,.roster{margin-left:0}
@@ -123,6 +129,7 @@ footer a{color:var(--ink-soft)}
   input[type=search]{margin-left:0;max-width:100%}
   .step-note{margin-left:0}
   .step-lead{margin-left:0}
+  .legend{margin-left:0}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -295,8 +302,9 @@ function renderStep2(){
     const p=queue[0];
     html += `<div class="card">
       <p class="counter">${done} of ${people.length} done<span class="bar"><i style="width:${Math.round(done/people.length*100)}%"></i></span></p>
-      <p class="person-name">${esc(withTitle(p.name))}</p>
+      <p class="person-name">${esc(withTitle(p.name))}${p.badgeAt?badgeMark():""}</p>
       <p class="handle">@${esc(p.handle)}</p>
+      ${p.badgeAt?`<p class="badge-line">${badgeMark()}Followed everyone on the list</p>`:""}
       <div class="actions">
         <a class="primary" href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener" data-open="${esc(p.handle)}">Open @${esc(p.handle)} on Instagram</a>
         <button type="button" data-mark="already" data-handle="${esc(p.handle)}">Already following</button>
@@ -312,6 +320,10 @@ function renderStep2(){
 /* ---------- completion badge ---------- */
 let editingBadge=false;
 let badgeBlob=null;
+
+function badgeMark(){
+  return `<span class="badge-mark" role="img" aria-label="Badge holder" title="Followed everyone on the list"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.8 6.3l2.1 2.1 4.3-4.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+}
 
 function badgePerson(){
   return people.find(p=>p.handle===state.badgeHandle)||null;
@@ -461,7 +473,9 @@ function renderPeek(){
     box.innerHTML = `<p class="peek-head">${people.length} dermatologist${people.length===1?" has":"s have"} started following each other!</p>
       <p><button type="button" id="showList" class="ghost">Show full list</button></p>`;
   } else {
+    const anyBadge=people.some(p=>p.badgeAt);
     box.innerHTML = `<p><button type="button" id="hideList" class="ghost">Hide full list</button></p>
+      ${anyBadge?`<p class="badge-line legend">${badgeMark()}Followed everyone on the list</p>`:""}
       <input type="search" id="filter" placeholder="Search by name or handle" aria-label="Search by name or handle">
       <ul class="roster" id="roster"></ul>`;
     renderRoster("");
@@ -482,7 +496,7 @@ function renderRoster(q){
     const label=m==="followed"?"Done":m==="already"?"Already following":"";
     const isNew=state.visited&&!state.seen.includes(p.handle);
     return `<li><span class="who">
-      <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
+      <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
       <span class="ig">@${esc(p.handle)}</span></span>
       <span class="state ${m==='followed'||m==='already'?'is-done':''}">${label}</span></li>`;
   }).join("") + (rows.length>ROSTER_CAP?`<li><span class="who state">${rows.length-ROSTER_CAP} more. Search to narrow it down.</span></li>`:"");
