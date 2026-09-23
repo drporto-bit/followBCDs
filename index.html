@@ -71,6 +71,10 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .primary{background:var(--accent);border-color:var(--accent);color:#fff;text-align:center;text-decoration:none;
   display:block;padding:.8rem 1rem;font-weight:500;border-radius:8px;flex:1 1 100%}
 .primary:hover{background:var(--accent);filter:brightness(1.08)}
+.primary.is-off{opacity:.4;pointer-events:none}
+.agree{display:flex;gap:.65rem;align-items:flex-start;font-size:.92rem;color:var(--ink-soft);cursor:pointer}
+.agree em{font-style:normal;color:var(--accent)}
+.agree input{width:1.15rem;height:1.15rem;margin:.15rem 0 0;flex:0 0 auto;accent-color:var(--accent)}
 .ghost{color:var(--ink-soft)}
 .done-line{display:flex;align-items:center;gap:.5rem;color:var(--done);font-size:.92rem}
 .empty{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:1.5rem;text-align:center;
@@ -161,8 +165,8 @@ const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfFJiF-DKfzUjJ8FhZyIN
 const STORE_KEY = "derm-follow-v1";
 
 function load(){
-  try{ return Object.assign({marks:{},seen:[],visited:false,submitted:false}, JSON.parse(localStorage.getItem(STORE_KEY))||{}); }
-  catch(e){ return {marks:{},seen:[],visited:false,submitted:false}; }
+  try{ return Object.assign({marks:{},seen:[],visited:false,submitted:false,agreed:false}, JSON.parse(localStorage.getItem(STORE_KEY))||{}); }
+  catch(e){ return {marks:{},seen:[],visited:false,submitted:false,agreed:false}; }
 }
 function save(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){} }
 let state = load();
@@ -201,12 +205,15 @@ function renderStep1(){
   const box=document.getElementById("step1");
   document.getElementById("num1").className = "step-num" + (state.submitted?" is-done":"");
   if(state.submitted){
-    box.innerHTML = `<p class="done-line">✓ You've submitted your handle.</p>
-      <p class="step-note" style="margin:.6rem 0 0">Verification is manual, so give it a day or two before you appear below.
+    box.innerHTML = `<p class="done-line">✓ You've submitted your Instagram.</p>
+      <p class="step-note" style="margin:.6rem 0 0">Verification is by hand between clinic days, so please be patient before you appear on the list. Meanwhile, start on step 2. Everyone below already added themselves and is waiting to be followed back.
       <a href="${FORM_URL}" target="_blank" rel="noopener" id="again">Submit again</a> if something needs fixing.</p>`;
   } else {
-    box.innerHTML = `<div class="actions" style="margin-top:0">
-        <a class="primary" href="${FORM_URL}" target="_blank" rel="noopener" id="openform">Open the sign-up form</a>
+    const ok=state.agreed;
+    box.innerHTML = `<label class="agree"><input type="checkbox" id="agree" ${ok?"checked":""}>
+        <span>I'll follow my colleagues on this list, not just add myself. <em>(required)</em></span></label>
+      <div class="actions">
+        <a class="primary ${ok?"":"is-off"}" href="${FORM_URL}" target="_blank" rel="noopener" id="openform" ${ok?"":'aria-disabled="true"'}>Open the sign-up form</a>
         <button type="button" id="markSubmitted" class="ghost">I've already submitted</button>
       </div>`;
   }
@@ -302,6 +309,12 @@ function renderRoster(q){
 }
 
 /* ---------- events ---------- */
+document.addEventListener("change", e=>{
+  if(e.target.id==="agree"){
+    state.agreed=e.target.checked; save(state); renderStep1();
+  }
+});
+
 document.addEventListener("click", e=>{
   const info=e.target.closest(".info");
   if(info){
