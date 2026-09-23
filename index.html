@@ -210,7 +210,7 @@ function renderStep1(){
   document.getElementById("num1").className = "step-num" + (state.submitted?" is-done":"");
   if(state.submitted){
     box.innerHTML = `<p class="done-line">✓ You've submitted your Instagram.</p>
-      <p class="step-note" style="margin:.6rem 0 0">Verification is by hand between clinic days, so please be patient before you appear on the list. Meanwhile, start on step 2. Everyone below already added themselves and is waiting to be followed back.
+      <p class="step-note" style="margin:.6rem 0 0">Begin Step 2 below in order for your name to be added to the list following TBCD membership verification.
       <a href="${FORM_URL}" target="_blank" rel="noopener" id="again">Submit again</a> if something needs fixing.</p>`;
   } else {
     const ok=state.agreed;
