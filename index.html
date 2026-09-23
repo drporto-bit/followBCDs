@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>BCD Instagram Directory</title>
-<meta name="description" content="A directory of board-certified dermatologists on Instagram, verified against the TBCD roster. Add your handle, then follow your colleagues.">
+<meta name="description" content="A directory of board-certified dermatologists on Instagram, verified against the TBCD roster. Add your Instagram, then follow your colleagues.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ig.dermatolo.gy/">
 <meta property="og:title" content="BCD Instagram Directory">
-<meta property="og:description" content="Verified against the TBCD roster. Add your handle, then follow your colleagues a tap at a time.">
+<meta property="og:description" content="Verified against the TBCD roster. Add your Instagram, then follow your colleagues a tap at a time.">
 <meta property="og:image" content="https://ig.dermatolo.gy/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -124,7 +124,7 @@ footer a{color:var(--ink-soft)}
 <div id="banner"></div>
 
 <section class="step">
-  <div class="step-head"><span class="step-num" id="num1">1</span><h2 class="step-title">Add your handle</h2>
+  <div class="step-head"><span class="step-num" id="num1">1</span><h2 class="step-title">Add your Instagram</h2>
     <button type="button" class="info" data-info="note1" aria-expanded="false" aria-label="What this step needs">i</button></div>
   <p class="step-note" id="note1" hidden>The form asks for three things: your name exactly as it appears on TBCD, your professional Instagram handle, and an email address in case verification needs a follow-up. Your email is never shown on this page. Every submission is checked by hand against the TBCD roster, and this is a volunteer effort run between clinic days, so please be patient waiting to appear on the list.</p>
   <div class="card" id="step1"></div>
@@ -238,7 +238,7 @@ function renderStep2(){
     html += `<div class="note"><strong>That's ${sessionCount} in one sitting.</strong> Instagram starts blocking follows past roughly this many in a day. Worth stopping here and coming back tomorrow. Your place is saved.</div>`;
   }
   if(fresh.length && queue.length){
-    html += `<div class="note">${fresh.length} new ${fresh.length===1?"colleague has":"colleagues have"} been added since your last visit. They're first in line.</div>`;
+    html += `<div class="note">${fresh.length} new ${fresh.length===1?"colleague has":"colleagues have"} been added since your last visit.</div>`;
   }
   if(queue.length===0){
     html += `<div class="empty">You've been through everyone. Come back after the next round of sign-ups.</div>`;
@@ -250,7 +250,6 @@ function renderStep2(){
         <a class="primary" href="#" id="startQueue">${isReturning?`Continue &mdash; ${queue.length} left`:`Start following colleagues`}</a>
       </div></div>`;
   } else {
-    queue.sort((a,b)=>(fresh.includes(b.handle)?1:0)-(fresh.includes(a.handle)?1:0));
     const p=queue[0];
     html += `<div class="card">
       <p class="counter">${done} of ${people.length} done<span class="bar"><i style="width:${Math.round(done/people.length*100)}%"></i></span></p>
@@ -417,7 +416,7 @@ renderStep1();
     })).filter(p=>{
       if(!p.name||!p.handle||!p.ok||seen.has(p.handle)) return false;
       seen.add(p.handle); return true;
-    }).sort((a,b)=>a.name.localeCompare(b.name));
+    });
     renderStep2();
     if(!state.visited){ state.visited=true; state.seen=people.map(p=>p.handle); save(state); }
   }catch(err){
