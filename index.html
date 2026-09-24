@@ -535,7 +535,7 @@ function renderStep3(left){
       <div class="actions">
         <button type="button" class="primary" id="shareBadge">Save or share badge</button>
       </div>
-      <p class="step-note" style="margin:.9rem 0 0">You're at the front of the list for everyone else. New colleagues join after each round of sign-ups, so come back to earn a fresh badge and stay there.</p>
+      <p class="step-note" style="margin:.9rem 0 0">You followed everyone on this list! This will be manually verified. You’ve earned your badge and will be prioritized first to your colleagues who join this site. Congratulations!</p>
     </div>`;
   drawBadge();
 }
@@ -761,6 +761,7 @@ async function finishEmailLink(){
 const TOP_N=5;
 /* medals for the top three, only when they've earned a badge (a rank alone isn't an achievement) */
 const MEDALS=["🥇","🥈","🥉"];
+const RANKED=10;
 let boardOpen=false, boardQuery="";
 
 function fmtWhen(t){
@@ -774,7 +775,8 @@ function boardRow(p,rank){
   const label=p.handle===myHandle?"You":m==="followed"?"Following":m==="already"?"Following":"";
   const isNew=state.visited&&!state.seen.includes(p.handle);
   const medal = rank<=3 && p.badgeAt ? MEDALS[rank-1] : "";
-  return `<li${medal?' class="medalist"':''}><span class="rank"${medal?` aria-label="Rank ${rank}"`:''}>${medal||rank}</span><span class="who">
+  const shownRank = rank<=RANKED ? rank : "";   /* only the top ten get a number */
+  return `<li${medal?' class="medalist"':''}><span class="rank"${medal?` aria-label="Rank ${rank}"`:''}>${medal||shownRank}</span><span class="who">
     <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
     <span class="ig">@${esc(p.handle)}</span>${whenLine(p)}</span>
     <span class="state ${label&&label!=="You"?'is-done':''}">${label}</span></li>`;
