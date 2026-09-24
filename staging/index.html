@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BCD Instagram Directory</title>
+<meta name="description" content="A directory of board-certified dermatologists on Instagram, verified against the TBCD roster. Add your Instagram, then follow your colleagues.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ig.dermatolo.gy/">
+<meta property="og:title" content="BCD Instagram Directory">
+<meta property="og:description" content="Verified against the TBCD roster. Add your Instagram, then follow your colleagues a tap at a time.">
+<meta property="og:image" content="https://ig.dermatolo.gy/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BCD Instagram Directory">
+<meta property="og:site_name" content="BCD Instagram Directory">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F1F7;
+  --surface:#FFFFFF;
+  --ink:#1B1725;
+  --ink-soft:#5A5468;
+  --line:#DCD7E6;
+  --accent:#5B3A94;
+  --accent-soft:#EDE5F8;
+  --done:#2E6B4F;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#151320;--surface:#1E1B2B;--ink:#EFECF6;--ink-soft:#A49CBA;
+    --line:#332E45;--accent:#C3A7F0;--accent-soft:#2A2340;--done:#7FC3A1;
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:38rem;margin:0 auto;padding:2rem 1.15rem 4rem}
+h1{font-family:"Newsreader",Georgia,serif;font-weight:400;font-size:1.9rem;line-height:1.15;margin:0 0 .4rem;letter-spacing:-.01em}
+.sub{color:var(--ink-soft);margin:0 0 2.25rem;font-size:.95rem}
+.step{margin-bottom:2.25rem}
+.step-head{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.6rem}
+.step-num{width:1.5rem;height:1.5rem;flex:0 0 auto;border-radius:50%;background:var(--accent);color:#fff;
+  font-size:.82rem;line-height:1.5rem;text-align:center;align-self:center}
+.step-num.is-done{background:var(--done)}
+.step-title{font-family:"Newsreader",Georgia,serif;font-size:1.25rem;margin:0}
+.step-note{color:var(--ink-soft);font-size:.9rem;margin:.1rem 0 .9rem 2.1rem}
+.step-lead{color:var(--ink-soft);font-size:.95rem;margin:.1rem 0 .9rem 2.1rem}
+.info{width:1.6rem;height:1.6rem;flex:0 0 auto;align-self:center;border-radius:50%;border:1px solid var(--line);
+  background:transparent;color:var(--ink-soft);font-size:.85rem;font-style:italic;font-family:Georgia,serif;
+  line-height:1;padding:0;display:flex;align-items:center;justify-content:center}
+.info:hover,.info[aria-expanded="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.25rem;margin-left:2.1rem}
+.who-row{display:flex;align-items:center;gap:.9rem;margin-top:1rem}
+.who-row .person-name{margin:0}
+.who-row .handle{margin:.1rem 0 0}
+.avatar{flex:0 0 auto;width:3.5rem;height:3.5rem;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-family:"Newsreader",Georgia,serif;font-size:1.35rem;letter-spacing:.02em}
+.just{margin:0 0 .75rem 2.1rem}
+@keyframes cardIn{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+.card-in{animation:cardIn .38s cubic-bezier(.2,.7,.3,1)}
+.person-name{font-family:"Newsreader",Georgia,serif;font-size:1.45rem;line-height:1.2;margin:.9rem 0 0}
+.handle{color:var(--ink-soft);font-size:.95rem;margin:.15rem 0 0}
+.counter{font-size:.82rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.bar{display:block;height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:.5rem}
+.bar i{display:block;height:100%;background:var(--accent);width:0}
+.actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.15rem}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink);padding:.6rem .9rem}
+button:hover{background:var(--accent-soft)}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.primary{background:var(--accent);border-color:var(--accent);color:#fff;text-align:center;text-decoration:none;
+  display:block;padding:.8rem 1rem;font-weight:500;border-radius:8px;flex:1 1 100%}
+.primary:hover{background:var(--accent);filter:brightness(1.08)}
+.primary.is-off{opacity:.4;pointer-events:none}
+.agree{display:flex;gap:.65rem;align-items:flex-start;font-size:.92rem;color:var(--ink-soft);cursor:pointer}
+.agree em{font-style:normal;color:var(--accent)}
+.agree input{width:1.15rem;height:1.15rem;margin:.15rem 0 0;flex:0 0 auto;accent-color:var(--accent)}
+.ghost{color:var(--ink-soft)}
+.done-line{display:flex;align-items:center;gap:.5rem;color:var(--done);font-size:.92rem}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:1.5rem;text-align:center;
+  color:var(--ink-soft);margin-left:2.1rem}
+.note{background:var(--accent-soft);border-radius:10px;padding:.85rem 1rem;margin:0 0 1rem 2.1rem;font-size:.9rem}
+#banner:not(:empty){background:var(--accent-soft);border-radius:10px;padding:.9rem 1.05rem;margin:0 0 2rem;font-size:.9rem}
+#banner p{margin:0}
+.banner-head{display:flex;align-items:center;gap:.6rem}
+.banner-head .info{width:1.4rem;height:1.4rem;font-size:.8rem}
+#banner p + p{margin-top:.6rem}
+#banner button{padding:.45rem .75rem;font-size:.85rem}
+.url-line{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;word-break:break-all;color:var(--ink-soft)}
+.roster{list-style:none;margin:1.5rem 0 0 2.1rem;padding:0;border-top:1px solid var(--line)}
+.peek-head{color:var(--ink-soft);font-size:.9rem;margin:1.5rem 0 0 2.1rem}
+#peek > p:last-child{margin-left:2.1rem}
+.roster li{display:flex;align-items:baseline;gap:.75rem;padding:.7rem .15rem;border-bottom:1px solid var(--line)}
+.roster a{color:var(--ink);text-decoration:none;font-weight:500}
+.roster a:hover{text-decoration:underline}
+.roster .who{flex:1 1 auto;min-width:0}
+.roster .ig{display:block;color:var(--ink-soft);font-size:.85rem}
+.roster .when{display:block;color:var(--ink-soft);font-size:.78rem;font-variant-numeric:tabular-nums}
+.state{font-size:.78rem;color:var(--ink-soft);white-space:nowrap}
+.state.is-done{color:var(--done)}
+.new-dot{display:inline-block;width:.4rem;height:.4rem;border-radius:50%;background:var(--accent);vertical-align:middle;margin-left:.4rem}
+input[type=search]{width:100%;padding:.6rem .75rem;border:1px solid var(--line);border-radius:8px;background:var(--surface);
+  color:var(--ink);font:inherit;margin-left:2.1rem;max-width:calc(100% - 2.1rem)}
+footer{margin-top:3rem;color:var(--ink-soft);font-size:.82rem;line-height:1.7}
+footer button{padding:.45rem .7rem;font-size:.85rem}
+.save-row{display:flex;align-items:center;gap:.5rem}
+#gear{display:inline-flex;align-items:center;gap:.45rem;color:var(--ink-soft)}
+#gear[aria-expanded="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+#tools{margin-top:.75rem}
+.save-row button{display:inline-flex;align-items:center;gap:.45rem}
+.save-row .info{width:1.5rem;height:1.5rem;font-size:.8rem}
+footer a{color:var(--ink-soft)}
+.credit{margin-top:1.5rem}
+.text-in{flex:1 1 100%;width:100%;padding:.7rem .8rem;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface);color:var(--ink);font:inherit}
+.pick{list-style:none;margin:.5rem 0 0;padding:0}
+.pick li + li{border-top:1px solid var(--line)}
+.pick button{display:block;width:100%;text-align:left;border:0;border-radius:6px;background:transparent;padding:.65rem .5rem}
+.pick .ig{display:block;color:var(--ink-soft);font-size:.85rem}
+.badge-mark{display:inline-flex;align-items:center;justify-content:center;width:.8em;height:.8em;min-width:14px;min-height:14px;
+  border-radius:50%;background:var(--accent);color:#fff;margin-left:.35em;vertical-align:.02em}
+.badge-mark svg{width:70%;height:70%}
+.badge-line{display:flex;align-items:center;gap:.4rem;color:var(--accent);font-size:.85rem;margin:.35rem 0 0}
+.badge-line .badge-mark{margin-left:0}
+.legend{margin:0 0 .75rem 2.1rem}
+.badge{display:block;width:100%;max-width:22rem;height:auto;margin:0 auto;border-radius:12px;border:1px solid var(--line)}
+@media (max-width:30rem){
+  .card,.empty,.note,.roster{margin-left:0}
+  .peek-head,#peek > p:last-child{margin-left:0}
+  input[type=search]{margin-left:0;max-width:100%}
+  .step-note{margin-left:0}
+  .step-lead{margin-left:0}
+  .legend{margin-left:0}
+  .just{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"BCD Instagram Directory","url":"https://ig.dermatolo.gy/",
+ "creator":{"@type":"Person","name":"Dennis Porto, MD","jobTitle":"Board-certified dermatologist","url":"https://www.skincare.md/"}}
+</script>
+</head>
+<body>
+<div class="wrap">
+
+<p style="background:#B4541F;color:#fff;border-radius:8px;padding:.5rem .75rem;font-size:.85rem;margin:0 0 1rem">Test copy. Saves and badges go to the real backend.</p>
+<h1>BCD Instagram Directory</h1>
+<p class="sub">A directory of board-certified dermatologists on Instagram, open to TBCD members. Add yourself, then follow the colleagues already listed.</p>
+
+<div id="banner"></div>
+
+<section class="step">
+  <div class="step-head"><span class="step-num" id="num1">1</span><h2 class="step-title">Add your Instagram</h2>
+    <button type="button" class="info" data-info="note1" aria-expanded="false" aria-label="What this step needs">i</button></div>
+  <p class="step-note" id="note1" hidden>The form asks for three things: your name exactly as it appears on TBCD, your professional Instagram handle, and an email address in case verification needs a follow-up. Your email is never shown on this page. Every submission is checked by hand against the TBCD roster, and this is a volunteer effort run between clinic days, so please be patient waiting to appear on the list.</p>
+  <div class="card" id="step1"></div>
+</section>
+
+<section class="step">
+  <div class="step-head"><span class="step-num" id="num2">2</span><h2 class="step-title">Follow your colleagues</h2>
+    <button type="button" class="info" data-info="note2" aria-expanded="false" aria-label="How this step works">i</button></div>
+  <p class="step-lead">One colleague at a time. Stop around 50 a day.</p>
+  <p class="step-note" id="note2" hidden>Tap the purple button to open that dermatologist's profile, follow them on Instagram, then come back here. The next colleague is already waiting, and nobody you've handled comes up twice. Instagram temporarily blocks accounts that follow too many people at once, so stop around 50 in a sitting and pick it up another day. This page remembers your place.</p>
+  <div id="step2"><div class="empty">Loading the list…</div></div>
+</section>
+
+<section class="step">
+  <div class="step-head"><span class="step-num" id="num3">3</span><h2 class="step-title">Earn your badge</h2>
+    <button type="button" class="info" data-info="note3" aria-expanded="false" aria-label="What the badge gets you">i</button></div>
+  <p class="step-lead">Follow everyone on the list to get a badge, a check mark by your name, and a spot at the front of the list so you get the most followers.</p>
+  <p class="step-note" id="note3" hidden>Once you've been through every colleague, find yourself on the list to create your badge. Your name gets a purple check, and you move to the front of everyone else's follow queue, most recent badges first, so you pick up follows from colleagues working through the list. When new colleagues are verified, follow them to earn a fresh badge with a new date and move back to the front.</p>
+  <div id="step3"></div>
+</section>
+
+<footer>
+  <p id="progress-note"></p>
+  <p><button type="button" id="gear" aria-expanded="false" aria-controls="tools">
+    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 5.5A2.5 2.5 0 1 0 8 10.5 2.5 2.5 0 0 0 8 5.5zm0 1.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6z"/><path d="M6.9.8h2.2l.3 1.8 1.2.5 1.5-1 1.6 1.6-1 1.5.5 1.2 1.8.3v2.2l-1.8.3-.5 1.2 1 1.5-1.6 1.6-1.5-1-1.2.5-.3 1.8H6.9l-.3-1.8-1.2-.5-1.5 1L2.3 12l1-1.5-.5-1.2L1 9V6.8l1.8-.3.5-1.2-1-1.5 1.6-1.6 1.5 1 1.2-.5.3-1.9zm1 2.9a4.3 4.3 0 1 0 0 8.6 4.3 4.3 0 0 0 0-8.6z"/></svg>
+    Options</button></p>
+  <div id="tools" hidden>
+    <p id="meLine"></p>
+    <p class="save-row">
+      <button type="button" id="copyProgress"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M2 1h9.5L15 4.5V14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm2 1v4h7V2H4zm5 1h1.5v2H9V3zM4 9h8v4H4V9z"/></svg> Save my progress</button>
+      <button type="button" class="info" data-info="whySave" aria-expanded="false" aria-label="What this does">i</button>
+    </p>
+    <p class="step-note" id="whySave" hidden style="margin:.5rem 0 0">Your progress already saves automatically in this browser, so you can close the page and come back. This button copies a link that carries your progress to another device. Paste it into a note or text it to yourself, and opening it on your other phone or computer picks up where you left off.</p>
+    <p><button id="reset" type="button">Start the list over</button></p>
+    <p class="credit">Made by Dr. Dennis Porto of <a href="https://www.skincare.md/">skincare.md</a></p>
+  </div>
+</footer>
+
+</div>
+
+<script>
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXPbcdgNQ-braX_b5buC8Gelg3AChvIjMVPzFRvSRmIJIGYWdlP4ix0HoCgN9WsP-irE98m2wvNIGQ/pub?gid=1301603971&single=true&output=csv";
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfFJiF-DKfzUjJ8FhZyINnhWqTgXHlJfewICdFI4sKDafTkGg/viewform";
+const STORE_KEY = "derm-follow-staging";  /* separate from the live page's saved progress */
+const DAILY_LIMIT = 50;
+
+/* Badge log: Google Form "BCD badge log" (one "Handle" question), responses in the sheet
+   "BCD badge log (Responses)", whose response tab is published as CSV. */
+const BADGE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR5k5wm2jpU0ovCKR7IK5hMo6Kztzs8a9531LM2vemJyiBRlMfpxYR_Qx8oF4_zAO3Wh8WHOudZVRLY/pub?gid=1123417389&single=true&output=csv";
+const BADGE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScQVEeM6Mmmma6-GzoVPI_xCUGx54_dzhONwYJ-MPKxgnvxuw/formResponse";
+const BADGE_FORM_ENTRY = "entry.514113407";
+const badgeLogReady = u => !u.includes("PASTE");
+
+/* Progress backup: Apps Script "BCD progress backend" bound to the badge-log spreadsheet (Progress tab, unpublished). */
+const PROGRESS_API = "https://script.google.com/macros/s/AKfycbwIfARptCjMeCUCGgJ3Fr1iPVjpGhZDBk5blsdCi_hp4zPeOiSna8IdYdnBWNHklMewFA/exec";
+
+function load(){
+  try{ return Object.assign({marks:{},seen:[],visited:false,submitted:false,agreed:false}, JSON.parse(localStorage.getItem(STORE_KEY))||{}); }
+  catch(e){ return {marks:{},seen:[],visited:false,submitted:false,agreed:false}; }
+}
+function save(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){} }
+let state = load();
+if(!state.me && state.badgeHandle){ state.me=state.badgeHandle; delete state.badgeHandle; save(state); } /* older versions */
+let people = [];
+
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function withTitle(name){
+  const n=String(name||"").trim();
+  return /^(dr\.?|doctor|prof\.?)\b/i.test(n) ? n : "Dr. "+n;
+}
+
+function parseCSV(text){
+  const rows=[]; let row=[], field="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){ field+='"'; i++; } else q=false; } else field+=c; }
+    else if(c==='"'){ q=true; }
+    else if(c===','){ row.push(field); field=""; }
+    else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=""; }
+    else if(c!=='\r'){ field+=c; }
+  }
+  if(field.length||row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r=>r.some(v=>v.trim()!==""));
+}
+function cleanHandle(raw){
+  let h=String(raw||"").trim().replace(/^.*instagram\.com\//i,"").replace(/^@/,"");
+  h=h.split(/[/?#\s]/)[0];
+  return h.replace(/[^A-Za-z0-9._]/g,"").toLowerCase();
+}
+function findCol(headers,cands){
+  for(let i=0;i<headers.length;i++){
+    const h=headers[i].trim().toLowerCase();
+    if(cands.some(c=>h.includes(c))) return i;
+  }
+  return -1;
+}
+
+/* ---------- step 1 ---------- */
+function renderStep1(){
+  const box=document.getElementById("step1");
+  document.getElementById("num1").className = "step-num" + (state.submitted?" is-done":"");
+  if(state.submitted){
+    box.innerHTML = `<p class="done-line">✓ You've submitted your Instagram.</p>
+      <p class="step-note" style="margin:.6rem 0 0">Complete Step 2 below in order for your name to be added to the list following TBCD membership verification.
+      <a href="${FORM_URL}" target="_blank" rel="noopener" id="again">Submit again</a> if something needs fixing.</p>`;
+  } else {
+    const ok=state.agreed;
+    box.innerHTML = `<label class="agree"><input type="checkbox" id="agree" ${ok?"checked":""}>
+        <span>I agree to follow my colleagues on this list, not just add myself. <em>(required)</em></span></label>
+      <div class="actions">
+        <a class="primary ${ok?"":"is-off"}" href="${FORM_URL}" target="_blank" rel="noopener" id="openform" ${ok?"":'aria-disabled="true"'}>Open the sign-up form</a>
+        <button type="button" id="markSubmitted" class="ghost">I've already submitted</button>
+      </div>`;
+  }
+}
+
+/* ---------- daily follow count (persists across reloads, resets at local midnight) ---------- */
+function todayKey(){
+  const d=new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+function followsToday(){
+  if(state.day!==todayKey()){ state.day=todayKey(); state.dayCount=0; }
+  return state.dayCount||0;
+}
+
+/* ---------- saving progress to your name ---------- */
+let restoring=false;
+let restoredCount=0;
+let verifiedNow=false;
+let syncTimer=null;
+
+function unsyncedPayload(){
+  const u=state.unsynced||{}, marks={};
+  Object.keys(u).forEach(h=>{ marks[h]=u[h]==="already"?"a":"f"; });
+  return marks;
+}
+function queueSync(){
+  if(!state.me) return;
+  clearTimeout(syncTimer); syncTimer=setTimeout(syncNow,1500);
+}
+async function syncNow(){
+  if(!state.me) return;
+  const pending=Object.assign({},state.unsynced||{});
+  if(!Object.keys(pending).length) return;
+  try{
+    const res=await fetch(PROGRESS_API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({action:"save",handle:state.me,marks:unsyncedPayload()})});
+    const out=await res.json();
+    if(out&&out.ok){
+      Object.keys(pending).forEach(h=>{ if(state.unsynced&&state.unsynced[h]===pending[h]) delete state.unsynced[h]; });
+      save(state);
+    }
+  }catch(e){ /* stays queued; retried on the next tap or visit */ }
+}
+function beaconSync(){
+  if(!state.me||!Object.keys(state.unsynced||{}).length||!navigator.sendBeacon) return;
+  try{
+    navigator.sendBeacon(PROGRESS_API,new Blob([JSON.stringify({action:"save",handle:state.me,marks:unsyncedPayload()})],{type:"text/plain;charset=utf-8"}));
+  }catch(e){}
+}
+async function restoreFromServer(){
+  try{
+    const out=await fetch(PROGRESS_API+"?action=get&handle="+encodeURIComponent(state.me)).then(r=>r.json());
+    if(!out||!out.ok||!out.marks) return 0;
+    let n=0;
+    Object.entries(out.marks).forEach(([h,v])=>{
+      if(!state.marks[h]){ state.marks[h]=v==="a"?"already":"followed"; n++; }
+      if(!state.seen.includes(h)) state.seen.push(h);
+    });
+    save(state);
+    return n;
+  }catch(e){ return 0; }
+}
+async function setMe(handle){
+  state.me=handle; state.meSkipped=false; state.submitted=true;
+  state.unsynced=Object.assign({},state.marks,state.unsynced||{});  /* back up anything done before picking */
+  delete state.unsynced[handle];
+  save(state);
+  restoring=true; restoredCount=0; renderStep1(); renderStep2();
+  restoredCount=await restoreFromServer();
+  restoring=false; renderStep2();
+  syncNow();
+}
+
+/* ---------- step 2 ---------- */
+let started=false;
+let lastDone=null;       /* {name, value} of the colleague just handled */
+let animateNext=false;   /* slide the next card in when the person is looking */
+let shown={handle:null,color:-1};
+
+const AVATAR_COLORS=["#5B3A94","#2E6B4F","#B4541F","#1F5F8B","#8A2D5B","#2F7F7A","#9A3B3B","#6B5A1E"];
+function initials(name){
+  const parts=String(name).replace(/^(dr\.?|doctor|prof\.?)\s+/i,"").trim().split(/\s+/).filter(Boolean);
+  if(!parts.length) return "?";
+  return (parts[0][0]+(parts.length>1?parts[parts.length-1][0]:"")).toUpperCase();
+}
+function colorFor(handle){
+  if(handle===shown.handle) return shown.color;      /* re-renders keep the same color */
+  let h=0; for(const ch of handle) h=(h*31+ch.charCodeAt(0))>>>0;
+  let i=h%AVATAR_COLORS.length;
+  if(i===shown.color) i=(i+1)%AVATAR_COLORS.length;  /* never the same color twice in a row */
+  shown={handle,color:i};
+  return i;
+}
+
+function mark(handle,value){
+  const who=people.find(p=>p.handle===handle);
+  if(who) lastDone={name:withTitle(who.name),value};
+  animateNext=true;
+  if(!state.marks[handle] && value==="followed"){ followsToday(); state.dayCount++; }
+  state.marks[handle]=value;
+  if(!state.seen.includes(handle)) state.seen.push(handle);
+  state.unsynced=state.unsynced||{}; state.unsynced[handle]=value;
+  save(state); renderStep2(); queueSync();
+}
+
+function renderStep2(){
+  const box=document.getElementById("step2");
+  if(!people.length){
+    box.innerHTML = `<div class="empty">Nobody's been verified yet. Check back once the first handles are approved.</div>`;
+    renderStep3(0);
+    return;
+  }
+  renderMeLine();
+  if(restoring){
+    box.innerHTML=`<div class="empty">Loading your saved progress…</div>`;
+    return;
+  }
+  if(state.pending && people.some(p=>p.handle===state.pending)){
+    /* they've been verified since signing up: switch to saving under their name */
+    const h=state.pending; delete state.pending; verifiedNow=true; setMe(h); return;
+  }
+  if(!state.me && !state.meSkipped && !state.pending){
+    box.innerHTML=`<div class="card">
+      <p class="person-name" style="margin-top:0">First, find yourself</p>
+      <p class="handle">Search your name, or type the Instagram handle you signed up with. Your progress saves to your name, so it's never lost if your phone clears it.</p>
+      <div class="actions">
+        <input type="text" id="badgeSearch" class="text-in" placeholder="Search by name or handle"
+          aria-label="Find yourself on the list" autocomplete="off" enterkeyhint="search">
+      </div>
+      <ul class="pick" id="badgePick" data-pending="1"></ul>
+    </div><div id="peek"></div>`;
+    renderPeek();
+    renderStep3(null);
+    return;
+  }
+  const self=state.me||state.pending;
+  const list=people.filter(p=>p.handle!==self);   /* you don't follow yourself */
+  const queue=list.filter(p=>!state.marks[p.handle]);
+  const fresh=state.visited?list.filter(p=>!state.seen.includes(p.handle)).map(p=>p.handle):[];
+  const done=list.length-queue.length;
+  document.getElementById("num2").className = "step-num" + (queue.length===0?" is-done":"");
+
+  let html="";
+  if(verifiedNow){
+    html += `<div class="note">You've been verified. Your progress now saves to your name.</div>`;
+  }
+  if(state.pending){
+    html += `<div class="note">Following as @${esc(state.pending)} while your TBCD membership is verified. Your progress is on this phone for now and moves to your name once you're approved.</div>`;
+  }
+  if(restoredCount){
+    html += `<div class="note">Welcome back. Restored ${restoredCount} ${restoredCount===1?"colleague":"colleagues"} you'd already handled.</div>`;
+  }
+  const today=followsToday();
+  if(today>=DAILY_LIMIT){
+    html += `<div class="note"><strong>That's ${today} follows today.</strong> Instagram starts blocking follows past roughly this many in a day. Worth stopping here and coming back tomorrow. Your place is saved.</div>`;
+  }
+  if(fresh.length && queue.length){
+    html += `<div class="note">${fresh.length} new ${fresh.length===1?"colleague has":"colleagues have"} been added since your last visit.</div>`;
+  }
+  if(queue.length===0){
+    html += `<div class="empty">You've been through everyone. Your badge is ready in Step 3.</div>`;
+  } else if(!started){
+    const isReturning = done>0;
+    html += `<div class="card">
+      ${isReturning?`<p class="counter">${done} of ${list.length} done<span class="bar"><i style="width:${Math.round(done/list.length*100)}%"></i></span></p>`:""}
+      <div class="actions" style="margin-top:${isReturning?"1.15rem":"0"}">
+        <a class="primary" href="#" id="startQueue">${isReturning?`Continue &mdash; ${queue.length} left`:`Start following colleagues`}</a>
+      </div></div>`;
+  } else {
+    const p=queue[0];
+    if(lastDone){
+      html += `<p class="done-line just">✓ ${lastDone.value==="already"
+        ?`${esc(lastDone.name)} marked as already following`
+        :`Followed ${esc(lastDone.name)}`}</p>`;
+    }
+    const ci=colorFor(p.handle);
+    const slide=animateNext && document.visibilityState==="visible";
+    if(slide) animateNext=false;
+    html += `<div class="card${slide?" card-in":""}">
+      <p class="counter">${done} of ${list.length} done<span class="bar"><i style="width:${Math.round(done/list.length*100)}%"></i></span></p>
+      <div class="who-row">
+        <span class="avatar" style="background:${AVATAR_COLORS[ci]}" aria-hidden="true">${esc(initials(p.name))}</span>
+        <div><p class="person-name">${esc(withTitle(p.name))}${p.badgeAt?badgeMark():""}</p>
+        <p class="handle">@${esc(p.handle)}</p></div>
+      </div>
+      ${p.badgeAt?`<p class="badge-line">${badgeMark()}Followed everyone on the list</p>`:""}
+      <div class="actions">
+        <a class="primary" href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener" data-open="${esc(p.handle)}">Open @${esc(p.handle)} on Instagram</a>
+        <button type="button" data-mark="already" data-handle="${esc(p.handle)}">Already following</button>
+      </div></div>`;
+  }
+  html += `<div id="peek"></div>`;
+  box.innerHTML=html;
+  renderPeek();
+  renderStep3(queue.length);
+  document.getElementById("progress-note").textContent = `${done} of ${list.length} handled${state.me?", saved to your name":" on this device"}.`;
+}
+
+/* ---------- completion badge ---------- */
+let badgeBlob=null;
+
+function renderStep3(left){
+  const box=document.getElementById("step3");
+  if(left===null){ box.innerHTML=`<div class="empty">Find yourself in Step 2 to get started.</div>`; return; }
+  if(state.pending && !state.me && left===0 && people.length){
+    box.innerHTML=`<div class="empty">You've followed everyone. Your badge unlocks as soon as your TBCD membership is verified.</div>`;
+    document.getElementById("num3").className="step-num"; return;
+  }
+  const earned=people.length>0 && left===0;
+  document.getElementById("num3").className = "step-num" + (earned&&badgePerson()?" is-done":"");
+  if(!people.length){ box.innerHTML=`<div class="empty">Your badge unlocks once there are colleagues to follow.</div>`; return; }
+  if(!earned){
+    box.innerHTML=`<div class="empty">${left} ${left===1?"colleague":"colleagues"} to go. Your badge unlocks once you've been through everyone.</div>`;
+    return;
+  }
+  box.innerHTML=badgeHTML();
+  drawBadge();
+}
+
+function renderMeLine(){
+  const el=document.getElementById("meLine"); if(!el) return;
+  const me=people.find(p=>p.handle===state.me);
+  el.innerHTML = me
+    ? `Saving progress as ${esc(withTitle(me.name))}. <button type="button" id="changeMe">Not you?</button>`
+    : state.pending
+      ? `Following as @${esc(state.pending)}, pending verification. <button type="button" id="changeMe">Change</button>`
+      : `<button type="button" id="findMe">Save progress to your name</button>`;
+}
+
+function badgeMark(){
+  return `<span class="badge-mark" role="img" aria-label="Badge holder" title="Followed everyone on the list"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.8 6.3l2.1 2.1 4.3-4.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+}
+
+function badgePerson(){
+  return people.find(p=>p.handle===state.me)||null;
+}
+
+function badgeHTML(){
+  const me=badgePerson();
+  if(!me){
+    return `<div class="card">
+      <p class="person-name" style="margin-top:0">You've followed everyone on the list.</p>
+      <p class="handle">Find yourself below to create your badge.</p>
+      <div class="actions">
+        <input type="text" id="badgeSearch" class="text-in" placeholder="Search by name or handle"
+          aria-label="Find yourself on the list" autocomplete="off" enterkeyhint="search">
+      </div>
+      <ul class="pick" id="badgePick"></ul>
+      <p class="step-note" style="margin:.75rem 0 0">Not on the list yet? You'll be able to pick yourself once your TBCD membership is verified.</p>
+    </div>`;
+  }
+  return `<div class="card">
+      <canvas id="badge" class="badge" width="1080" height="1080" role="img"
+        aria-label="${esc(withTitle(me.name))} followed every colleague in the BCD Instagram Directory"></canvas>
+      <div class="actions">
+        <button type="button" class="primary" id="shareBadge">Save or share badge</button>
+      </div>
+      <p class="step-note" style="margin:.9rem 0 0">You're at the front of the list for everyone else. New colleagues join after each round of sign-ups, so come back to earn a fresh badge and stay there.</p>
+    </div>`;
+}
+
+function renderPick(q){
+  const list=document.getElementById("badgePick"); if(!list) return;
+  const needle=q.trim().toLowerCase().replace(/^@/,"");
+  if(!needle){ list.innerHTML=""; return; }
+  const rows=people.filter(p=>p.name.toLowerCase().includes(needle)||p.handle.includes(needle)).slice(0,6);
+  let html=rows.map(p=>`<li><button type="button" data-pick="${esc(p.handle)}">${esc(withTitle(p.name))}<span class="ig">@${esc(p.handle)}</span></button></li>`).join("");
+  /* someone who just signed up isn't verified yet: let them continue under the handle they typed */
+  const typed=cleanHandle(q);
+  const allowPending=list.dataset.pending==="1" && !/\s/.test(q.trim()) && typed.length>=2 && !people.some(p=>p.handle===typed);
+  if(allowPending){
+    html+=`<li><button type="button" data-pending="${esc(typed)}">Continue as @${esc(typed)}<span class="ig">Just signed up? Keep going. Your progress saves to your name once you're verified.</span></button></li>`;
+  }
+  list.innerHTML = html || `<li><p class="handle" style="padding:.65rem .5rem;margin:0">Nobody by that name on the list yet. Just signed up? Type your Instagram handle.</p></li>`;
+}
+
+function logBadge(){
+  const me=badgePerson();
+  if(!me||!badgeLogReady(BADGE_FORM_URL)) return;
+  /* one log entry per earning: a new earning (list grew, caught up again) gets a new key, even on the same day */
+  if(!state.badgeEarnedAt){
+    state.badgeEarnedAt=Date.now();
+    if(state.badgeLogged) state.badgeLogged=`${me.handle}|${state.badgeEarnedAt}`; /* badge already logged under the old scheme */
+    save(state);
+  }
+  const key=`${me.handle}|${state.badgeEarnedAt}`;
+  if(state.badgeLogged===key) return;
+  fetch(BADGE_FORM_URL,{method:"POST",mode:"no-cors",body:new URLSearchParams({[BADGE_FORM_ENTRY]:me.handle})})
+    .then(()=>{ state.badgeLogged=key; save(state); })
+    .catch(()=>{});
+}
+
+function parseSheetDate(str){
+  const m=String(str||"").trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+  if(m) return new Date(+m[3],+m[1]-1,+m[2],+(m[4]||0),+(m[5]||0),+(m[6]||0)).getTime();
+  const t=Date.parse(str); return isNaN(t)?0:t;
+}
+
+async function loadBadges(){
+  const latest={};
+  if(!badgeLogReady(BADGE_CSV_URL)) return latest;
+  try{
+    const res=await fetch(BADGE_CSV_URL,{cache:"no-store"});
+    if(!res.ok) return latest;
+    const rows=parseCSV(await res.text());
+    const headers=rows.shift()||[];
+    const iTime=findCol(headers,["timestamp"]);
+    const iH=findCol(headers,["handle","instagram"]);
+    if(iTime===-1||iH===-1) return latest;
+    rows.forEach(r=>{
+      const h=cleanHandle(r[iH]); const t=parseSheetDate(r[iTime]);
+      if(h&&t&&(!latest[h]||t>latest[h])) latest[h]=t;
+    });
+  }catch(e){}
+  return latest;
+}
+
+function roundRectPath(x,X,Y,w,h,r){
+  x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+w,Y,X+w,Y+h,r); x.arcTo(X+w,Y+h,X,Y+h,r);
+  x.arcTo(X,Y+h,X,Y,r); x.arcTo(X,Y,X+w,Y,r); x.closePath();
+}
+
+async function drawBadge(){
+  const c=document.getElementById("badge"); if(!c) return;
+  badgeBlob=null;
+  /* A new earning happens only when someone is on the list who wasn't when the last badge was earned.
+     Refreshing, revisiting, or a colleague being removed never counts. */
+  const handlesNow=people.map(p=>p.handle);
+  const today=()=>new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  if(!state.mes && state.badgeDate && state.badgeCount===people.length) state.mes=handlesNow;
+  const covered=new Set(state.mes||[]);
+  if(!state.badgeDate || handlesNow.some(h=>!covered.has(h))){
+    state.mes=handlesNow;
+    state.badgeCount=people.length;
+    state.badgeEarnedAt=Date.now();
+    state.badgeDate=today();
+    save(state);
+  } else {
+    if(state.badgeCount!==people.length) state.badgeCount=people.length;
+    if(!/,/.test(state.badgeDate)) state.badgeDate=today();
+    save(state);
+  }
+  logBadge();
+  try{ await document.fonts.load('500 80px "Newsreader"'); }catch(e){}
+  const x=c.getContext("2d");
+  const P={paper:"#F3F1F7",card:"#FFFFFF",ink:"#1B1725",soft:"#5A5468",line:"#DCD7E6",accent:"#5B3A94"};
+  const serif='"Newsreader", Georgia, serif';
+  const sans='ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+
+  x.fillStyle=P.paper; x.fillRect(0,0,1080,1080);
+  roundRectPath(x,60,60,960,960,36); x.fillStyle=P.card; x.fill();
+  x.lineWidth=3; x.strokeStyle=P.line; x.stroke();
+
+  x.beginPath(); x.arc(540,320,150,0,Math.PI*2); x.lineWidth=4; x.strokeStyle=P.accent; x.stroke();
+  x.beginPath(); x.arc(540,320,128,0,Math.PI*2); x.fillStyle=P.accent; x.fill();
+  x.beginPath(); x.moveTo(478,322); x.lineTo(522,366); x.lineTo(606,276);
+  x.strokeStyle="#FFFFFF"; x.lineWidth=20; x.lineCap="round"; x.lineJoin="round"; x.stroke();
+
+  x.textAlign="center"; x.textBaseline="alphabetic";
+  const me=badgePerson(); if(!me) return;
+  const name=withTitle(me.name);
+  let size=84;
+  x.font=`500 ${size}px ${serif}`;
+  while(x.measureText(name).width>840 && size>36){ size-=2; x.font=`500 ${size}px ${serif}`; }
+  x.fillStyle=P.ink; x.fillText(name,540,580);
+
+  x.font=`400 38px ${sans}`; x.fillStyle=P.soft;
+  x.fillText("followed every colleague in the",540,660);
+  x.fillText("BCD Instagram Directory",540,710);
+
+  const n=state.badgeCount;
+  x.font=`500 32px ${sans}`; x.fillStyle=P.accent;
+  x.fillText(`${n} board-certified dermatologist${n===1?"":"s"}`,540,820);
+  x.font=`500 40px ${serif}`; x.fillStyle=P.ink;
+  x.fillText(`As of ${state.badgeDate}`,540,878);
+
+  x.font=`500 30px ${sans}`; x.fillStyle=P.accent;
+  x.fillText("ig.dermatolo.gy",540,960);
+
+  c.toBlob(b=>{ badgeBlob=b; },"image/png");
+}
+
+async function shareBadge(){
+  if(!badgeBlob) return;
+  const file=new File([badgeBlob],"bcd-badge.png",{type:"image/png"});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file]}); }catch(e){}
+    return;
+  }
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(badgeBlob); a.download="bcd-badge.png";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+
+/* ---------- social proof + collapsed full list ---------- */
+let listOpen=false;
+function renderPeek(){
+  const box=document.getElementById("peek"); if(!box) return;
+  if(!listOpen){
+    box.innerHTML = `<p class="peek-head">${people.length} dermatologist${people.length===1?" has":"s have"} started following each other!</p>
+      <p><button type="button" id="showList" class="ghost">Show full list</button></p>`;
+  } else {
+    const anyBadge=people.some(p=>p.badgeAt);
+    box.innerHTML = `<p><button type="button" id="hideList" class="ghost">Hide full list</button></p>
+      ${anyBadge?`<p class="badge-line legend">${badgeMark()}Followed everyone on the list</p>`:""}
+      <input type="search" id="filter" placeholder="Search by name or handle" aria-label="Search by name or handle">
+      <ul class="roster" id="roster"></ul>`;
+    renderRoster("");
+    const f=document.getElementById("filter");
+    if(f) f.addEventListener("input",e=>renderRoster(e.target.value));
+  }
+}
+
+const ROSTER_CAP=60;
+function fmtWhen(t){
+  return new Date(t).toLocaleString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"});
+}
+function whenLine(p){
+  if(p.badgeAt) return `<span class="when">Badge earned ${fmtWhen(p.badgeAt)}</span>`;
+  return "";
+}
+function renderRoster(q){
+  const list=document.getElementById("roster"); if(!list) return;
+  const needle=q.trim().toLowerCase();
+  const rows=people.filter(p=>!needle||p.name.toLowerCase().includes(needle)||p.handle.includes(needle));
+  if(!rows.length){ list.innerHTML=`<li><span class="who">Nobody by that name yet.</span></li>`; return; }
+  const shown=rows.slice(0,ROSTER_CAP);
+  list.innerHTML=shown.map(p=>{
+    const m=state.marks[p.handle];
+    const label=m==="followed"?"Done":m==="already"?"Already following":"";
+    const isNew=state.visited&&!state.seen.includes(p.handle);
+    return `<li><span class="who">
+      <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
+      <span class="ig">@${esc(p.handle)}</span>${whenLine(p)}</span>
+      <span class="state ${m==='followed'||m==='already'?'is-done':''}">${label}</span></li>`;
+  }).join("") + (rows.length>ROSTER_CAP?`<li><span class="who state">${rows.length-ROSTER_CAP} more. Search to narrow it down.</span></li>`:"");
+}
+
+/* ---------- events ---------- */
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState==="hidden") beaconSync();
+  if(document.visibilityState==="visible" && animateNext && started) renderStep2();
+});
+document.addEventListener("input", e=>{
+  if(e.target.id==="badgeSearch") renderPick(e.target.value);
+});
+document.addEventListener("change", e=>{
+  if(e.target.id==="agree"){
+    state.agreed=e.target.checked; save(state); renderStep1();
+  }
+});
+
+document.addEventListener("click", e=>{
+  const info=e.target.closest(".info");
+  if(info){
+    const note=document.getElementById(info.dataset.info);
+    const open=note.hasAttribute("hidden");
+    if(open) note.removeAttribute("hidden"); else note.setAttribute("hidden","");
+    info.setAttribute("aria-expanded", open?"true":"false");
+    return;
+  }
+  const gear=e.target.closest("#gear");
+  if(gear){
+    const tools=document.getElementById("tools");
+    const open=tools.hasAttribute("hidden");
+    if(open) tools.removeAttribute("hidden"); else tools.setAttribute("hidden","");
+    gear.setAttribute("aria-expanded", open?"true":"false");
+    return;
+  }
+  const pick=e.target.closest("[data-pick]");
+  if(pick){ setMe(pick.dataset.pick); return; }
+  const pend=e.target.closest("[data-pending]");
+  if(pend && pend.tagName==="BUTTON"){
+    state.pending=pend.dataset.pending; state.meSkipped=false; state.submitted=true;
+    save(state); renderStep1(); renderStep2(); return;
+  }
+  if(e.target.id==="changeMe"||e.target.id==="findMe"){
+    beaconSync(); state.me=null; delete state.pending; state.meSkipped=false; restoredCount=0; verifiedNow=false; save(state); renderStep2();
+    document.getElementById("step2").scrollIntoView({behavior:"smooth",block:"start"});
+    return;
+  }
+  if(e.target.id==="shareBadge"){ shareBadge(); return; }
+  if(e.target.id==="startQueue"){ e.preventDefault(); started=true; renderStep2(); return; }
+  if(e.target.id==="showList"){ listOpen=true; renderPeek(); return; }
+  if(e.target.id==="hideList"){ listOpen=false; renderPeek(); return; }
+  const btn=e.target.closest("[data-mark]");
+  if(btn){ mark(btn.dataset.handle,btn.dataset.mark); return; }
+  const prof=e.target.closest("[data-open]");
+  if(prof){ const h=prof.dataset.open; setTimeout(()=>mark(h,"followed"),400); }
+  if(e.target.id==="markSubmitted"||e.target.id==="openform"){
+    state.submitted=true; save(state);
+    if(e.target.id==="markSubmitted") renderStep1(); else setTimeout(renderStep1,400);
+  }
+});
+document.getElementById("reset").addEventListener("click",()=>{
+  if(!confirm("This clears which colleagues you've marked. Your Instagram follows aren't touched.")) return;
+  state={marks:{},seen:people.map(p=>p.handle),visited:true,submitted:state.submitted};
+  save(state); renderStep2();
+});
+
+/* ---------- environment banner ---------- */
+const UA = navigator.userAgent || "";
+const inAppBrowser = /FBAN|FBAV|FB_IAB|Instagram|LinkedInApp|Twitter/i.test(UA);
+const isPhone = /iPhone|iPod|Android.*Mobile/i.test(UA);
+
+function renderBanner(){
+  const b=document.getElementById("banner");
+  if(inAppBrowser){
+    b.innerHTML = `<p class="banner-head"><strong>Open this in Safari or Chrome first.</strong>
+        <button type="button" class="info" data-info="whyBrowser" aria-expanded="false" aria-label="Why">i</button></p>
+      <p class="step-note" id="whyBrowser" hidden style="margin:.6rem 0 0">You're in an app's built-in browser. It forgets your progress when you close it and doesn't hand off cleanly to Instagram. Tap the menu in the corner of this screen and choose Open in Safari or Open in Chrome.</p>`;
+  } else if(!isPhone){
+    b.innerHTML = `<p class="banner-head"><strong>This works best on your phone.</strong>
+        <button type="button" class="info" data-info="whyPhone" aria-expanded="false" aria-label="Why">i</button></p>
+      <p class="url-line">${location.origin+location.pathname}</p>
+      <p><button type="button" id="copyUrl">Copy this link</button></p>
+      <p class="step-note" id="whyPhone" hidden style="margin:.6rem 0 0">On a phone, tapping a colleague's name opens their profile directly in the Instagram app, so following is one tap. On a computer you'd have to log in to Instagram in the browser first, and every profile opens in a new tab.</p>`;
+  } else {
+    b.innerHTML = "";
+  }
+}
+
+/* ---------- carrying progress between devices ---------- */
+const CODES={followed:"f",already:"a"};
+const UNCODE={f:"followed",a:"already"};
+function progressLink(){
+  const code=Object.entries(state.marks).map(([h,v])=>CODES[v]+"~"+h).join(",");
+  let link=location.origin+location.pathname+"#p="+encodeURIComponent(code);
+  if(state.me&&state.badgeEarnedAt){
+    link+="&b="+encodeURIComponent([state.me,state.badgeEarnedAt,state.badgeCount,state.badgeDate].join("~"));
+  }
+  return link;
+}
+function applyProgressCode(code){
+  code.split(",").forEach(pair=>{
+    const [v,h]=pair.split("~");
+    if(!h||!UNCODE[v]) return;
+    if(!state.marks[h]) state.marks[h]=UNCODE[v];
+    if(!state.seen.includes(h)) state.seen.push(h);
+  });
+  save(state);
+}
+
+document.addEventListener("click", async e=>{
+  const copyBtn = e.target.closest("#copyUrl, #copyProgress");
+  if(copyBtn){
+    const isUrl = copyBtn.id==="copyUrl";
+    const text = isUrl ? location.origin+location.pathname : progressLink();
+    try{
+      await navigator.clipboard.writeText(text);
+      copyBtn.textContent = isUrl ? "Copied" : "Copied. Paste it somewhere safe.";
+    }catch(err){
+      copyBtn.textContent = "Couldn't copy. Try again.";
+    }
+  }
+});
+
+/* ---------- boot ---------- */
+const hashCode=(location.hash.match(/[#&]p=([^&]*)/)||[])[1];
+const badgeCode=(location.hash.match(/[#&]b=([^&]*)/)||[])[1];
+if(hashCode) applyProgressCode(decodeURIComponent(hashCode));
+if(badgeCode){
+  /* carry an existing badge to another device so it isn't logged again as a new one */
+  const [h,t,c,...d]=decodeURIComponent(badgeCode).split("~");
+  if(h && +t>(state.badgeEarnedAt||0)){
+    Object.assign(state,{me:h,badgeEarnedAt:+t,badgeCount:+c,badgeDate:d.join("~"),badgeLogged:`${h}|${+t}`});
+    delete state.mes;
+    save(state);
+  }
+}
+if(hashCode||badgeCode) history.replaceState(null,"",location.pathname);
+if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+renderBanner();
+renderStep1();
+(async function(){
+  try{
+    const badgesP=loadBadges();
+    const res=await fetch(SHEET_CSV_URL,{cache:"no-store"});
+    if(!res.ok) throw new Error(res.status);
+    const rows=parseCSV(await res.text());
+    const headers=rows.shift()||[];
+    const iName=findCol(headers,["name"]);
+    const iIG=findCol(headers,["instagram","handle"]);
+    const iOK=findCol(headers,["approved","verified"]);
+    const iSigned=findCol(headers,["timestamp"]);
+    const seen=new Set();
+    people=rows.map(r=>({
+      name:(r[iName]||"").trim(),
+      handle:cleanHandle(r[iIG]),
+      signedAt:iSigned===-1?0:parseSheetDate(r[iSigned]),
+      ok:iOK===-1?true:["yes","y","true","1","x"].includes(String(r[iOK]).trim().toLowerCase())
+    })).filter(p=>{
+      if(!p.name||!p.handle||!p.ok||seen.has(p.handle)) return false;
+      seen.add(p.handle); return true;
+    });
+    const badges=await badgesP;
+    people=people
+      .map((p,i)=>Object.assign(p,{badgeAt:badges[p.handle]||0,order:i}))
+      /* newest badges first, then everyone else newest sign-up first; sheet row order stands in when there's no timestamp */
+      .sort((a,b)=>(b.badgeAt-a.badgeAt)||(b.signedAt-a.signedAt)||(b.order-a.order));
+    renderStep2();
+    if(!state.visited){ state.visited=true; state.seen=people.map(p=>p.handle); save(state); }
+    syncNow();   /* send anything saved while offline or before leaving last time */
+  }catch(err){
+    document.getElementById("step2").innerHTML=`<div class="empty">The list didn't load. Try again in a moment.</div>`;
+  }
+})();
+</script>
+</body>
+</html>
