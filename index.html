@@ -118,7 +118,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .roster .recruits{color:var(--accent)}
 .invite-link{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem;word-break:break-all;
   background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.6rem .75rem;margin:.9rem 0 0}
-#inviteBox .card{margin-left:0}
 #inviteBox .actions .primary{flex:1 1 auto;width:auto}
 #leaderboard .roster{margin-left:0}
 #leaderboard .legend{margin-left:0}
@@ -196,12 +195,12 @@ footer a{color:var(--ink-soft)}
   <p class="step-note" id="note3" hidden>Once you've followed every colleague, your badge appears here and you move to the front of everyone else's follow queue, most recent badges first, so you pick up follows from colleagues working through the list. When new colleagues are verified, follow them to earn a fresh badge with a new date and move back to the front.</p>
   <div id="step3"></div>
 </section>
-</div>
 
-<section class="step" id="invite" hidden>
-  <div class="step-head"><h2 class="step-title">Recruit colleagues</h2></div>
+<section class="step" id="invite">
+  <div class="step-head"><span class="step-num" id="num4">3</span><h2 class="step-title">Recruit colleagues</h2></div>
   <div id="inviteBox"></div>
 </section>
+</div>
 
 <section class="step" id="leaderboard">
   <div class="step-head"><h2 class="step-title">Leaderboard</h2>
@@ -823,17 +822,23 @@ function renderBoardRows(){
     : `<li><span class="who">Nobody by that name yet.</span></li>`;
 }
 
-function inviteLink(){ return location.origin+"/?ref="+encodeURIComponent(myHandle); }
+function inviteLink(){
+  /* listed members get a personal link that counts recruits; everyone else shares the site itself */
+  return myHandle ? location.origin+"/?ref="+encodeURIComponent(myHandle) : location.origin+"/";
+}
 function renderInvite(){
-  const sec=document.getElementById("invite");
-  if(!user || !myHandle){ sec.hidden=true; return; }
-  sec.hidden=false;
-  const n=Number(refs[myHandle]||0);
-  document.getElementById("inviteBox").innerHTML=`<div class="card">
+  const box=document.getElementById("inviteBox"), num=document.getElementById("num4");
+  num.className="step-num";
+  if(!user){ box.innerHTML=`<div class="empty">Sign in to get your personal invite link.</div>`; return; }
+  const n=Number((myHandle && refs[myHandle])||0);
+  if(n) num.className="step-num is-done";
+  box.innerHTML=`<div class="card">
     <p class="handle" style="margin:0">Share your personal link to recruit other BCDs to boost your ranking and earn more followers!</p>
     <p class="invite-link">${esc(inviteLink())}</p>
     <div class="actions"><button type="button" class="primary" id="shareInvite">Share your link</button><button type="button" id="copyInvite">Copy</button></div>
-    <p class="msg">${n?`You've recruited ${n} BCD${n===1?"":"s"} so far.`:"You haven't recruited anyone yet."} Recruits count once they sign up through your link and are verified.</p>
+    ${myHandle
+      ? `<p class="msg">${n?`You've recruited ${n} BCD${n===1?"":"s"} so far.`:"You haven't recruited anyone yet."} Recruits count once they sign up through your link and are verified.</p>`
+      : `<p class="msg">Recruit counts and leaderboard credit are for colleagues listed in the directory.</p>`}
   </div>`;
 }
 async function shareInvite(){
