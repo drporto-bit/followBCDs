@@ -215,7 +215,7 @@ footer a{color:var(--ink-soft)}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult,
   sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut }
   from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp, FieldPath }
@@ -223,7 +223,7 @@ import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp, FieldPat
 
 const fbApp = initializeApp({
   apiKey: "AIzaSyDifqt_PvK_PTmskGcTLamHfKB_E6QxFQk",
-  authDomain: "bcd-directory.firebaseapp.com",
+  authDomain: "ig.dermatolo.gy",   /* sign-in helper pages are served from this site (/__/auth/) */
   projectId: "bcd-directory",
   storageBucket: "bcd-directory.firebasestorage.app",
   messagingSenderId: "562460673596",
@@ -730,18 +730,19 @@ async function sendLink(){
   renderGate();
 }
 
+const GOOGLE_FAILED="Google sign-in didn't work in this browser. Enter your email below and we'll send you a sign-in link instead.";
 async function googleIn(){
   const provider=new GoogleAuthProvider();
   provider.setCustomParameters({prompt:"select_account"});
   try{ await signInWithPopup(auth,provider); }
   catch(e){
+    if(e.code==="auth/popup-closed-by-user"||e.code==="auth/cancelled-popup-request") return;
     if(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment"){
-      await signInWithRedirect(auth,provider);
-    } else if(e.code!=="auth/popup-closed-by-user"&&e.code!=="auth/cancelled-popup-request"){
-      console.error(e);
-      authMsg="Google sign-in didn't finish. Try again, or use the email link.";
-      renderGate();
+      try{ await signInWithRedirect(auth,provider); return; }catch(e2){ e=e2; }
     }
+    console.error(e);
+    authMsg=GOOGLE_FAILED;
+    renderGate();
   }
 }
 
@@ -912,6 +913,8 @@ const directoryReady = loadDirectory().then(()=>{
 });
 
 finishEmailLink();
+/* if a Google sign-in came back through a redirect and failed, say so instead of leaving people stuck */
+getRedirectResult(auth).catch(e=>{ console.error(e); authMsg=GOOGLE_FAILED; renderGate(); });
 
 onAuthStateChanged(auth, async u=>{
   user=u; authKnown=true; account=null; myHandle=null; accountReady=!u; accountLoaded=false;
