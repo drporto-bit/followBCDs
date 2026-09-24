@@ -830,7 +830,7 @@ function renderInvite(){
   sec.hidden=false;
   const n=Number(refs[myHandle]||0);
   document.getElementById("inviteBox").innerHTML=`<div class="card">
-    <p class="handle" style="margin:0">Share your personal link. Every board-certified dermatologist who joins through it and is verified moves you up the leaderboard.</p>
+    <p class="handle" style="margin:0">Share your personal link to recruit other BCDs to boost your ranking and earn more followers!</p>
     <p class="invite-link">${esc(inviteLink())}</p>
     <div class="actions"><button type="button" class="primary" id="shareInvite">Share your link</button><button type="button" id="copyInvite">Copy</button></div>
     <p class="msg">${n?`You've recruited ${n} BCD${n===1?"":"s"} so far.`:"You haven't recruited anyone yet."} Recruits count once they sign up through your link and are verified.</p>
