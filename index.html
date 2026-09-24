@@ -142,9 +142,9 @@ input[type=search]{width:100%;padding:.6rem .75rem;border:1px solid var(--line);
   background:var(--surface);color:var(--ink);font:inherit}
 footer{margin-top:3rem;color:var(--ink-soft);font-size:.82rem;line-height:1.7}
 footer button{padding:.45rem .7rem;font-size:.85rem}
-#gear{display:inline-flex;align-items:center;gap:.45rem;color:var(--ink-soft)}
-#gear[aria-expanded="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
-#tools{margin-top:.75rem}
+.reset-row{margin:.75rem 0 0 2.1rem}
+.linkish{border:0;background:none;padding:0;color:var(--ink-soft);font-size:.82rem;text-decoration:underline;text-underline-offset:2px}
+.linkish:hover{background:none;color:var(--ink)}
 footer a{color:var(--ink-soft)}
 .credit{margin-top:1.5rem}
 .badge-mark{display:inline-flex;align-items:center;justify-content:center;width:.8em;height:.8em;min-width:14px;min-height:14px;
@@ -161,6 +161,7 @@ footer a{color:var(--ink-soft)}
   .step-lead{margin-left:0}
   .legend{margin-left:0}
   .just{margin-left:0}
+  .reset-row{margin-left:0}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -211,13 +212,7 @@ footer a{color:var(--ink-soft)}
 
 
 <footer>
-  <p><button type="button" id="gear" aria-expanded="false" aria-controls="tools">
-    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 5.5A2.5 2.5 0 1 0 8 10.5 2.5 2.5 0 0 0 8 5.5zm0 1.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6z"/><path d="M6.9.8h2.2l.3 1.8 1.2.5 1.5-1 1.6 1.6-1 1.5.5 1.2 1.8.3v2.2l-1.8.3-.5 1.2 1 1.5-1.6 1.6-1.5-1-1.2.5-.3 1.8H6.9l-.3-1.8-1.2-.5-1.5 1L2.3 12l1-1.5-.5-1.2L1 9V6.8l1.8-.3.5-1.2-1-1.5 1.6-1.6 1.5 1 1.2-.5.3-1.9zm1 2.9a4.3 4.3 0 1 0 0 8.6 4.3 4.3 0 0 0 0-8.6z"/></svg>
-    Options</button></p>
-  <div id="tools" hidden>
-    <p><button id="reset" type="button">Start the list over</button></p>
-    <p class="credit">Made by Dr. Dennis Porto of <a href="https://www.skincare.md/">skincare.md</a></p>
-  </div>
+  <p class="credit">Made by Dr. Dennis Porto of <a href="https://www.skincare.md/">skincare.md</a></p>
 </footer>
 
 </div>
@@ -500,6 +495,9 @@ function renderStep2(){
         <a class="primary" href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener" data-open="${esc(p.handle)}">Open @${esc(p.handle)} on Instagram</a>
         <button type="button" data-mark="already" data-handle="${esc(p.handle)}">Already following</button>
       </div></div>`;
+  }
+  if(user && done>0){
+    html += `<p class="reset-row"><button type="button" id="reset" class="linkish">Start the list over</button></p>`;
   }
   box.innerHTML=html;
   renderBoard();
@@ -805,9 +803,13 @@ function renderBoard(){
   const anyBadge=people.some(p=>p.badgeAt);
   const head=`<p class="lb-count">${people.length} board-certified dermatologist${people.length===1?"":"s"} listed</p>
     ${anyBadge?`<p class="badge-line legend">${badgeMark()}Followed everyone on the list</p>`:""}`;
+  if(!user) boardOpen=false;   /* the full list is for signed-in members */
   if(!boardOpen){
-    box.innerHTML = head + `<ul class="roster">${people.slice(0,TOP_N).map((p,i)=>boardRow(p,i+1)).join("")}</ul>
-      ${people.length>TOP_N?`<p class="lb-more"><button type="button" id="showAll" class="ghost">Show all ${people.length}</button></p>`:""}`;
+    const more = people.length>TOP_N
+      ? (user ? `<p class="lb-more"><button type="button" id="showAll" class="ghost">Show all ${people.length}</button></p>`
+              : `<p class="lb-more msg">Sign in to see all ${people.length}.</p>`)
+      : "";
+    box.innerHTML = head + `<ul class="roster">${people.slice(0,TOP_N).map((p,i)=>boardRow(p,i+1)).join("")}</ul>` + more;
     return;
   }
   box.innerHTML = head + `<input type="search" id="lbFilter" placeholder="Search by name or handle" aria-label="Search by name or handle" value="${esc(boardQuery)}">
@@ -883,14 +885,6 @@ document.addEventListener("click", e=>{
     info.setAttribute("aria-expanded", open?"true":"false");
     return;
   }
-  const gear=e.target.closest("#gear");
-  if(gear){
-    const tools=document.getElementById("tools");
-    const open=tools.hasAttribute("hidden");
-    if(open) tools.removeAttribute("hidden"); else tools.setAttribute("hidden","");
-    gear.setAttribute("aria-expanded", open?"true":"false");
-    return;
-  }
   const t=e.target.closest("button, a"); if(!t) return;
   if(t.id==="googleIn"){ googleIn(); return; }
   if(t.id==="emailLink"){ sendLink(); return; }
@@ -902,18 +896,19 @@ document.addEventListener("click", e=>{
   if(t.id==="retryBadge"){ claimFailed=false; renderStep2(); return; }
   if(t.id==="shareBadge"){ shareBadge(); return; }
   if(t.id==="shareInvite"){ shareInvite(); return; }
+  if(t.id==="reset"){ resetList(); return; }
   if(t.id==="copyInvite"){ copyInvite(); return; }
   if(t.id==="startQueue"){ e.preventDefault(); started=true; renderStep2(); return; }
-  if(t.id==="showAll"){ boardOpen=true; renderBoard(); return; }
+  if(t.id==="showAll"){ if(user){ boardOpen=true; renderBoard(); } return; }
   if(t.id==="showTop"){ boardOpen=false; boardQuery=""; renderBoard(); document.getElementById("leaderboard").scrollIntoView({block:"start"}); return; }
   if(t.dataset.mark){ mark(t.dataset.handle,t.dataset.mark); return; }
   if(t.dataset.open){ const h=t.dataset.open; setTimeout(()=>mark(h,"followed"),400); }
 });
-document.getElementById("reset").addEventListener("click",()=>{
+function resetList(){
   if(!confirm("This clears which colleagues you've marked, here and in your saved progress. Your Instagram follows aren't touched.")) return;
   Object.assign(state,{marks:{},seen:people.map(p=>p.handle),visited:true});
-  save(state); restoredCount=0; renderStep2(); pushAccount();
-});
+  save(state); restoredCount=0; started=false; renderStep2(); pushAccount();
+}
 
 /* ---------- environment banner ---------- */
 const UA = navigator.userAgent || "";
