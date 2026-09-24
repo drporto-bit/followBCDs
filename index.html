@@ -314,6 +314,7 @@ function accountData(){
     email: user.email || null,
     h: myHandle || null,
     marks,
+    followOnly: !!(account && account.followOnly) && !myHandle,
     createdAt: account && account.createdAt ? account.createdAt : serverTimestamp(),
     updatedAt: serverTimestamp()
   };
@@ -497,7 +498,9 @@ function renderStep3(left){
   }
   if(!user){ box.innerHTML=`<div class="empty">Sign in to earn your badge.</div>`; return; }
   if(!myHandle){
-    box.innerHTML=`<div class="empty">You've followed everyone. Your badge unlocks as soon as your TBCD membership is verified.</div>`;
+    box.innerHTML = (!signup && account && account.followOnly)
+      ? `<div class="empty">You've followed everyone. Badges, check marks and a spot at the front of the list are for colleagues listed in the directory. Add yourself at the top anytime.</div>`
+      : `<div class="empty">You've followed everyone. Your badge unlocks as soon as your TBCD membership is verified.</div>`;
     return;
   }
   if(!badgeCurrent()){
@@ -637,6 +640,15 @@ function renderGate(){
       <button type="button" id="signOut" class="ghost">Sign out</button></div>`;
     return;
   }
+  if(!signup && !editingSignup && account && account.followOnly){
+    frost(false);
+    box.innerHTML=`<div class="card gate-card">
+      <p class="done-line">✓ Signed in to follow colleagues</p>
+      <p class="msg">You're not listed in the directory. You can add yourself anytime.</p>
+      <div class="actions"><button type="button" id="addMe">Add me to the directory</button><button type="button" id="signOut" class="ghost">Sign out</button></div>
+    </div>`;
+    return;
+  }
   if(signup && !editingSignup){
     frost(false);
     box.innerHTML=`<div class="card gate-card">
@@ -646,7 +658,7 @@ function renderGate(){
     </div>`;
     return;
   }
-  frost(!signup);
+  frost(!signup && !(account && account.followOnly));
   const s=signup||{};
   box.innerHTML=`<div class="card gate-card">
     <h2 class="gate-title">${signup?"Edit your entry":"Add yourself"}</h2>
@@ -661,6 +673,9 @@ function renderGate(){
       <button type="button" class="primary" id="suSubmit" ${signup?"":"disabled"}>${signup?"Save changes":"Add me to the directory"}</button>
     </div>
     ${signupMsg?`<p class="msg warn">${signupMsg}</p>`:""}
+    ${signup?"":`<div class="or">or</div>
+    <button type="button" class="secondary" id="followOnly">Just follow colleagues</button>
+    <p class="msg">For colleagues without a professional Instagram, or who'd rather not be listed. You can follow everyone in the directory without adding yourself, and add yourself later.</p>`}
     <p class="msg">Already signed up with a different email? <a href="#" id="signOutLink">Sign out</a> and sign in with that address instead.</p>
   </div>`;
 }
@@ -681,6 +696,7 @@ async function submitSignup(){
     await setDoc(doc(db,"signups",user.uid), data);
     signup=Object.assign({},data,{createdAt: signup&&signup.createdAt ? signup.createdAt : new Date()});
     editingSignup=false; signupMsg="";
+    if(account && account.followOnly){ account.followOnly=false; pushAccount(); }
   }catch(e){
     console.error(e);
     signupMsg="That didn't save. Try again in a moment.";
@@ -809,6 +825,8 @@ document.addEventListener("click", e=>{
   if(t.id==="emailLink"){ sendLink(); return; }
   if(t.id==="signOut"||t.id==="signOutLink"){ e.preventDefault(); authMsg=""; restoredCount=0; signOut(auth); return; }
   if(t.id==="editSignup"){ editingSignup=true; signupMsg=""; renderGate(); return; }
+  if(t.id==="followOnly"){ account=Object.assign({},account||{},{followOnly:true}); editingSignup=false; signupMsg=""; renderAll(); pushAccount(); return; }
+  if(t.id==="addMe"){ editingSignup=true; signupMsg=""; renderGate(); return; }
   if(t.id==="suSubmit"){ submitSignup(); return; }
   if(t.id==="retryBadge"){ claimFailed=false; renderStep2(); return; }
   if(t.id==="shareBadge"){ shareBadge(); return; }
