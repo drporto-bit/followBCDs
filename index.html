@@ -75,19 +75,37 @@ h1{font-family:"Newsreader",Georgia,serif;font-weight:400;font-size:1.9rem;line-
 button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);
   color:var(--ink);padding:.6rem .9rem}
 button:hover{background:var(--accent-soft)}
+button:disabled{opacity:.5;cursor:default}
 button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .primary{background:var(--accent);border-color:var(--accent);color:#fff;text-align:center;text-decoration:none;
-  display:block;padding:.8rem 1rem;font-weight:500;border-radius:8px;flex:1 1 100%}
+  display:block;padding:.8rem 1rem;font-weight:500;border-radius:8px;flex:1 1 100%;width:100%}
 .primary:hover{background:var(--accent);filter:brightness(1.08)}
 .primary.is-off{opacity:.4;pointer-events:none}
+.secondary{display:flex;align-items:center;justify-content:center;gap:.55rem;width:100%;padding:.75rem 1rem;font-weight:500}
 .agree{display:flex;gap:.65rem;align-items:flex-start;font-size:.92rem;color:var(--ink-soft);cursor:pointer}
 .agree em{font-style:normal;color:var(--accent)}
 .agree input{width:1.15rem;height:1.15rem;margin:.15rem 0 0;flex:0 0 auto;accent-color:var(--accent)}
 .ghost{color:var(--ink-soft)}
-.done-line{display:flex;align-items:center;gap:.5rem;color:var(--done);font-size:.92rem}
+.done-line{display:flex;align-items:center;gap:.5rem;color:var(--done);font-size:.92rem;margin:0}
 .empty{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:1.5rem;text-align:center;
   color:var(--ink-soft);margin-left:2.1rem}
+.empty .actions{justify-content:center}
 .note{background:var(--accent-soft);border-radius:10px;padding:.85rem 1rem;margin:0 0 1rem 2.1rem;font-size:.9rem}
+.note a{color:var(--accent)}
+.or{display:flex;align-items:center;gap:.75rem;color:var(--ink-soft);font-size:.85rem;margin:1rem 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.msg{color:var(--ink-soft);font-size:.9rem;margin:.9rem 0 0}
+#gate{margin-bottom:2.25rem}
+.gate-card{margin-left:0}
+.gate-title{font-family:"Newsreader",Georgia,serif;font-weight:400;font-size:1.4rem;line-height:1.2;margin:0 0 .35rem}
+.gate-status{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.75rem 1rem}
+.gate-status button{padding:.4rem .7rem;font-size:.85rem}
+.field{display:block;margin-top:.9rem}
+.field span{display:block;font-size:.85rem;color:var(--ink-soft);margin-bottom:.3rem}
+.warn{color:#B4541F}
+#app{transition:filter .3s,opacity .3s}
+.frosted{filter:blur(5px);opacity:.5;pointer-events:none;user-select:none}
 #banner:not(:empty){background:var(--accent-soft);border-radius:10px;padding:.9rem 1.05rem;margin:0 0 2rem;font-size:.9rem}
 #banner p{margin:0}
 .banner-head{display:flex;align-items:center;gap:.6rem}
@@ -109,22 +127,15 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .new-dot{display:inline-block;width:.4rem;height:.4rem;border-radius:50%;background:var(--accent);vertical-align:middle;margin-left:.4rem}
 input[type=search]{width:100%;padding:.6rem .75rem;border:1px solid var(--line);border-radius:8px;background:var(--surface);
   color:var(--ink);font:inherit;margin-left:2.1rem;max-width:calc(100% - 2.1rem)}
+.text-in{flex:1 1 100%;width:100%;padding:.7rem .8rem;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface);color:var(--ink);font:inherit}
 footer{margin-top:3rem;color:var(--ink-soft);font-size:.82rem;line-height:1.7}
 footer button{padding:.45rem .7rem;font-size:.85rem}
-.save-row{display:flex;align-items:center;gap:.5rem}
 #gear{display:inline-flex;align-items:center;gap:.45rem;color:var(--ink-soft)}
 #gear[aria-expanded="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
 #tools{margin-top:.75rem}
-.save-row button{display:inline-flex;align-items:center;gap:.45rem}
-.save-row .info{width:1.5rem;height:1.5rem;font-size:.8rem}
 footer a{color:var(--ink-soft)}
 .credit{margin-top:1.5rem}
-.text-in{flex:1 1 100%;width:100%;padding:.7rem .8rem;border:1px solid var(--line);border-radius:8px;
-  background:var(--surface);color:var(--ink);font:inherit}
-.pick{list-style:none;margin:.5rem 0 0;padding:0}
-.pick li + li{border-top:1px solid var(--line)}
-.pick button{display:block;width:100%;text-align:left;border:0;border-radius:6px;background:transparent;padding:.65rem .5rem}
-.pick .ig{display:block;color:var(--ink-soft);font-size:.85rem}
 .badge-mark{display:inline-flex;align-items:center;justify-content:center;width:.8em;height:.8em;min-width:14px;min-height:14px;
   border-radius:50%;background:var(--accent);color:#fff;margin-left:.35em;vertical-align:.02em}
 .badge-mark svg{width:70%;height:70%}
@@ -152,32 +163,30 @@ footer a{color:var(--ink-soft)}
 <div class="wrap">
 
 <h1>BCD Instagram Directory</h1>
-<p class="sub">A directory of board-certified dermatologists on Instagram, open to TBCD members. Add yourself, then follow the colleagues already listed.</p>
+<p class="sub">A directory of board-certified dermatologists on Instagram, open to TBCD members. Sign in, add yourself, then follow the colleagues already listed.</p>
 
 <div id="banner"></div>
 
-<section class="step">
-  <div class="step-head"><span class="step-num" id="num1">1</span><h2 class="step-title">Add your Instagram</h2>
-    <button type="button" class="info" data-info="note1" aria-expanded="false" aria-label="What this step needs">i</button></div>
-  <p class="step-note" id="note1" hidden>The form asks for three things: your name exactly as it appears on TBCD, your professional Instagram handle, and an email address in case verification needs a follow-up. Your email is never shown on this page. Every submission is checked by hand against the TBCD roster, and this is a volunteer effort run between clinic days, so please be patient waiting to appear on the list.</p>
-  <div class="card" id="step1"></div>
-</section>
+<div id="gate"><div class="card gate-card"><p class="msg" style="margin:0">Loading…</p></div></div>
 
+<div id="app" class="frosted" aria-hidden="true">
 <section class="step">
-  <div class="step-head"><span class="step-num" id="num2">2</span><h2 class="step-title">Follow your colleagues</h2>
+  <div class="step-head"><span class="step-num" id="num2">1</span><h2 class="step-title">Follow your colleagues</h2>
     <button type="button" class="info" data-info="note2" aria-expanded="false" aria-label="How this step works">i</button></div>
   <p class="step-lead">One colleague at a time. Stop around 50 a day.</p>
-  <p class="step-note" id="note2" hidden>Tap the purple button to open that dermatologist's profile, follow them on Instagram, then come back here. The next colleague is already waiting, and nobody you've handled comes up twice. Instagram temporarily blocks accounts that follow too many people at once, so stop around 50 in a sitting and pick it up another day. This page remembers your place.</p>
+  <p class="step-note" id="note2" hidden>Tap the purple button to open that dermatologist's profile, follow them on Instagram, then come back here. The next colleague is already waiting, and nobody you've handled comes up twice. Instagram temporarily blocks accounts that follow too many people at once, so stop around 50 in a sitting and pick it up another day. Your place is saved to your account, so you can continue on any device.</p>
   <div id="step2"><div class="empty">Loading the list…</div></div>
 </section>
 
 <section class="step">
-  <div class="step-head"><span class="step-num" id="num3">3</span><h2 class="step-title">Earn your badge</h2>
+  <div class="step-head"><span class="step-num" id="num3">2</span><h2 class="step-title">Earn your badge</h2>
     <button type="button" class="info" data-info="note3" aria-expanded="false" aria-label="What the badge gets you">i</button></div>
   <p class="step-lead">Follow everyone on the list to get a badge, a check mark by your name, and a spot at the front of the list so you get the most followers.</p>
-  <p class="step-note" id="note3" hidden>Once you've been through every colleague, find yourself on the list to create your badge. Your name gets a purple check, and you move to the front of everyone else's follow queue, most recent badges first, so you pick up follows from colleagues working through the list. When new colleagues are verified, follow them to earn a fresh badge with a new date and move back to the front.</p>
+  <p class="step-note" id="note3" hidden>Once you've been through every colleague, your badge appears here. Your name gets a purple check, and you move to the front of everyone else's follow queue, most recent badges first, so you pick up follows from colleagues working through the list. When new colleagues are verified, follow them to earn a fresh badge with a new date and move back to the front.</p>
   <div id="step3"></div>
 </section>
+</div>
+
 
 <footer>
   <p id="progress-note"></p>
@@ -185,11 +194,6 @@ footer a{color:var(--ink-soft)}
     <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 5.5A2.5 2.5 0 1 0 8 10.5 2.5 2.5 0 0 0 8 5.5zm0 1.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6z"/><path d="M6.9.8h2.2l.3 1.8 1.2.5 1.5-1 1.6 1.6-1 1.5.5 1.2 1.8.3v2.2l-1.8.3-.5 1.2 1 1.5-1.6 1.6-1.5-1-1.2.5-.3 1.8H6.9l-.3-1.8-1.2-.5-1.5 1L2.3 12l1-1.5-.5-1.2L1 9V6.8l1.8-.3.5-1.2-1-1.5 1.6-1.6 1.5 1 1.2-.5.3-1.9zm1 2.9a4.3 4.3 0 1 0 0 8.6 4.3 4.3 0 0 0 0-8.6z"/></svg>
     Options</button></p>
   <div id="tools" hidden>
-    <p class="save-row">
-      <button type="button" id="copyProgress"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M2 1h9.5L15 4.5V14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm2 1v4h7V2H4zm5 1h1.5v2H9V3zM4 9h8v4H4V9z"/></svg> Save my progress</button>
-      <button type="button" class="info" data-info="whySave" aria-expanded="false" aria-label="What this does">i</button>
-    </p>
-    <p class="step-note" id="whySave" hidden style="margin:.5rem 0 0">Your progress already saves automatically in this browser, so you can close the page and come back. This button copies a link that carries your progress to another device. Paste it into a note or text it to yourself, and opening it on your other phone or computer picks up where you left off.</p>
     <p><button id="reset" type="button">Start the list over</button></p>
     <p class="credit">Made by Dr. Dennis Porto of <a href="https://www.skincare.md/">skincare.md</a></p>
   </div>
@@ -197,76 +201,175 @@ footer a{color:var(--ink-soft)}
 
 </div>
 
-<script>
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXPbcdgNQ-braX_b5buC8Gelg3AChvIjMVPzFRvSRmIJIGYWdlP4ix0HoCgN9WsP-irE98m2wvNIGQ/pub?gid=1301603971&single=true&output=csv";
-const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfFJiF-DKfzUjJ8FhZyINnhWqTgXHlJfewICdFI4sKDafTkGg/viewform";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+  sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut }
+  from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp, FieldPath }
+  from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-lite.js";
+
+const fbApp = initializeApp({
+  apiKey: "AIzaSyDifqt_PvK_PTmskGcTLamHfKB_E6QxFQk",
+  authDomain: "bcd-directory.firebaseapp.com",
+  projectId: "bcd-directory",
+  storageBucket: "bcd-directory.firebasestorage.app",
+  messagingSenderId: "562460673596",
+  appId: "1:562460673596:web:b811ca5c378dfc49c56539"
+});
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
 const STORE_KEY = "derm-follow-v1";
+const EMAIL_KEY = STORE_KEY + ":signin-email";
+const REF_KEY = STORE_KEY + ":ref";
 const DAILY_LIMIT = 50;
 
-/* Badge log: Google Form "BCD badge log" (one "Handle" question), responses in the sheet
-   "BCD badge log (Responses)", whose response tab is published as CSV. */
-const BADGE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR5k5wm2jpU0ovCKR7IK5hMo6Kztzs8a9531LM2vemJyiBRlMfpxYR_Qx8oF4_zAO3Wh8WHOudZVRLY/pub?gid=1123417389&single=true&output=csv";
-const BADGE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScQVEeM6Mmmma6-GzoVPI_xCUGx54_dzhONwYJ-MPKxgnvxuw/formResponse";
-const BADGE_FORM_ENTRY = "entry.514113407";
-const badgeLogReady = u => !u.includes("PASTE");
-
+/* ---------- on-phone state (same format as the previous version, so nobody loses their place) ---------- */
 function load(){
   try{ return Object.assign({marks:{},seen:[],visited:false,submitted:false,agreed:false}, JSON.parse(localStorage.getItem(STORE_KEY))||{}); }
   catch(e){ return {marks:{},seen:[],visited:false,submitted:false,agreed:false}; }
 }
 function save(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){} }
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,v); }catch(e){} }
 let state = load();
-let people = [];
+/* drop fields only the old badge-log version used */
+["badgeHandle","badgeHandles","badgeCount","badgeDate","badgeEarnedAt","badgeLogged"].forEach(k=>delete state[k]);
+save(state);
 
+/* ---------- directory data from Firebase ---------- */
+let roster = {members:[],handles:[],count:0};
+let board = {};          /* handle -> {at: Timestamp, c: number} */
+let people = [];
+let directoryLoaded = false;
+
+async function loadDirectory(){
+  const [rs, bs] = await Promise.all([getDoc(doc(db,"public","roster")), getDoc(doc(db,"public","board"))]);
+  roster = rs.data() || {members:[],handles:[],count:0};
+  board = (bs.data()||{}).b || {};
+  applyBoard();
+  directoryLoaded = true;
+}
+function applyBoard(){
+  people = (roster.members||[]).map(m=>({
+    name:m.n, handle:m.h, signedAt:m.t||0,
+    badgeAt: board[m.h] && board[m.h].at ? board[m.h].at.toMillis() : 0
+  }))
+  /* newest badges first, then everyone else newest sign-up first */
+  .sort((a,b)=>(b.badgeAt-a.badgeAt)||(b.signedAt-a.signedAt));
+}
+
+/* ---------- account ---------- */
+let user = null;          /* signed-in Firebase user */
+let account = null;       /* their saved record */
+let myHandle = null;      /* the listing their verified email belongs to */
+let authKnown = false;    /* has Firebase told us whether anyone is signed in */
+let accountReady = false;
+let accountLoaded = false; /* saved progress has been merged in; only then is it safe to write back */
+let restoredCount = 0;
+let authMsg = "";
+let pushTimer = null;
+let signup = null;        /* their pending sign-up, if they submitted one on this page */
+let editingSignup = false;
+let signupMsg = "";
+
+function me(){ return people.find(p=>p.handle===myHandle)||null; }
+function pendingRef(){ return lsGet(REF_KEY); }
+
+async function loadAccount(u){
+  const snap = await getDoc(doc(db,"users",u.uid));
+  account = snap.exists() ? snap.data() : null;
+  /* restore: anything saved to the account that this phone doesn't have */
+  let n=0;
+  Object.entries((account&&account.marks)||{}).forEach(([h,v])=>{
+    if(!state.marks[h]){ state.marks[h]= v==="a"?"already":"followed"; n++; }
+    if(!state.seen.includes(h)) state.seen.push(h);
+  });
+  restoredCount = n;
+  accountLoaded = true;
+  /* link to a listing when the verified email matches a sign-up */
+  myHandle = null;
+  if(u.emailVerified && u.email){
+    try{
+      const e = await getDoc(doc(db,"emails",u.email.toLowerCase()));
+      if(e.exists()) myHandle = e.data().h;
+    }catch(err){ /* not on the list yet */ }
+  }
+  if(!myHandle){
+    try{ const sd = await getDoc(doc(db,"signups",u.uid)); signup = sd.exists() ? sd.data() : null; }
+    catch(err){ signup = null; }
+  }
+  save(state);
+  await pushAccount();
+}
+
+function accountData(){
+  const valid = new Set(roster.handles||[]);
+  const marks = {};
+  Object.entries(state.marks).forEach(([h,v])=>{
+    if(valid.has(h) && h!==myHandle) marks[h] = v==="already" ? "a" : "f";
+  });
+  const data = {
+    email: user.email || null,
+    h: myHandle || null,
+    marks,
+    createdAt: account && account.createdAt ? account.createdAt : serverTimestamp(),
+    updatedAt: serverTimestamp()
+  };
+  const ref = (account && account.ref) || pendingRef();
+  if(ref && ref!==myHandle) data.ref = ref;
+  return data;
+}
+async function pushAccount(){
+  /* never write before the saved progress and the list are loaded, or we'd overwrite what's saved */
+  if(!user || !accountLoaded || !directoryLoaded) return;
+  clearTimeout(pushTimer);
+  const write = ()=>setDoc(doc(db,"users",user.uid), accountData());
+  try{ await write(); }
+  catch(e){
+    /* usually a stale list: refresh it and try once more */
+    try{ await loadDirectory(); await write(); }catch(e2){ console.error("Saving progress failed", e2); return; }
+  }
+  if(!account) account = {createdAt:new Date()};
+  account.h = myHandle; if(!account.ref && pendingRef() && pendingRef()!==myHandle) account.ref = pendingRef();
+}
+function queuePush(){
+  if(!user) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(pushAccount, 1500);
+}
+
+/* ---------- badge ---------- */
+let claiming = false, claimFailed = false;
+function badgeCurrent(){ const e=board[myHandle]; return !!(e && e.c>=roster.count); }
+
+async function claimBadge(){
+  const h = myHandle;
+  const write = ()=>updateDoc(doc(db,"public","board"), new FieldPath("b",h), {at:serverTimestamp(), c:roster.count});
+  await pushAccount();                          /* the rules check your saved progress first */
+  try{ await write(); }
+  catch(e){
+    await loadDirectory();                      /* the list may have changed since the page loaded */
+    if(badgeCurrent()) return;
+    await pushAccount();
+    await write();
+  }
+  const bs = await getDoc(doc(db,"public","board"));
+  board = (bs.data()||{}).b || {};
+  applyBoard();
+}
+
+/* ---------- helpers ---------- */
 function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function withTitle(name){
   const n=String(name||"").trim();
   return /^(dr\.?|doctor|prof\.?)\b/i.test(n) ? n : "Dr. "+n;
 }
-
-function parseCSV(text){
-  const rows=[]; let row=[], field="", q=false;
-  for(let i=0;i<text.length;i++){
-    const c=text[i];
-    if(q){ if(c==='"'){ if(text[i+1]==='"'){ field+='"'; i++; } else q=false; } else field+=c; }
-    else if(c==='"'){ q=true; }
-    else if(c===','){ row.push(field); field=""; }
-    else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=""; }
-    else if(c!=='\r'){ field+=c; }
-  }
-  if(field.length||row.length){ row.push(field); rows.push(row); }
-  return rows.filter(r=>r.some(v=>v.trim()!==""));
-}
 function cleanHandle(raw){
   let h=String(raw||"").trim().replace(/^.*instagram\.com\//i,"").replace(/^@/,"");
   h=h.split(/[/?#\s]/)[0];
   return h.replace(/[^A-Za-z0-9._]/g,"").toLowerCase();
-}
-function findCol(headers,cands){
-  for(let i=0;i<headers.length;i++){
-    const h=headers[i].trim().toLowerCase();
-    if(cands.some(c=>h.includes(c))) return i;
-  }
-  return -1;
-}
-
-/* ---------- step 1 ---------- */
-function renderStep1(){
-  const box=document.getElementById("step1");
-  document.getElementById("num1").className = "step-num" + (state.submitted?" is-done":"");
-  if(state.submitted){
-    box.innerHTML = `<p class="done-line">✓ You've submitted your Instagram.</p>
-      <p class="step-note" style="margin:.6rem 0 0">Complete Step 2 below in order for your name to be added to the list following TBCD membership verification.
-      <a href="${FORM_URL}" target="_blank" rel="noopener" id="again">Submit again</a> if something needs fixing.</p>`;
-  } else {
-    const ok=state.agreed;
-    box.innerHTML = `<label class="agree"><input type="checkbox" id="agree" ${ok?"checked":""}>
-        <span>I agree to follow my colleagues on this list, not just add myself. <em>(required)</em></span></label>
-      <div class="actions">
-        <a class="primary ${ok?"":"is-off"}" href="${FORM_URL}" target="_blank" rel="noopener" id="openform" ${ok?"":'aria-disabled="true"'}>Open the sign-up form</a>
-        <button type="button" id="markSubmitted" class="ghost">I've already submitted</button>
-      </div>`;
-  }
 }
 
 /* ---------- daily follow count (persists across reloads, resets at local midnight) ---------- */
@@ -307,22 +410,27 @@ function mark(handle,value){
   if(!state.marks[handle] && value==="followed"){ followsToday(); state.dayCount++; }
   state.marks[handle]=value;
   if(!state.seen.includes(handle)) state.seen.push(handle);
-  save(state); renderStep2();
+  save(state); renderStep2(); queuePush();
 }
 
 function renderStep2(){
   const box=document.getElementById("step2");
+  if(!directoryLoaded) return;
   if(!people.length){
     box.innerHTML = `<div class="empty">Nobody's been verified yet. Check back once the first handles are approved.</div>`;
     renderStep3(0);
     return;
   }
-  const queue=people.filter(p=>!state.marks[p.handle]);
-  const fresh=state.visited?people.filter(p=>!state.seen.includes(p.handle)).map(p=>p.handle):[];
-  const done=people.length-queue.length;
+  const list=people.filter(p=>p.handle!==myHandle);   /* you don't follow yourself */
+  const queue=list.filter(p=>!state.marks[p.handle]);
+  const fresh=state.visited?list.filter(p=>!state.seen.includes(p.handle)).map(p=>p.handle):[];
+  const done=list.length-queue.length;
   document.getElementById("num2").className = "step-num" + (queue.length===0?" is-done":"");
 
   let html="";
+  if(restoredCount){
+    html += `<div class="note">Welcome back. Restored ${restoredCount} ${restoredCount===1?"colleague":"colleagues"} you'd already handled.</div>`;
+  }
   const today=followsToday();
   if(today>=DAILY_LIMIT){
     html += `<div class="note"><strong>That's ${today} follows today.</strong> Instagram starts blocking follows past roughly this many in a day. Worth stopping here and coming back tomorrow. Your place is saved.</div>`;
@@ -331,11 +439,11 @@ function renderStep2(){
     html += `<div class="note">${fresh.length} new ${fresh.length===1?"colleague has":"colleagues have"} been added since your last visit.</div>`;
   }
   if(queue.length===0){
-    html += `<div class="empty">You've been through everyone. Your badge is ready in Step 3.</div>`;
+    html += `<div class="empty">You've been through everyone. Your badge is in Step 2.</div>`;
   } else if(!started){
     const isReturning = done>0;
     html += `<div class="card">
-      ${isReturning?`<p class="counter">${done} of ${people.length} done<span class="bar"><i style="width:${Math.round(done/people.length*100)}%"></i></span></p>`:""}
+      ${isReturning?`<p class="counter">${done} of ${list.length} done<span class="bar"><i style="width:${Math.round(done/list.length*100)}%"></i></span></p>`:""}
       <div class="actions" style="margin-top:${isReturning?"1.15rem":"0"}">
         <a class="primary" href="#" id="startQueue">${isReturning?`Continue &mdash; ${queue.length} left`:`Start following colleagues`}</a>
       </div></div>`;
@@ -350,7 +458,7 @@ function renderStep2(){
     const slide=animateNext && document.visibilityState==="visible";
     if(slide) animateNext=false;
     html += `<div class="card${slide?" card-in":""}">
-      <p class="counter">${done} of ${people.length} done<span class="bar"><i style="width:${Math.round(done/people.length*100)}%"></i></span></p>
+      <p class="counter">${done} of ${list.length} done<span class="bar"><i style="width:${Math.round(done/list.length*100)}%"></i></span></p>
       <div class="who-row">
         <span class="avatar" style="background:${AVATAR_COLORS[ci]}" aria-hidden="true">${esc(initials(p.name))}</span>
         <div><p class="person-name">${esc(withTitle(p.name))}${p.badgeAt?badgeMark():""}</p>
@@ -366,108 +474,59 @@ function renderStep2(){
   box.innerHTML=html;
   renderPeek();
   renderStep3(queue.length);
-  document.getElementById("progress-note").textContent = `${done} of ${people.length} handled on this device.`;
+  document.getElementById("progress-note").textContent =
+    user ? `${done} of ${list.length} handled, saved to your account.` : "";
 }
 
-/* ---------- completion badge ---------- */
-let editingBadge=false;
+/* ---------- step 3: badge ---------- */
 let badgeBlob=null;
 
 function renderStep3(left){
   const box=document.getElementById("step3");
-  const earned=people.length>0 && left===0;
-  document.getElementById("num3").className = "step-num" + (earned&&badgePerson()?" is-done":"");
+  const n3=document.getElementById("num3");
+  n3.className="step-num";
   if(!people.length){ box.innerHTML=`<div class="empty">Your badge unlocks once there are colleagues to follow.</div>`; return; }
-  if(!earned){
+  if(left>0){
     box.innerHTML=`<div class="empty">${left} ${left===1?"colleague":"colleagues"} to go. Your badge unlocks once you've been through everyone.</div>`;
     return;
   }
-  box.innerHTML=badgeHTML();
+  if(!authKnown || (user && !accountReady)){
+    box.innerHTML=`<div class="empty">Loading your badge…</div>`; return;
+  }
+  if(!user){ box.innerHTML=`<div class="empty">Sign in to earn your badge.</div>`; return; }
+  if(!myHandle){
+    box.innerHTML=`<div class="empty">You've followed everyone. Your badge unlocks as soon as your TBCD membership is verified.</div>`;
+    return;
+  }
+  if(!badgeCurrent()){
+    if(claimFailed){
+      box.innerHTML=`<div class="empty">Your badge didn't save. <div class="actions"><button type="button" id="retryBadge">Try again</button></div></div>`;
+      return;
+    }
+    box.innerHTML=`<div class="empty">Creating your badge…</div>`;
+    if(!claiming){
+      claiming=true;
+      claimBadge()
+        .then(()=>{ claimFailed=false; })
+        .catch(e=>{ console.error("Badge failed", e); claimFailed=true; })
+        .finally(()=>{ claiming=false; renderStep2(); });
+    }
+    return;
+  }
+  n3.className="step-num is-done";
+  box.innerHTML=`<div class="card">
+      <canvas id="badge" class="badge" width="1080" height="1080" role="img"
+        aria-label="${esc(withTitle(me().name))} followed every colleague in the BCD Instagram Directory"></canvas>
+      <div class="actions">
+        <button type="button" class="primary" id="shareBadge">Save or share badge</button>
+      </div>
+      <p class="step-note" style="margin:.9rem 0 0">You're at the front of the list for everyone else. New colleagues join after each round of sign-ups, so come back to earn a fresh badge and stay there.</p>
+    </div>`;
   drawBadge();
 }
 
 function badgeMark(){
   return `<span class="badge-mark" role="img" aria-label="Badge holder" title="Followed everyone on the list"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.8 6.3l2.1 2.1 4.3-4.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
-}
-
-function badgePerson(){
-  return people.find(p=>p.handle===state.badgeHandle)||null;
-}
-
-function badgeHTML(){
-  const me=badgePerson();
-  if(!me||editingBadge){
-    return `<div class="card">
-      <p class="person-name" style="margin-top:0">You've followed everyone on the list.</p>
-      <p class="handle">Find yourself below to create your badge.</p>
-      <div class="actions">
-        <input type="text" id="badgeSearch" class="text-in" placeholder="Search by name or handle"
-          aria-label="Find yourself on the list" autocomplete="off" enterkeyhint="search">
-      </div>
-      <ul class="pick" id="badgePick"></ul>
-      <p class="step-note" style="margin:.75rem 0 0">Not on the list yet? You'll be able to pick yourself once your TBCD membership is verified.</p>
-    </div>`;
-  }
-  return `<div class="card">
-      <canvas id="badge" class="badge" width="1080" height="1080" role="img"
-        aria-label="${esc(withTitle(me.name))} followed every colleague in the BCD Instagram Directory"></canvas>
-      <div class="actions">
-        <button type="button" class="primary" id="shareBadge">Save or share badge</button>
-        <button type="button" class="ghost" id="editBadge">Not you? Pick again</button>
-      </div>
-      <p class="step-note" style="margin:.9rem 0 0">You're at the front of the list for everyone else. New colleagues join after each round of sign-ups, so come back to earn a fresh badge and stay there.</p>
-    </div>`;
-}
-
-function renderPick(q){
-  const list=document.getElementById("badgePick"); if(!list) return;
-  const needle=q.trim().toLowerCase().replace(/^@/,"");
-  if(!needle){ list.innerHTML=""; return; }
-  const rows=people.filter(p=>p.name.toLowerCase().includes(needle)||p.handle.includes(needle)).slice(0,6);
-  list.innerHTML = rows.length
-    ? rows.map(p=>`<li><button type="button" data-pick="${esc(p.handle)}">${esc(withTitle(p.name))}<span class="ig">@${esc(p.handle)}</span></button></li>`).join("")
-    : `<li><p class="handle" style="padding:.65rem .5rem;margin:0">Nobody by that name on the list yet.</p></li>`;
-}
-
-function logBadge(){
-  const me=badgePerson();
-  if(!me||!badgeLogReady(BADGE_FORM_URL)) return;
-  /* one log entry per earning: a new earning (list grew, caught up again) gets a new key, even on the same day */
-  if(!state.badgeEarnedAt){
-    state.badgeEarnedAt=Date.now();
-    if(state.badgeLogged) state.badgeLogged=`${me.handle}|${state.badgeEarnedAt}`; /* badge already logged under the old scheme */
-    save(state);
-  }
-  const key=`${me.handle}|${state.badgeEarnedAt}`;
-  if(state.badgeLogged===key) return;
-  fetch(BADGE_FORM_URL,{method:"POST",mode:"no-cors",body:new URLSearchParams({[BADGE_FORM_ENTRY]:me.handle})})
-    .then(()=>{ state.badgeLogged=key; save(state); })
-    .catch(()=>{});
-}
-
-function parseSheetDate(str){
-  const m=String(str||"").trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
-  if(m) return new Date(+m[3],+m[1]-1,+m[2],+(m[4]||0),+(m[5]||0),+(m[6]||0)).getTime();
-  const t=Date.parse(str); return isNaN(t)?0:t;
-}
-
-async function loadBadges(){
-  const latest={};
-  if(!badgeLogReady(BADGE_CSV_URL)) return latest;
-  try{
-    const res=await fetch(BADGE_CSV_URL,{cache:"no-store"});
-    if(!res.ok) return latest;
-    const rows=parseCSV(await res.text());
-    const headers=rows.shift()||[];
-    const iTime=findCol(headers,["timestamp"]);
-    const iH=findCol(headers,["handle","instagram"]);
-    if(iTime===-1||iH===-1) return latest;
-    rows.forEach(r=>{
-      const h=cleanHandle(r[iH]); const t=parseSheetDate(r[iTime]);
-      if(h&&t&&(!latest[h]||t>latest[h])) latest[h]=t;
-    });
-  }catch(e){}
-  return latest;
 }
 
 function roundRectPath(x,X,Y,w,h,r){
@@ -477,25 +536,8 @@ function roundRectPath(x,X,Y,w,h,r){
 
 async function drawBadge(){
   const c=document.getElementById("badge"); if(!c) return;
+  const who=me(), entry=board[myHandle]; if(!who||!entry) return;
   badgeBlob=null;
-  /* A new earning happens only when someone is on the list who wasn't when the last badge was earned.
-     Refreshing, revisiting, or a colleague being removed never counts. */
-  const handlesNow=people.map(p=>p.handle);
-  const today=()=>new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
-  if(!state.badgeHandles && state.badgeDate && state.badgeCount===people.length) state.badgeHandles=handlesNow;
-  const covered=new Set(state.badgeHandles||[]);
-  if(!state.badgeDate || handlesNow.some(h=>!covered.has(h))){
-    state.badgeHandles=handlesNow;
-    state.badgeCount=people.length;
-    state.badgeEarnedAt=Date.now();
-    state.badgeDate=today();
-    save(state);
-  } else {
-    if(state.badgeCount!==people.length) state.badgeCount=people.length;
-    if(!/,/.test(state.badgeDate)) state.badgeDate=today();
-    save(state);
-  }
-  logBadge();
   try{ await document.fonts.load('500 80px "Newsreader"'); }catch(e){}
   const x=c.getContext("2d");
   const P={paper:"#F3F1F7",card:"#FFFFFF",ink:"#1B1725",soft:"#5A5468",line:"#DCD7E6",accent:"#5B3A94"};
@@ -512,8 +554,7 @@ async function drawBadge(){
   x.strokeStyle="#FFFFFF"; x.lineWidth=20; x.lineCap="round"; x.lineJoin="round"; x.stroke();
 
   x.textAlign="center"; x.textBaseline="alphabetic";
-  const me=badgePerson(); if(!me) return;
-  const name=withTitle(me.name);
+  const name=withTitle(who.name);
   let size=84;
   x.font=`500 ${size}px ${serif}`;
   while(x.measureText(name).width>840 && size>36){ size-=2; x.font=`500 ${size}px ${serif}`; }
@@ -523,11 +564,12 @@ async function drawBadge(){
   x.fillText("followed every colleague in the",540,660);
   x.fillText("BCD Instagram Directory",540,710);
 
-  const n=state.badgeCount;
+  const n=entry.c;
+  const date=new Date(entry.at.toMillis()).toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
   x.font=`500 32px ${sans}`; x.fillStyle=P.accent;
   x.fillText(`${n} board-certified dermatologist${n===1?"":"s"}`,540,820);
   x.font=`500 40px ${serif}`; x.fillStyle=P.ink;
-  x.fillText(`As of ${state.badgeDate}`,540,878);
+  x.fillText(`As of ${date}`,540,878);
 
   x.font=`500 30px ${sans}`; x.fillStyle=P.accent;
   x.fillText("ig.dermatolo.gy",540,960);
@@ -546,6 +588,144 @@ async function shareBadge(){
   a.href=URL.createObjectURL(badgeBlob); a.download="bcd-badge.png";
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+
+/* ---------- sign-in gate ---------- */
+const GOOGLE_G = `<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>`;
+
+function frost(on){
+  const app=document.getElementById("app");
+  app.classList.toggle("frosted",on);
+  if(on) app.setAttribute("aria-hidden","true"); else app.removeAttribute("aria-hidden");
+  app.inert=on;
+}
+
+function renderGate(){
+  const box=document.getElementById("gate");
+  if(!authKnown || (user && !accountReady)){
+    frost(true);
+    box.innerHTML=`<div class="card gate-card"><p class="msg" style="margin:0">${user?"Loading your account…":"Loading…"}</p></div>`;
+    return;
+  }
+  if(!user){
+    frost(true);
+    const stored=lsGet(EMAIL_KEY)||"";
+    box.innerHTML=`<div class="card gate-card">
+      <h2 class="gate-title">Sign in to get started</h2>
+      <p class="handle">Sign in to add yourself and follow your colleagues. Your place is saved to your account, so you can pick up on any device. There's no password.</p>
+      <div class="actions">
+        <button type="button" class="secondary" id="googleIn">${GOOGLE_G} Continue with Google</button>
+      </div>
+      <p class="or">or</p>
+      <div class="actions" style="margin-top:0">
+        <input type="email" id="emailIn" class="text-in" placeholder="Your email"
+          autocomplete="email" inputmode="email" enterkeyhint="send" value="${esc(stored)}" aria-label="Your email">
+        <button type="button" class="primary" id="emailLink">Email me a sign-in link</button>
+      </div>
+      ${authMsg?`<p class="msg">${authMsg}</p>`:""}
+      <p class="msg">Already on the list? Sign in with the email you signed up with and you'll be matched to your listing.</p>
+    </div>`;
+    return;
+  }
+  const who=me();
+  if(who){
+    frost(false);
+    box.innerHTML=`<div class="gate-status">
+      <p class="done-line">✓ You're on the list as ${esc(withTitle(who.name))}</p>
+      <button type="button" id="signOut" class="ghost">Sign out</button></div>`;
+    return;
+  }
+  if(signup && !editingSignup){
+    frost(false);
+    box.innerHTML=`<div class="card gate-card">
+      <p class="done-line">✓ Submitted as ${esc(withTitle(signup.name))}, @${esc(signup.handle)}</p>
+      <p class="msg">You'll appear on the list once your TBCD membership is verified. Verification is often done the same day. In the meantime, start following your colleagues below.</p>
+      <div class="actions"><button type="button" id="editSignup">Edit</button><button type="button" id="signOut" class="ghost">Sign out</button></div>
+    </div>`;
+    return;
+  }
+  frost(!signup);
+  const s=signup||{};
+  box.innerHTML=`<div class="card gate-card">
+    <h2 class="gate-title">${signup?"Edit your entry":"Add yourself"}</h2>
+    <p class="handle">Signed in as ${esc(user.email||"")}. Every entry is checked by hand against the TBCD roster.</p>
+    <label class="field"><span>Your name, exactly as it appears on TBCD</span>
+      <input type="text" id="suName" class="text-in" autocomplete="name" value="${esc(s.name||"")}"></label>
+    <label class="field"><span>Your professional Instagram handle</span>
+      <input type="text" id="suHandle" class="text-in" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@yourhandle" value="${esc(s.handle?"@"+s.handle:"")}"></label>
+    ${signup?"":`<label class="agree" style="margin-top:1rem"><input type="checkbox" id="suAgree">
+      <span>I agree to follow my colleagues on this list, not just add myself. <em>(required)</em></span></label>`}
+    <div class="actions">
+      <button type="button" class="primary" id="suSubmit" ${signup?"":"disabled"}>${signup?"Save changes":"Add me to the directory"}</button>
+    </div>
+    ${signupMsg?`<p class="msg warn">${signupMsg}</p>`:""}
+    <p class="msg">Already signed up with a different email? <a href="#" id="signOutLink">Sign out</a> and sign in with that address instead.</p>
+  </div>`;
+}
+
+async function submitSignup(){
+  const name=(document.getElementById("suName").value||"").trim().replace(/\s+/g," ");
+  const handle=cleanHandle(document.getElementById("suHandle").value);
+  if(name.length<2){ signupMsg="Enter your name as it appears on TBCD."; renderGate(); return; }
+  if(!/^[a-z0-9._]{1,30}$/.test(handle)){ signupMsg="Enter your Instagram handle, like @yourhandle."; renderGate(); return; }
+  if(people.some(p=>p.handle===handle)){
+    signupMsg=`@${esc(handle)} is already on the list. If that's you, sign out and sign in with the email you originally signed up with.`;
+    renderGate(); return;
+  }
+  const btn=document.getElementById("suSubmit"); if(btn){ btn.disabled=true; btn.textContent="Saving…"; }
+  const data={ name, handle, email:user.email, pending:true,
+    createdAt: signup&&signup.createdAt ? signup.createdAt : serverTimestamp(), updatedAt: serverTimestamp() };
+  try{
+    await setDoc(doc(db,"signups",user.uid), data);
+    signup=Object.assign({},data,{createdAt: signup&&signup.createdAt ? signup.createdAt : new Date()});
+    editingSignup=false; signupMsg="";
+  }catch(e){
+    console.error(e);
+    signupMsg="That didn't save. Try again in a moment.";
+  }
+  renderAll();
+}
+
+async function sendLink(){
+  const input=document.getElementById("emailIn");
+  const email=(input&&input.value||"").trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ authMsg="Enter a valid email address."; renderGate(); return; }
+  const btn=document.getElementById("emailLink"); if(btn){ btn.disabled=true; btn.textContent="Sending…"; }
+  try{
+    await sendSignInLinkToEmail(auth,email,{url:location.origin+location.pathname, handleCodeInApp:true});
+    lsSet(EMAIL_KEY,email);
+    authMsg=`Check your inbox at ${esc(email)} for a sign-in link and open it on this phone. It can take a minute, and sometimes lands in spam.`;
+  }catch(e){
+    console.error(e);
+    authMsg="That didn't send. Check the address and try again.";
+  }
+  renderGate();
+}
+
+async function googleIn(){
+  const provider=new GoogleAuthProvider();
+  provider.setCustomParameters({prompt:"select_account"});
+  try{ await signInWithPopup(auth,provider); }
+  catch(e){
+    if(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment"){
+      await signInWithRedirect(auth,provider);
+    } else if(e.code!=="auth/popup-closed-by-user"&&e.code!=="auth/cancelled-popup-request"){
+      console.error(e);
+      authMsg="Google sign-in didn't finish. Try again, or use the email link.";
+      renderGate();
+    }
+  }
+}
+
+async function finishEmailLink(){
+  if(!isSignInWithEmailLink(auth,location.href)) return;
+  let email=lsGet(EMAIL_KEY);
+  if(!email) email=window.prompt("To finish signing in, enter the email address the link was sent to.");
+  if(email){
+    try{ await signInWithEmailLink(auth,email.trim(),location.href); lsSet(EMAIL_KEY,null); authMsg=""; }
+    catch(e){ console.error(e); authMsg="That sign-in link has expired or was already used. Request a new one below."; }
+  }
+  history.replaceState(null,"",location.pathname);
 }
 
 /* ---------- social proof + collapsed full list ---------- */
@@ -572,18 +752,17 @@ function fmtWhen(t){
   return new Date(t).toLocaleString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"});
 }
 function whenLine(p){
-  if(p.badgeAt) return `<span class="when">Badge earned ${fmtWhen(p.badgeAt)}</span>`;
-  return "";
+  return p.badgeAt ? `<span class="when">Badge earned ${fmtWhen(p.badgeAt)}</span>` : "";
 }
 function renderRoster(q){
   const list=document.getElementById("roster"); if(!list) return;
   const needle=q.trim().toLowerCase();
   const rows=people.filter(p=>!needle||p.name.toLowerCase().includes(needle)||p.handle.includes(needle));
   if(!rows.length){ list.innerHTML=`<li><span class="who">Nobody by that name yet.</span></li>`; return; }
-  const shown=rows.slice(0,ROSTER_CAP);
-  list.innerHTML=shown.map(p=>{
+  const shownRows=rows.slice(0,ROSTER_CAP);
+  list.innerHTML=shownRows.map(p=>{
     const m=state.marks[p.handle];
-    const label=m==="followed"?"Done":m==="already"?"Already following":"";
+    const label=p.handle===myHandle?"You":m==="followed"?"Done":m==="already"?"Already following":"";
     const isNew=state.visited&&!state.seen.includes(p.handle);
     return `<li><span class="who">
       <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
@@ -592,17 +771,18 @@ function renderRoster(q){
   }).join("") + (rows.length>ROSTER_CAP?`<li><span class="who state">${rows.length-ROSTER_CAP} more. Search to narrow it down.</span></li>`:"");
 }
 
+function renderAll(){ renderGate(); renderStep2(); }
+
 /* ---------- events ---------- */
 document.addEventListener("visibilitychange", ()=>{
-  if(document.visibilityState==="visible" && animateNext && started) renderStep2();
-});
-document.addEventListener("input", e=>{
-  if(e.target.id==="badgeSearch") renderPick(e.target.value);
+  if(document.visibilityState==="hidden"){ if(pushTimer) pushAccount(); return; }
+  if(animateNext && started) renderStep2();
 });
 document.addEventListener("change", e=>{
-  if(e.target.id==="agree"){
-    state.agreed=e.target.checked; save(state); renderStep1();
-  }
+  if(e.target.id==="suAgree"){ const b=document.getElementById("suSubmit"); if(b) b.disabled=!e.target.checked; }
+});
+document.addEventListener("keydown", e=>{
+  if(e.target.id==="emailIn" && e.key==="Enter"){ e.preventDefault(); sendLink(); }
 });
 
 document.addEventListener("click", e=>{
@@ -622,26 +802,24 @@ document.addEventListener("click", e=>{
     gear.setAttribute("aria-expanded", open?"true":"false");
     return;
   }
-  const pick=e.target.closest("[data-pick]");
-  if(pick){ state.badgeHandle=pick.dataset.pick; editingBadge=false; save(state); renderStep2(); return; }
-  if(e.target.id==="editBadge"){ editingBadge=true; renderStep2(); return; }
-  if(e.target.id==="shareBadge"){ shareBadge(); return; }
-  if(e.target.id==="startQueue"){ e.preventDefault(); started=true; renderStep2(); return; }
-  if(e.target.id==="showList"){ listOpen=true; renderPeek(); return; }
-  if(e.target.id==="hideList"){ listOpen=false; renderPeek(); return; }
-  const btn=e.target.closest("[data-mark]");
-  if(btn){ mark(btn.dataset.handle,btn.dataset.mark); return; }
-  const prof=e.target.closest("[data-open]");
-  if(prof){ const h=prof.dataset.open; setTimeout(()=>mark(h,"followed"),400); }
-  if(e.target.id==="markSubmitted"||e.target.id==="openform"){
-    state.submitted=true; save(state);
-    if(e.target.id==="markSubmitted") renderStep1(); else setTimeout(renderStep1,400);
-  }
+  const t=e.target.closest("button, a"); if(!t) return;
+  if(t.id==="googleIn"){ googleIn(); return; }
+  if(t.id==="emailLink"){ sendLink(); return; }
+  if(t.id==="signOut"||t.id==="signOutLink"){ e.preventDefault(); authMsg=""; restoredCount=0; signOut(auth); return; }
+  if(t.id==="editSignup"){ editingSignup=true; signupMsg=""; renderGate(); return; }
+  if(t.id==="suSubmit"){ submitSignup(); return; }
+  if(t.id==="retryBadge"){ claimFailed=false; renderStep2(); return; }
+  if(t.id==="shareBadge"){ shareBadge(); return; }
+  if(t.id==="startQueue"){ e.preventDefault(); started=true; renderStep2(); return; }
+  if(t.id==="showList"){ listOpen=true; renderPeek(); return; }
+  if(t.id==="hideList"){ listOpen=false; renderPeek(); return; }
+  if(t.dataset.mark){ mark(t.dataset.handle,t.dataset.mark); return; }
+  if(t.dataset.open){ const h=t.dataset.open; setTimeout(()=>mark(h,"followed"),400); }
 });
 document.getElementById("reset").addEventListener("click",()=>{
-  if(!confirm("This clears which colleagues you've marked. Your Instagram follows aren't touched.")) return;
-  state={marks:{},seen:people.map(p=>p.handle),visited:true,submitted:state.submitted};
-  save(state); renderStep2();
+  if(!confirm("This clears which colleagues you've marked, here and in your saved progress. Your Instagram follows aren't touched.")) return;
+  Object.assign(state,{marks:{},seen:people.map(p=>p.handle),visited:true});
+  save(state); restoredCount=0; renderStep2(); pushAccount();
 });
 
 /* ---------- environment banner ---------- */
@@ -665,91 +843,54 @@ function renderBanner(){
     b.innerHTML = "";
   }
 }
-
-/* ---------- carrying progress between devices ---------- */
-const CODES={followed:"f",already:"a"};
-const UNCODE={f:"followed",a:"already"};
-function progressLink(){
-  const code=Object.entries(state.marks).map(([h,v])=>CODES[v]+"~"+h).join(",");
-  let link=location.origin+location.pathname+"#p="+encodeURIComponent(code);
-  if(state.badgeHandle&&state.badgeEarnedAt){
-    link+="&b="+encodeURIComponent([state.badgeHandle,state.badgeEarnedAt,state.badgeCount,state.badgeDate].join("~"));
-  }
-  return link;
-}
-function applyProgressCode(code){
-  code.split(",").forEach(pair=>{
-    const [v,h]=pair.split("~");
-    if(!h||!UNCODE[v]) return;
-    if(!state.marks[h]) state.marks[h]=UNCODE[v];
-    if(!state.seen.includes(h)) state.seen.push(h);
-  });
-  save(state);
-}
-
 document.addEventListener("click", async e=>{
-  const copyBtn = e.target.closest("#copyUrl, #copyProgress");
-  if(copyBtn){
-    const isUrl = copyBtn.id==="copyUrl";
-    const text = isUrl ? location.origin+location.pathname : progressLink();
-    try{
-      await navigator.clipboard.writeText(text);
-      copyBtn.textContent = isUrl ? "Copied" : "Copied. Paste it somewhere safe.";
-    }catch(err){
-      copyBtn.textContent = "Couldn't copy. Try again.";
-    }
-  }
+  const copyBtn = e.target.closest("#copyUrl");
+  if(!copyBtn) return;
+  try{ await navigator.clipboard.writeText(location.origin+location.pathname); copyBtn.textContent="Copied"; }
+  catch(err){ copyBtn.textContent="Couldn't copy. Try again."; }
 });
 
 /* ---------- boot ---------- */
-const hashCode=(location.hash.match(/[#&]p=([^&]*)/)||[])[1];
-const badgeCode=(location.hash.match(/[#&]b=([^&]*)/)||[])[1];
-if(hashCode) applyProgressCode(decodeURIComponent(hashCode));
-if(badgeCode){
-  /* carry an existing badge to another device so it isn't logged again as a new one */
-  const [h,t,c,...d]=decodeURIComponent(badgeCode).split("~");
-  if(h && +t>(state.badgeEarnedAt||0)){
-    Object.assign(state,{badgeHandle:h,badgeEarnedAt:+t,badgeCount:+c,badgeDate:d.join("~"),badgeLogged:`${h}|${+t}`});
-    delete state.badgeHandles;
-    save(state);
-  }
-}
-if(hashCode||badgeCode) history.replaceState(null,"",location.pathname);
-if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
-renderBanner();
-renderStep1();
-(async function(){
-  try{
-    const badgesP=loadBadges();
-    const res=await fetch(SHEET_CSV_URL,{cache:"no-store"});
-    if(!res.ok) throw new Error(res.status);
-    const rows=parseCSV(await res.text());
-    const headers=rows.shift()||[];
-    const iName=findCol(headers,["name"]);
-    const iIG=findCol(headers,["instagram","handle"]);
-    const iOK=findCol(headers,["approved","verified"]);
-    const iSigned=findCol(headers,["timestamp"]);
-    const seen=new Set();
-    people=rows.map(r=>({
-      name:(r[iName]||"").trim(),
-      handle:cleanHandle(r[iIG]),
-      signedAt:iSigned===-1?0:parseSheetDate(r[iSigned]),
-      ok:iOK===-1?true:["yes","y","true","1","x"].includes(String(r[iOK]).trim().toLowerCase())
-    })).filter(p=>{
-      if(!p.name||!p.handle||!p.ok||seen.has(p.handle)) return false;
-      seen.add(p.handle); return true;
-    });
-    const badges=await badgesP;
-    people=people
-      .map((p,i)=>Object.assign(p,{badgeAt:badges[p.handle]||0,order:i}))
-      /* newest badges first, then everyone else newest sign-up first; sheet row order stands in when there's no timestamp */
-      .sort((a,b)=>(b.badgeAt-a.badgeAt)||(b.signedAt-a.signedAt)||(b.order-a.order));
-    renderStep2();
-    if(!state.visited){ state.visited=true; state.seen=people.map(p=>p.handle); save(state); }
-  }catch(err){
-    document.getElementById("step2").innerHTML=`<div class="empty">The list didn't load. Try again in a moment.</div>`;
+(function captureRef(){
+  /* ?ref=handle from an invite link; recorded to the account at first sign-in */
+  const params=new URLSearchParams(location.search);
+  const r=cleanHandle(params.get("ref")||"");
+  if(r){
+    if(!pendingRef()) lsSet(REF_KEY,r);
+    params.delete("ref");
+    const qs=params.toString();
+    history.replaceState(null,"",location.pathname+(qs?"?"+qs:"")+location.hash);
   }
 })();
+if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+renderBanner();
+renderGate();
+
+const directoryReady = loadDirectory().then(()=>{
+  renderStep2();
+  if(!state.visited){ state.visited=true; state.seen=people.map(p=>p.handle); save(state); }
+}).catch(err=>{
+  console.error(err);
+  document.getElementById("step2").innerHTML=`<div class="empty">The list didn't load. Try again in a moment.</div>`;
+});
+
+finishEmailLink();
+
+onAuthStateChanged(auth, async u=>{
+  user=u; authKnown=true; account=null; myHandle=null; accountReady=!u; accountLoaded=false;
+  signup=null; editingSignup=false; signupMsg="";
+  renderAll();
+  if(!u) return;
+  try{
+    await directoryReady;
+    await loadAccount(u);
+  }catch(err){
+    console.error(err);
+    authMsg="We couldn't load your saved progress. Refresh to try again.";
+  }
+  accountReady=true;
+  renderAll();
+});
 </script>
 </body>
 </html>
