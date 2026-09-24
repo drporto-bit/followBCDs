@@ -342,11 +342,12 @@ function queuePush(){
 
 /* ---------- badge ---------- */
 let claiming = false, claimFailed = false;
-function badgeCurrent(){ const e=board[myHandle]; return !!(e && e.c>=roster.count); }
+/* a badge is current if it was earned after the most recent colleague was added (the list's version) */
+function badgeCurrent(){ const e=board[myHandle]; return !!(e && (e.v||0)>=(roster.v||0)); }
 
 async function claimBadge(){
   const h = myHandle;
-  const write = ()=>updateDoc(doc(db,"public","board"), new FieldPath("b",h), {at:serverTimestamp(), c:roster.count});
+  const write = ()=>updateDoc(doc(db,"public","board"), new FieldPath("b",h), {at:serverTimestamp(), c:roster.count, v:roster.v||0});
   await pushAccount();                          /* the rules check your saved progress first */
   try{ await write(); }
   catch(e){
@@ -358,6 +359,7 @@ async function claimBadge(){
   const bs = await getDoc(doc(db,"public","board"));
   board = (bs.data()||{}).b || {};
   applyBoard();
+  if(!badgeCurrent()) throw new Error("Badge still not current after saving");  /* never retry in a loop */
 }
 
 /* ---------- helpers ---------- */
