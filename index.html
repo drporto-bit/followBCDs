@@ -179,7 +179,7 @@ footer a{color:var(--ink-soft)}
 
 <div id="gate"><div class="card gate-card"><p class="msg" style="margin:0">Loading…</p></div></div>
 
-<div id="app" class="frosted" aria-hidden="true">
+<div id="app" class="frosted" aria-hidden="true" hidden>
 <section class="step">
   <div class="step-head"><span class="step-num" id="num2">1</span><h2 class="step-title">Follow your colleagues</h2>
     <button type="button" class="info" data-info="note2" aria-expanded="false" aria-label="How this step works">i</button></div>
@@ -632,6 +632,8 @@ function frost(on){
 
 function renderGate(){
   const box=document.getElementById("gate");
+  /* signed out: skip the frosted steps entirely so the leaderboard sits right under the sign-in card */
+  document.getElementById("app").hidden = !user;
   if(!authKnown || (user && !accountReady)){
     frost(true);
     box.innerHTML=`<div class="card gate-card"><p class="msg" style="margin:0">${user?"Loading your account…":"Loading…"}</p></div>`;
