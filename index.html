@@ -119,6 +119,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 #leaderboard .legend{margin-left:0}
 .lb-count{color:var(--ink-soft);font-size:.9rem;margin:0 0 .75rem}
 .rank{flex:0 0 1.75rem;color:var(--ink-soft);font-size:.85rem;font-variant-numeric:tabular-nums;text-align:right}
+.medalist .rank{font-size:1.25rem;line-height:1}
+.medalist .who > a{font-weight:600}
 .lb-more{margin-top:.9rem}
 #leaderboard input[type=search]{margin:0 0 .25rem;max-width:100%}
 .roster li{display:flex;align-items:baseline;gap:.75rem;padding:.7rem .15rem;border-bottom:1px solid var(--line)}
@@ -200,7 +202,6 @@ footer a{color:var(--ink-soft)}
 
 
 <footer>
-  <p id="progress-note"></p>
   <p><button type="button" id="gear" aria-expanded="false" aria-controls="tools">
     <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 5.5A2.5 2.5 0 1 0 8 10.5 2.5 2.5 0 0 0 8 5.5zm0 1.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6z"/><path d="M6.9.8h2.2l.3 1.8 1.2.5 1.5-1 1.6 1.6-1 1.5.5 1.2 1.8.3v2.2l-1.8.3-.5 1.2 1 1.5-1.6 1.6-1.5-1-1.2.5-.3 1.8H6.9l-.3-1.8-1.2-.5-1.5 1L2.3 12l1-1.5-.5-1.2L1 9V6.8l1.8-.3.5-1.2-1-1.5 1.6-1.6 1.5 1 1.2-.5.3-1.9zm1 2.9a4.3 4.3 0 1 0 0 8.6 4.3 4.3 0 0 0 0-8.6z"/></svg>
     Options</button></p>
@@ -488,8 +489,6 @@ function renderStep2(){
   box.innerHTML=html;
   renderBoard();
   renderStep3(queue.length);
-  document.getElementById("progress-note").textContent =
-    user ? `${done} of ${list.length} handled, saved to your account.` : "";
 }
 
 /* ---------- step 3: badge ---------- */
@@ -759,6 +758,8 @@ async function finishEmailLink(){
 
 /* ---------- leaderboard: top 5, expandable to everyone ---------- */
 const TOP_N=5;
+/* medals for the top three, only when they've earned a badge (a rank alone isn't an achievement) */
+const MEDALS=["🥇","🥈","🥉"];
 let boardOpen=false, boardQuery="";
 
 function fmtWhen(t){
@@ -771,7 +772,8 @@ function boardRow(p,rank){
   const m=state.marks[p.handle];
   const label=p.handle===myHandle?"You":m==="followed"?"Following":m==="already"?"Following":"";
   const isNew=state.visited&&!state.seen.includes(p.handle);
-  return `<li><span class="rank">${rank}</span><span class="who">
+  const medal = rank<=3 && p.badgeAt ? MEDALS[rank-1] : "";
+  return `<li${medal?' class="medalist"':''}><span class="rank"${medal?` aria-label="Rank ${rank}"`:''}>${medal||rank}</span><span class="who">
     <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
     <span class="ig">@${esc(p.handle)}</span>${whenLine(p)}</span>
     <span class="state ${label&&label!=="You"?'is-done':''}">${label}</span></li>`;
