@@ -114,8 +114,13 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 #banner button{padding:.45rem .75rem;font-size:.85rem}
 .url-line{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;word-break:break-all;color:var(--ink-soft)}
 .roster{list-style:none;margin:1.5rem 0 0 2.1rem;padding:0;border-top:1px solid var(--line)}
-.peek-head{color:var(--ink-soft);font-size:.9rem;margin:1.5rem 0 0 2.1rem}
-#peek > p:last-child{margin-left:2.1rem}
+.lb-note{margin-left:0}
+#leaderboard .roster{margin-left:0}
+#leaderboard .legend{margin-left:0}
+.lb-count{color:var(--ink-soft);font-size:.9rem;margin:0 0 .75rem}
+.rank{flex:0 0 1.75rem;color:var(--ink-soft);font-size:.85rem;font-variant-numeric:tabular-nums;text-align:right}
+.lb-more{margin-top:.9rem}
+#leaderboard input[type=search]{margin:0 0 .25rem;max-width:100%}
 .roster li{display:flex;align-items:baseline;gap:.75rem;padding:.7rem .15rem;border-bottom:1px solid var(--line)}
 .roster a{color:var(--ink);text-decoration:none;font-weight:500}
 .roster a:hover{text-decoration:underline}
@@ -145,7 +150,6 @@ footer a{color:var(--ink-soft)}
 .badge{display:block;width:100%;max-width:22rem;height:auto;margin:0 auto;border-radius:12px;border:1px solid var(--line)}
 @media (max-width:30rem){
   .card,.empty,.note,.roster{margin-left:0}
-  .peek-head,#peek > p:last-child{margin-left:0}
   input[type=search]{margin-left:0;max-width:100%}
   .step-note{margin-left:0}
   .step-lead{margin-left:0}
@@ -163,7 +167,7 @@ footer a{color:var(--ink-soft)}
 <div class="wrap">
 
 <h1>BCD Instagram Directory</h1>
-<p class="sub">A directory of board-certified dermatologists on Instagram, open to TBCD members. Sign in, add yourself, then follow the colleagues already listed.</p>
+<p class="sub">A directory of board-certified dermatologists on Instagram. Sign in, add yourself, then follow the colleagues already listed. Follow everyone to win a badge and prioritization.</p>
 
 <div id="banner"></div>
 
@@ -173,7 +177,7 @@ footer a{color:var(--ink-soft)}
 <section class="step">
   <div class="step-head"><span class="step-num" id="num2">1</span><h2 class="step-title">Follow your colleagues</h2>
     <button type="button" class="info" data-info="note2" aria-expanded="false" aria-label="How this step works">i</button></div>
-  <p class="step-lead">One colleague at a time. Stop around 50 a day.</p>
+  <p class="step-lead">We help you add one colleague at a time (max of 50 per day per Instagram rules).</p>
   <p class="step-note" id="note2" hidden>Tap the purple button to open that dermatologist's profile, follow them on Instagram, then come back here. The next colleague is already waiting, and nobody you've handled comes up twice. Instagram temporarily blocks accounts that follow too many people at once, so stop around 50 in a sitting and pick it up another day. Your place is saved to your account, so you can continue on any device.</p>
   <div id="step2"><div class="empty">Loading the list…</div></div>
 </section>
@@ -181,11 +185,18 @@ footer a{color:var(--ink-soft)}
 <section class="step">
   <div class="step-head"><span class="step-num" id="num3">2</span><h2 class="step-title">Earn your badge</h2>
     <button type="button" class="info" data-info="note3" aria-expanded="false" aria-label="What the badge gets you">i</button></div>
-  <p class="step-lead">Follow everyone on the list to get a badge, a check mark by your name, and a spot at the front of the list so you get the most followers.</p>
-  <p class="step-note" id="note3" hidden>Once you've been through every colleague, your badge appears here. Your name gets a purple check, and you move to the front of everyone else's follow queue, most recent badges first, so you pick up follows from colleagues working through the list. When new colleagues are verified, follow them to earn a fresh badge with a new date and move back to the front.</p>
+  <p class="step-lead">Follow everyone on the list to get a badge and prioritization on the list so you get the most followers.</p>
+  <p class="step-note" id="note3" hidden>Once you've followed every colleague, your badge appears here and you move to the front of everyone else's follow queue, most recent badges first, so you pick up follows from colleagues working through the list. When new colleagues are verified, follow them to earn a fresh badge with a new date and move back to the front.</p>
   <div id="step3"></div>
 </section>
 </div>
+
+<section class="step" id="leaderboard">
+  <div class="step-head"><h2 class="step-title">Leaderboard</h2>
+    <button type="button" class="info" data-info="noteLb" aria-expanded="false" aria-label="How the leaderboard is ordered">i</button></div>
+  <p class="step-note lb-note" id="noteLb" hidden>The leaderboard is the order everyone else follows in. Badge holders come first, most recent badge at the top, followed by everyone else, newest sign-ups first. Follow everyone, or catch up after new colleagues join, to move to the top.</p>
+  <div id="board"><div class="empty">Loading…</div></div>
+</section>
 
 
 <footer>
@@ -422,6 +433,7 @@ function renderStep2(){
   if(!people.length){
     box.innerHTML = `<div class="empty">Nobody's been verified yet. Check back once the first handles are approved.</div>`;
     renderStep3(0);
+    renderBoard();
     return;
   }
   const list=people.filter(p=>p.handle!==myHandle);   /* you don't follow yourself */
@@ -473,9 +485,8 @@ function renderStep2(){
         <button type="button" data-mark="already" data-handle="${esc(p.handle)}">Already following</button>
       </div></div>`;
   }
-  html += `<div id="peek"></div>`;
   box.innerHTML=html;
-  renderPeek();
+  renderBoard();
   renderStep3(queue.length);
   document.getElementById("progress-note").textContent =
     user ? `${done} of ${list.length} handled, saved to your account.` : "";
@@ -746,47 +757,48 @@ async function finishEmailLink(){
   history.replaceState(null,"",location.pathname);
 }
 
-/* ---------- social proof + collapsed full list ---------- */
-let listOpen=false;
-function renderPeek(){
-  const box=document.getElementById("peek"); if(!box) return;
-  if(!listOpen){
-    box.innerHTML = `<p class="peek-head">${people.length} dermatologist${people.length===1?" has":"s have"} started following each other!</p>
-      <p><button type="button" id="showList" class="ghost">Show full list</button></p>`;
-  } else {
-    const anyBadge=people.some(p=>p.badgeAt);
-    box.innerHTML = `<p><button type="button" id="hideList" class="ghost">Hide full list</button></p>
-      ${anyBadge?`<p class="badge-line legend">${badgeMark()}Followed everyone on the list</p>`:""}
-      <input type="search" id="filter" placeholder="Search by name or handle" aria-label="Search by name or handle">
-      <ul class="roster" id="roster"></ul>`;
-    renderRoster("");
-    const f=document.getElementById("filter");
-    if(f) f.addEventListener("input",e=>renderRoster(e.target.value));
-  }
-}
+/* ---------- leaderboard: top 5, expandable to everyone ---------- */
+const TOP_N=5;
+let boardOpen=false, boardQuery="";
 
-const ROSTER_CAP=60;
 function fmtWhen(t){
   return new Date(t).toLocaleString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"});
 }
 function whenLine(p){
   return p.badgeAt ? `<span class="when">Badge earned ${fmtWhen(p.badgeAt)}</span>` : "";
 }
-function renderRoster(q){
-  const list=document.getElementById("roster"); if(!list) return;
-  const needle=q.trim().toLowerCase();
-  const rows=people.filter(p=>!needle||p.name.toLowerCase().includes(needle)||p.handle.includes(needle));
-  if(!rows.length){ list.innerHTML=`<li><span class="who">Nobody by that name yet.</span></li>`; return; }
-  const shownRows=rows.slice(0,ROSTER_CAP);
-  list.innerHTML=shownRows.map(p=>{
-    const m=state.marks[p.handle];
-    const label=p.handle===myHandle?"You":m==="followed"?"Done":m==="already"?"Already following":"";
-    const isNew=state.visited&&!state.seen.includes(p.handle);
-    return `<li><span class="who">
-      <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
-      <span class="ig">@${esc(p.handle)}</span>${whenLine(p)}</span>
-      <span class="state ${m==='followed'||m==='already'?'is-done':''}">${label}</span></li>`;
-  }).join("") + (rows.length>ROSTER_CAP?`<li><span class="who state">${rows.length-ROSTER_CAP} more. Search to narrow it down.</span></li>`:"");
+function boardRow(p,rank){
+  const m=state.marks[p.handle];
+  const label=p.handle===myHandle?"You":m==="followed"?"Following":m==="already"?"Following":"";
+  const isNew=state.visited&&!state.seen.includes(p.handle);
+  return `<li><span class="rank">${rank}</span><span class="who">
+    <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
+    <span class="ig">@${esc(p.handle)}</span>${whenLine(p)}</span>
+    <span class="state ${label&&label!=="You"?'is-done':''}">${label}</span></li>`;
+}
+function renderBoard(){
+  const box=document.getElementById("board"); if(!box||!directoryLoaded) return;
+  if(!people.length){ box.innerHTML=`<div class="empty" style="margin-left:0">Nobody's on the list yet.</div>`; return; }
+  const anyBadge=people.some(p=>p.badgeAt);
+  const head=`<p class="lb-count">${people.length} board-certified dermatologist${people.length===1?"":"s"} listed</p>
+    ${anyBadge?`<p class="badge-line legend">${badgeMark()}Followed everyone on the list</p>`:""}`;
+  if(!boardOpen){
+    box.innerHTML = head + `<ul class="roster">${people.slice(0,TOP_N).map((p,i)=>boardRow(p,i+1)).join("")}</ul>
+      ${people.length>TOP_N?`<p class="lb-more"><button type="button" id="showAll" class="ghost">Show all ${people.length}</button></p>`:""}`;
+    return;
+  }
+  box.innerHTML = head + `<input type="search" id="lbFilter" placeholder="Search by name or handle" aria-label="Search by name or handle" value="${esc(boardQuery)}">
+    <ul class="roster" id="lbRows"></ul>
+    <p class="lb-more"><button type="button" id="showTop" class="ghost">Show top ${TOP_N}</button></p>`;
+  renderBoardRows();
+}
+function renderBoardRows(){
+  const list=document.getElementById("lbRows"); if(!list) return;
+  const needle=boardQuery.trim().toLowerCase().replace(/^@/,"");
+  const rows=people.map((p,i)=>({p,rank:i+1}))
+    .filter(({p})=>!needle||p.name.toLowerCase().includes(needle)||p.handle.includes(needle));
+  list.innerHTML = rows.length ? rows.map(({p,rank})=>boardRow(p,rank)).join("")
+    : `<li><span class="who">Nobody by that name yet.</span></li>`;
 }
 
 function renderAll(){ renderGate(); renderStep2(); }
@@ -795,6 +807,9 @@ function renderAll(){ renderGate(); renderStep2(); }
 document.addEventListener("visibilitychange", ()=>{
   if(document.visibilityState==="hidden"){ if(pushTimer) pushAccount(); return; }
   if(animateNext && started) renderStep2();
+});
+document.addEventListener("input", e=>{
+  if(e.target.id==="lbFilter"){ boardQuery=e.target.value; renderBoardRows(); }
 });
 document.addEventListener("change", e=>{
   if(e.target.id==="suAgree"){ const b=document.getElementById("suSubmit"); if(b) b.disabled=!e.target.checked; }
@@ -831,8 +846,8 @@ document.addEventListener("click", e=>{
   if(t.id==="retryBadge"){ claimFailed=false; renderStep2(); return; }
   if(t.id==="shareBadge"){ shareBadge(); return; }
   if(t.id==="startQueue"){ e.preventDefault(); started=true; renderStep2(); return; }
-  if(t.id==="showList"){ listOpen=true; renderPeek(); return; }
-  if(t.id==="hideList"){ listOpen=false; renderPeek(); return; }
+  if(t.id==="showAll"){ boardOpen=true; renderBoard(); return; }
+  if(t.id==="showTop"){ boardOpen=false; boardQuery=""; renderBoard(); document.getElementById("leaderboard").scrollIntoView({block:"start"}); return; }
   if(t.dataset.mark){ mark(t.dataset.handle,t.dataset.mark); return; }
   if(t.dataset.open){ const h=t.dataset.open; setTimeout(()=>mark(h,"followed"),400); }
 });
