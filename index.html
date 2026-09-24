@@ -774,6 +774,14 @@ async function finishEmailLink(){
 
 /* ---------- leaderboard: top 5, expandable to everyone ---------- */
 const TOP_N=5;
+/* the site's creator never takes a top-5 spot, so the showcase is always other colleagues */
+const HOST_HANDLE="skinsurgerymd";
+function boardOrder(){
+  const list=people.slice();
+  const i=list.findIndex(p=>p.handle===HOST_HANDLE);
+  if(i>=0 && i<TOP_N && list.length>TOP_N){ const [host]=list.splice(i,1); list.splice(TOP_N,0,host); }
+  return list;
+}
 /* medals for the top three, only when they've earned a badge (a rank alone isn't an achievement) */
 const MEDALS=["🥇","🥈","🥉"];
 const RANKED=10;
@@ -809,7 +817,7 @@ function renderBoard(){
       ? (user ? `<p class="lb-more"><button type="button" id="showAll" class="ghost">Show all ${people.length}</button></p>`
               : `<p class="lb-more msg">Sign in to see all ${people.length}.</p>`)
       : "";
-    box.innerHTML = head + `<ul class="roster">${people.slice(0,TOP_N).map((p,i)=>boardRow(p,i+1)).join("")}</ul>` + more;
+    box.innerHTML = head + `<ul class="roster">${boardOrder().slice(0,TOP_N).map((p,i)=>boardRow(p,i+1)).join("")}</ul>` + more;
     return;
   }
   box.innerHTML = head + `<input type="search" id="lbFilter" placeholder="Search by name or handle" aria-label="Search by name or handle" value="${esc(boardQuery)}">
@@ -820,7 +828,7 @@ function renderBoard(){
 function renderBoardRows(){
   const list=document.getElementById("lbRows"); if(!list) return;
   const needle=boardQuery.trim().toLowerCase().replace(/^@/,"");
-  const rows=people.map((p,i)=>({p,rank:i+1}))
+  const rows=boardOrder().map((p,i)=>({p,rank:i+1}))
     .filter(({p})=>!needle||p.name.toLowerCase().includes(needle)||p.handle.includes(needle));
   list.innerHTML = rows.length ? rows.map(({p,rank})=>boardRow(p,rank)).join("")
     : `<li><span class="who">Nobody by that name yet.</span></li>`;
