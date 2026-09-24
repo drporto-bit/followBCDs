@@ -96,6 +96,17 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .or{display:flex;align-items:center;gap:.75rem;color:var(--ink-soft);font-size:.85rem;margin:1rem 0}
 .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
 .msg{color:var(--ink-soft);font-size:.9rem;margin:.9rem 0 0}
+#gate{margin-bottom:2.25rem}
+.gate-card{margin-left:0}
+.gate-title{font-family:"Newsreader",Georgia,serif;font-weight:400;font-size:1.4rem;line-height:1.2;margin:0 0 .35rem}
+.gate-status{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.75rem 1rem}
+.gate-status button{padding:.4rem .7rem;font-size:.85rem}
+.field{display:block;margin-top:.9rem}
+.field span{display:block;font-size:.85rem;color:var(--ink-soft);margin-bottom:.3rem}
+.warn{color:#B4541F}
+#app{transition:filter .3s,opacity .3s}
+.frosted{filter:blur(5px);opacity:.5;pointer-events:none;user-select:none}
 #banner:not(:empty){background:var(--accent-soft);border-radius:10px;padding:.9rem 1.05rem;margin:0 0 2rem;font-size:.9rem}
 #banner p{margin:0}
 .banner-head{display:flex;align-items:center;gap:.6rem}
@@ -152,42 +163,32 @@ footer a{color:var(--ink-soft)}
 <body>
 <div class="wrap">
 
-<p style="background:#B4541F;color:#fff;border-radius:8px;padding:.5rem .75rem;font-size:.85rem;margin:0 0 1rem">Test copy. Sign-ins, saved progress and badges are real.</p>
+<p style="background:#B4541F;color:#fff;border-radius:8px;padding:.5rem .75rem;font-size:.85rem;margin:0 0 1rem">Test copy. Sign-ins, sign-ups, saved progress and badges are real.</p>
 <h1>BCD Instagram Directory</h1>
-<p class="sub">A directory of board-certified dermatologists on Instagram, open to TBCD members. Add yourself, then follow the colleagues already listed.</p>
+<p class="sub">A directory of board-certified dermatologists on Instagram, open to TBCD members. Sign in, add yourself, then follow the colleagues already listed.</p>
 
 <div id="banner"></div>
 
-<section class="step">
-  <div class="step-head"><span class="step-num" id="num1">1</span><h2 class="step-title">Add your Instagram</h2>
-    <button type="button" class="info" data-info="note1" aria-expanded="false" aria-label="What this step needs">i</button></div>
-  <p class="step-note" id="note1" hidden>The form asks for three things: your name exactly as it appears on TBCD, your professional Instagram handle, and an email address in case verification needs a follow-up. Your email is never shown on this page. Every submission is checked by hand against the TBCD roster, and this is a volunteer effort run between clinic days, so please be patient waiting to appear on the list.</p>
-  <div class="card" id="step1"></div>
-</section>
+<div id="gate"><div class="card gate-card"><p class="msg" style="margin:0">Loading…</p></div></div>
 
+<div id="app" class="frosted" aria-hidden="true">
 <section class="step">
-  <div class="step-head"><span class="step-num" id="num2">2</span><h2 class="step-title">Follow your colleagues</h2>
+  <div class="step-head"><span class="step-num" id="num2">1</span><h2 class="step-title">Follow your colleagues</h2>
     <button type="button" class="info" data-info="note2" aria-expanded="false" aria-label="How this step works">i</button></div>
   <p class="step-lead">One colleague at a time. Stop around 50 a day.</p>
-  <p class="step-note" id="note2" hidden>Tap the purple button to open that dermatologist's profile, follow them on Instagram, then come back here. The next colleague is already waiting, and nobody you've handled comes up twice. Instagram temporarily blocks accounts that follow too many people at once, so stop around 50 in a sitting and pick it up another day. This page remembers your place, and saving your progress in Step 4 keeps it safe on any device.</p>
+  <p class="step-note" id="note2" hidden>Tap the purple button to open that dermatologist's profile, follow them on Instagram, then come back here. The next colleague is already waiting, and nobody you've handled comes up twice. Instagram temporarily blocks accounts that follow too many people at once, so stop around 50 in a sitting and pick it up another day. Your place is saved to your account, so you can continue on any device.</p>
   <div id="step2"><div class="empty">Loading the list…</div></div>
 </section>
 
 <section class="step">
-  <div class="step-head"><span class="step-num" id="num3">3</span><h2 class="step-title">Earn your badge</h2>
+  <div class="step-head"><span class="step-num" id="num3">2</span><h2 class="step-title">Earn your badge</h2>
     <button type="button" class="info" data-info="note3" aria-expanded="false" aria-label="What the badge gets you">i</button></div>
   <p class="step-lead">Follow everyone on the list to get a badge, a check mark by your name, and a spot at the front of the list so you get the most followers.</p>
-  <p class="step-note" id="note3" hidden>Once you've been through every colleague and saved your progress in Step 4, your badge appears here. Your name gets a purple check, and you move to the front of everyone else's follow queue, most recent badges first, so you pick up follows from colleagues working through the list. When new colleagues are verified, follow them to earn a fresh badge with a new date and move back to the front.</p>
+  <p class="step-note" id="note3" hidden>Once you've been through every colleague, your badge appears here. Your name gets a purple check, and you move to the front of everyone else's follow queue, most recent badges first, so you pick up follows from colleagues working through the list. When new colleagues are verified, follow them to earn a fresh badge with a new date and move back to the front.</p>
   <div id="step3"></div>
 </section>
+</div>
 
-<section class="step" id="save">
-  <div class="step-head"><span class="step-num" id="num4">4</span><h2 class="step-title">Save your progress</h2>
-    <button type="button" class="info" data-info="note4" aria-expanded="false" aria-label="Why sign in">i</button></div>
-  <p class="step-lead">Sign in so your place is never lost, on this phone or any other.</p>
-  <p class="step-note" id="note4" hidden>Phones can clear this page's memory if you don't visit for a while, especially iPhones. Signing in saves the colleagues you've handled to your account, so you can pick up where you left off on any device. It's also how your badge and check mark are tied to you. Use the email from your sign-up form and your account links to your listing automatically. There's no password.</p>
-  <div id="step4"></div>
-</section>
 
 <footer>
   <p id="progress-note"></p>
@@ -221,7 +222,6 @@ const fbApp = initializeApp({
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
 
-const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfFJiF-DKfzUjJ8FhZyINnhWqTgXHlJfewICdFI4sKDafTkGg/viewform";
 const STORE_KEY = "derm-follow-staging";  /* separate from the live page's saved progress on this phone */
 const EMAIL_KEY = STORE_KEY + ":signin-email";
 const REF_KEY = STORE_KEY + ":ref";
@@ -272,6 +272,9 @@ let accountLoaded = false; /* saved progress has been merged in; only then is it
 let restoredCount = 0;
 let authMsg = "";
 let pushTimer = null;
+let signup = null;        /* their pending sign-up, if they submitted one on this page */
+let editingSignup = false;
+let signupMsg = "";
 
 function me(){ return people.find(p=>p.handle===myHandle)||null; }
 function pendingRef(){ return lsGet(REF_KEY); }
@@ -295,7 +298,10 @@ async function loadAccount(u){
       if(e.exists()) myHandle = e.data().h;
     }catch(err){ /* not on the list yet */ }
   }
-  if(myHandle) state.submitted = true;
+  if(!myHandle){
+    try{ const sd = await getDoc(doc(db,"signups",u.uid)); signup = sd.exists() ? sd.data() : null; }
+    catch(err){ signup = null; }
+  }
   save(state);
   await pushAccount();
 }
@@ -368,25 +374,6 @@ function cleanHandle(raw){
   return h.replace(/[^A-Za-z0-9._]/g,"").toLowerCase();
 }
 
-/* ---------- step 1 ---------- */
-function renderStep1(){
-  const box=document.getElementById("step1");
-  document.getElementById("num1").className = "step-num" + (state.submitted?" is-done":"");
-  if(state.submitted){
-    box.innerHTML = `<p class="done-line">✓ You've submitted your Instagram.</p>
-      <p class="step-note" style="margin:.6rem 0 0">Complete Step 2 below in order for your name to be added to the list following TBCD membership verification.
-      <a href="${FORM_URL}" target="_blank" rel="noopener" id="again">Submit again</a> if something needs fixing.</p>`;
-  } else {
-    const ok=state.agreed;
-    box.innerHTML = `<label class="agree"><input type="checkbox" id="agree" ${ok?"checked":""}>
-        <span>I agree to follow my colleagues on this list, not just add myself. <em>(required)</em></span></label>
-      <div class="actions">
-        <a class="primary ${ok?"":"is-off"}" href="${FORM_URL}" target="_blank" rel="noopener" id="openform" ${ok?"":'aria-disabled="true"'}>Open the sign-up form</a>
-        <button type="button" id="markSubmitted" class="ghost">I've already submitted</button>
-      </div>`;
-  }
-}
-
 /* ---------- daily follow count (persists across reloads, resets at local midnight) ---------- */
 function todayKey(){
   const d=new Date();
@@ -443,9 +430,6 @@ function renderStep2(){
   document.getElementById("num2").className = "step-num" + (queue.length===0?" is-done":"");
 
   let html="";
-  if(authKnown && !user && done===0){
-    html += `<div class="note">Been here before? <a href="#save" id="toSave">Sign in to restore your progress.</a></div>`;
-  }
   if(restoredCount){
     html += `<div class="note">Welcome back. Restored ${restoredCount} ${restoredCount===1?"colleague":"colleagues"} you'd already handled.</div>`;
   }
@@ -457,7 +441,7 @@ function renderStep2(){
     html += `<div class="note">${fresh.length} new ${fresh.length===1?"colleague has":"colleagues have"} been added since your last visit.</div>`;
   }
   if(queue.length===0){
-    html += `<div class="empty">You've been through everyone. Your badge is in Step 3.</div>`;
+    html += `<div class="empty">You've been through everyone. Your badge is in Step 2.</div>`;
   } else if(!started){
     const isReturning = done>0;
     html += `<div class="card">
@@ -493,7 +477,7 @@ function renderStep2(){
   renderPeek();
   renderStep3(queue.length);
   document.getElementById("progress-note").textContent =
-    `${done} of ${list.length} handled${user?", saved to your account":" on this device"}.`;
+    user ? `${done} of ${list.length} handled, saved to your account.` : "";
 }
 
 /* ---------- step 3: badge ---------- */
@@ -511,14 +495,9 @@ function renderStep3(left){
   if(!authKnown || (user && !accountReady)){
     box.innerHTML=`<div class="empty">Loading your badge…</div>`; return;
   }
-  if(!user){
-    box.innerHTML=`<div class="empty">You've followed everyone. Save your progress in Step 4 to claim your badge.
-      <div class="actions"><a class="primary" href="#save" id="toSave">Go to Step 4</a></div></div>`;
-    return;
-  }
+  if(!user){ box.innerHTML=`<div class="empty">Sign in to earn your badge.</div>`; return; }
   if(!myHandle){
-    box.innerHTML=`<div class="empty">You've followed everyone. Your badge unlocks as soon as your TBCD membership is verified.
-      <p class="msg">Already verified? Make sure you signed in with the email from your sign-up form. You're signed in as ${esc(user.email||"")}.</p></div>`;
+    box.innerHTML=`<div class="empty">You've followed everyone. Your badge unlocks as soon as your TBCD membership is verified.</div>`;
     return;
   }
   if(!badgeCurrent()){
@@ -613,43 +592,106 @@ async function shareBadge(){
   setTimeout(()=>URL.revokeObjectURL(a.href),4000);
 }
 
-/* ---------- step 4: save your progress ---------- */
+/* ---------- sign-in gate ---------- */
 const GOOGLE_G = `<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>`;
 
-function renderStep4(){
-  const box=document.getElementById("step4");
-  const n4=document.getElementById("num4");
-  n4.className="step-num"+(user?" is-done":"");
-  if(!authKnown){ box.innerHTML=`<div class="empty">Loading…</div>`; return; }
-  if(user){
-    const who=me();
-    box.innerHTML=`<div class="card">
-      <p class="done-line">✓ Progress saved to ${esc(user.email||"your account")}</p>
-      <p class="msg">${!accountReady ? "Loading your account…"
-        : who ? `Linked to your listing, ${esc(withTitle(who.name))} (@${esc(who.handle)}).`
-        : `Not linked to a listing yet. It links automatically once your TBCD membership is verified, as long as this is the email from your sign-up form.`}</p>
-      ${authMsg?`<p class="msg">${authMsg}</p>`:""}
-      <div class="actions"><button type="button" id="signOut" class="ghost">Sign out</button></div>
-    </div>`;
+function frost(on){
+  const app=document.getElementById("app");
+  app.classList.toggle("frosted",on);
+  if(on) app.setAttribute("aria-hidden","true"); else app.removeAttribute("aria-hidden");
+  app.inert=on;
+}
+
+function renderGate(){
+  const box=document.getElementById("gate");
+  if(!authKnown || (user && !accountReady)){
+    frost(true);
+    box.innerHTML=`<div class="card gate-card"><p class="msg" style="margin:0">${user?"Loading your account…":"Loading…"}</p></div>`;
     return;
   }
-  const stored=lsGet(EMAIL_KEY)||"";
-  box.innerHTML=`<div class="card">
-      <button type="button" class="secondary" id="googleIn">${GOOGLE_G} Continue with Google</button>
+  if(!user){
+    frost(true);
+    const stored=lsGet(EMAIL_KEY)||"";
+    box.innerHTML=`<div class="card gate-card">
+      <h2 class="gate-title">Sign in to get started</h2>
+      <p class="handle">Sign in to add yourself and follow your colleagues. Your place is saved to your account, so you can pick up on any device. There's no password.</p>
+      <div class="actions">
+        <button type="button" class="secondary" id="googleIn">${GOOGLE_G} Continue with Google</button>
+      </div>
       <p class="or">or</p>
       <div class="actions" style="margin-top:0">
-        <input type="email" id="emailIn" class="text-in" placeholder="Email you signed up with"
-          autocomplete="email" inputmode="email" enterkeyhint="send" value="${esc(stored)}">
+        <input type="email" id="emailIn" class="text-in" placeholder="Your email"
+          autocomplete="email" inputmode="email" enterkeyhint="send" value="${esc(stored)}" aria-label="Your email">
         <button type="button" class="primary" id="emailLink">Email me a sign-in link</button>
       </div>
       ${authMsg?`<p class="msg">${authMsg}</p>`:""}
+      <p class="msg">Already on the list? Sign in with the email you signed up with and you'll be matched to your listing.</p>
     </div>`;
+    return;
+  }
+  const who=me();
+  if(who){
+    frost(false);
+    box.innerHTML=`<div class="gate-status">
+      <p class="done-line">✓ You're on the list as ${esc(withTitle(who.name))}</p>
+      <button type="button" id="signOut" class="ghost">Sign out</button></div>`;
+    return;
+  }
+  if(signup && !editingSignup){
+    frost(false);
+    box.innerHTML=`<div class="card gate-card">
+      <p class="done-line">✓ Submitted as ${esc(withTitle(signup.name))}, @${esc(signup.handle)}</p>
+      <p class="msg">You'll appear on the list once your TBCD membership is verified. It's checked by hand between clinic days, so it can take a few days. In the meantime, start following your colleagues below.</p>
+      <div class="actions"><button type="button" id="editSignup">Edit</button><button type="button" id="signOut" class="ghost">Sign out</button></div>
+    </div>`;
+    return;
+  }
+  frost(!signup);
+  const s=signup||{};
+  box.innerHTML=`<div class="card gate-card">
+    <h2 class="gate-title">${signup?"Edit your entry":"Add yourself"}</h2>
+    <p class="handle">Signed in as ${esc(user.email||"")}. Every entry is checked by hand against the TBCD roster.</p>
+    <label class="field"><span>Your name, exactly as it appears on TBCD</span>
+      <input type="text" id="suName" class="text-in" autocomplete="name" value="${esc(s.name||"")}"></label>
+    <label class="field"><span>Your professional Instagram handle</span>
+      <input type="text" id="suHandle" class="text-in" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@yourhandle" value="${esc(s.handle?"@"+s.handle:"")}"></label>
+    ${signup?"":`<label class="agree" style="margin-top:1rem"><input type="checkbox" id="suAgree">
+      <span>I agree to follow my colleagues on this list, not just add myself. <em>(required)</em></span></label>`}
+    <div class="actions">
+      <button type="button" class="primary" id="suSubmit" ${signup?"":"disabled"}>${signup?"Save changes":"Add me to the directory"}</button>
+    </div>
+    ${signupMsg?`<p class="msg warn">${signupMsg}</p>`:""}
+    <p class="msg">Already signed up with a different email? <a href="#" id="signOutLink">Sign out</a> and sign in with that address instead.</p>
+  </div>`;
+}
+
+async function submitSignup(){
+  const name=(document.getElementById("suName").value||"").trim().replace(/\s+/g," ");
+  const handle=cleanHandle(document.getElementById("suHandle").value);
+  if(name.length<2){ signupMsg="Enter your name as it appears on TBCD."; renderGate(); return; }
+  if(!/^[a-z0-9._]{1,30}$/.test(handle)){ signupMsg="Enter your Instagram handle, like @yourhandle."; renderGate(); return; }
+  if(people.some(p=>p.handle===handle)){
+    signupMsg=`@${esc(handle)} is already on the list. If that's you, sign out and sign in with the email you originally signed up with.`;
+    renderGate(); return;
+  }
+  const btn=document.getElementById("suSubmit"); if(btn){ btn.disabled=true; btn.textContent="Saving…"; }
+  const data={ name, handle, email:user.email, pending:true,
+    createdAt: signup&&signup.createdAt ? signup.createdAt : serverTimestamp(), updatedAt: serverTimestamp() };
+  try{
+    await setDoc(doc(db,"signups",user.uid), data);
+    signup=Object.assign({},data,{createdAt: signup&&signup.createdAt ? signup.createdAt : new Date()});
+    editingSignup=false; signupMsg="";
+  }catch(e){
+    console.error(e);
+    signupMsg="That didn't save. Try again in a moment.";
+  }
+  renderAll();
 }
 
 async function sendLink(){
   const input=document.getElementById("emailIn");
   const email=(input&&input.value||"").trim();
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ authMsg="Enter a valid email address."; renderStep4(); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ authMsg="Enter a valid email address."; renderGate(); return; }
   const btn=document.getElementById("emailLink"); if(btn){ btn.disabled=true; btn.textContent="Sending…"; }
   try{
     await sendSignInLinkToEmail(auth,email,{url:location.origin+location.pathname, handleCodeInApp:true});
@@ -659,7 +701,7 @@ async function sendLink(){
     console.error(e);
     authMsg="That didn't send. Check the address and try again.";
   }
-  renderStep4();
+  renderGate();
 }
 
 async function googleIn(){
@@ -672,7 +714,7 @@ async function googleIn(){
     } else if(e.code!=="auth/popup-closed-by-user"&&e.code!=="auth/cancelled-popup-request"){
       console.error(e);
       authMsg="Google sign-in didn't finish. Try again, or use the email link.";
-      renderStep4();
+      renderGate();
     }
   }
 }
@@ -731,7 +773,7 @@ function renderRoster(q){
   }).join("") + (rows.length>ROSTER_CAP?`<li><span class="who state">${rows.length-ROSTER_CAP} more. Search to narrow it down.</span></li>`:"");
 }
 
-function renderAll(){ renderStep1(); renderStep2(); renderStep4(); }
+function renderAll(){ renderGate(); renderStep2(); }
 
 /* ---------- events ---------- */
 document.addEventListener("visibilitychange", ()=>{
@@ -739,7 +781,7 @@ document.addEventListener("visibilitychange", ()=>{
   if(animateNext && started) renderStep2();
 });
 document.addEventListener("change", e=>{
-  if(e.target.id==="agree"){ state.agreed=e.target.checked; save(state); renderStep1(); }
+  if(e.target.id==="suAgree"){ const b=document.getElementById("suSubmit"); if(b) b.disabled=!e.target.checked; }
 });
 document.addEventListener("keydown", e=>{
   if(e.target.id==="emailIn" && e.key==="Enter"){ e.preventDefault(); sendLink(); }
@@ -763,10 +805,11 @@ document.addEventListener("click", e=>{
     return;
   }
   const t=e.target.closest("button, a"); if(!t) return;
-  if(t.id==="toSave"){ e.preventDefault(); document.getElementById("save").scrollIntoView({behavior:"smooth",block:"start"}); return; }
   if(t.id==="googleIn"){ googleIn(); return; }
   if(t.id==="emailLink"){ sendLink(); return; }
-  if(t.id==="signOut"){ authMsg=""; restoredCount=0; signOut(auth); return; }
+  if(t.id==="signOut"||t.id==="signOutLink"){ e.preventDefault(); authMsg=""; restoredCount=0; signOut(auth); return; }
+  if(t.id==="editSignup"){ editingSignup=true; signupMsg=""; renderGate(); return; }
+  if(t.id==="suSubmit"){ submitSignup(); return; }
   if(t.id==="retryBadge"){ claimFailed=false; renderStep2(); return; }
   if(t.id==="shareBadge"){ shareBadge(); return; }
   if(t.id==="startQueue"){ e.preventDefault(); started=true; renderStep2(); return; }
@@ -774,10 +817,6 @@ document.addEventListener("click", e=>{
   if(t.id==="hideList"){ listOpen=false; renderPeek(); return; }
   if(t.dataset.mark){ mark(t.dataset.handle,t.dataset.mark); return; }
   if(t.dataset.open){ const h=t.dataset.open; setTimeout(()=>mark(h,"followed"),400); }
-  if(t.id==="markSubmitted"||t.id==="openform"){
-    state.submitted=true; save(state);
-    if(t.id==="markSubmitted") renderStep1(); else setTimeout(renderStep1,400);
-  }
 });
 document.getElementById("reset").addEventListener("click",()=>{
   if(!confirm("This clears which colleagues you've marked, here and in your saved progress. Your Instagram follows aren't touched.")) return;
@@ -827,8 +866,7 @@ document.addEventListener("click", async e=>{
 })();
 if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
 renderBanner();
-renderStep1();
-renderStep4();
+renderGate();
 
 const directoryReady = loadDirectory().then(()=>{
   renderStep2();
@@ -842,6 +880,7 @@ finishEmailLink();
 
 onAuthStateChanged(auth, async u=>{
   user=u; authKnown=true; account=null; myHandle=null; accountReady=!u; accountLoaded=false;
+  signup=null; editingSignup=false; signupMsg="";
   renderAll();
   if(!u) return;
   try{
