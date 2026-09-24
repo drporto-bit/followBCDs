@@ -115,6 +115,11 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .url-line{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;word-break:break-all;color:var(--ink-soft)}
 .roster{list-style:none;margin:1.5rem 0 0 2.1rem;padding:0;border-top:1px solid var(--line)}
 .lb-note{margin-left:0}
+.roster .recruits{color:var(--accent)}
+.invite-link{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem;word-break:break-all;
+  background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.6rem .75rem;margin:.9rem 0 0}
+#inviteBox .card{margin-left:0}
+#inviteBox .actions .primary{flex:1 1 auto;width:auto}
 #leaderboard .roster{margin-left:0}
 #leaderboard .legend{margin-left:0}
 .lb-count{color:var(--ink-soft);font-size:.9rem;margin:0 0 .75rem}
@@ -193,10 +198,15 @@ footer a{color:var(--ink-soft)}
 </section>
 </div>
 
+<section class="step" id="invite" hidden>
+  <div class="step-head"><h2 class="step-title">Recruit colleagues</h2></div>
+  <div id="inviteBox"></div>
+</section>
+
 <section class="step" id="leaderboard">
   <div class="step-head"><h2 class="step-title">Leaderboard</h2>
     <button type="button" class="info" data-info="noteLb" aria-expanded="false" aria-label="How the leaderboard is ordered">i</button></div>
-  <p class="step-note lb-note" id="noteLb" hidden>The leaderboard is the order everyone else follows in. Badge holders come first, most recent badge at the top, followed by everyone else, newest sign-ups first. Follow everyone, or catch up after new colleagues join, to move to the top.</p>
+  <p class="step-note lb-note" id="noteLb" hidden>The leaderboard is the order everyone else follows in. Badge holders who've recruited colleagues come first, most recruits at the top. Then other badge holders, most recent badge first. Then colleagues who've recruited but don't have a badge yet, and then everyone else, newest sign-ups first. Follow everyone and share your invite link to move up.</p>
   <div id="board"><div class="empty">Loading…</div></div>
 </section>
 
@@ -252,7 +262,8 @@ save(state);
 
 /* ---------- directory data from Firebase ---------- */
 let roster = {members:[],handles:[],count:0};
-let board = {};          /* handle -> {at: Timestamp, c: number} */
+let board = {};          /* handle -> {at: Timestamp, c: number, v: number} */
+let refs = {};           /* handle -> number of verified colleagues they recruited (written by the sync script) */
 let people = [];
 let directoryLoaded = false;
 
@@ -260,17 +271,21 @@ async function loadDirectory(){
   const [rs, bs] = await Promise.all([getDoc(doc(db,"public","roster")), getDoc(doc(db,"public","board"))]);
   roster = rs.data() || {members:[],handles:[],count:0};
   board = (bs.data()||{}).b || {};
+  refs = (bs.data()||{}).r || {};
   applyBoard();
   directoryLoaded = true;
 }
 function applyBoard(){
   people = (roster.members||[]).map(m=>({
     name:m.n, handle:m.h, signedAt:m.t||0,
-    badgeAt: board[m.h] && board[m.h].at ? board[m.h].at.toMillis() : 0
+    badgeAt: board[m.h] && board[m.h].at ? board[m.h].at.toMillis() : 0,
+    refs: Number(refs[m.h]||0)
   }))
-  /* newest badges first, then everyone else newest sign-up first */
-  .sort((a,b)=>(b.badgeAt-a.badgeAt)||(b.signedAt-a.signedAt));
+  .sort((a,b)=>(tier(a)-tier(b))||(b.refs-a.refs)||(b.badgeAt-a.badgeAt)||(b.signedAt-a.signedAt));
 }
+/* 0: badge + recruits (most recruits first)   1: badge, no recruits (newest badge first)
+   2: recruits, no badge (most recruits first)  3: everyone else (newest sign-up first) */
+function tier(p){ return p.badgeAt ? (p.refs?0:1) : (p.refs?2:3); }
 
 /* ---------- account ---------- */
 let user = null;          /* signed-in Firebase user */
@@ -330,7 +345,7 @@ function accountData(){
     createdAt: account && account.createdAt ? account.createdAt : serverTimestamp(),
     updatedAt: serverTimestamp()
   };
-  const ref = (account && account.ref) || pendingRef();
+  const ref = (account && account.ref) || (!account ? pendingRef() : null);   /* an invite only counts for a brand-new account */
   if(ref && ref!==myHandle) data.ref = ref;
   return data;
 }
@@ -371,6 +386,7 @@ async function claimBadge(){
   }
   const bs = await getDoc(doc(db,"public","board"));
   board = (bs.data()||{}).b || {};
+  refs = (bs.data()||{}).r || refs;
   applyBoard();
   if(!badgeCurrent()) throw new Error("Badge still not current after saving");  /* never retry in a loop */
 }
@@ -768,7 +784,8 @@ function fmtWhen(t){
   return new Date(t).toLocaleString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"});
 }
 function whenLine(p){
-  return p.badgeAt ? `<span class="when">Badge earned ${fmtWhen(p.badgeAt)}</span>` : "";
+  return (p.refs ? `<span class="when recruits">Recruited ${p.refs} BCD${p.refs===1?"":"s"}</span>` : "")
+       + (p.badgeAt ? `<span class="when">Badge earned ${fmtWhen(p.badgeAt)}</span>` : "");
 }
 function boardRow(p,rank){
   const m=state.marks[p.handle];
@@ -806,7 +823,34 @@ function renderBoardRows(){
     : `<li><span class="who">Nobody by that name yet.</span></li>`;
 }
 
-function renderAll(){ renderGate(); renderStep2(); }
+function inviteLink(){ return location.origin+"/?ref="+encodeURIComponent(myHandle); }
+function renderInvite(){
+  const sec=document.getElementById("invite");
+  if(!user || !myHandle){ sec.hidden=true; return; }
+  sec.hidden=false;
+  const n=Number(refs[myHandle]||0);
+  document.getElementById("inviteBox").innerHTML=`<div class="card">
+    <p class="handle" style="margin:0">Share your personal link. Every board-certified dermatologist who joins through it and is verified moves you up the leaderboard.</p>
+    <p class="invite-link">${esc(inviteLink())}</p>
+    <div class="actions"><button type="button" class="primary" id="shareInvite">Share your link</button><button type="button" id="copyInvite">Copy</button></div>
+    <p class="msg">${n?`You've recruited ${n} BCD${n===1?"":"s"} so far.`:"You haven't recruited anyone yet."} Recruits count once they sign up through your link and are verified.</p>
+  </div>`;
+}
+async function shareInvite(){
+  const url=inviteLink();
+  if(navigator.share){
+    try{ await navigator.share({title:"BCD Instagram Directory", text:"Join the BCD Instagram Directory to follow board-certified dermatologists and get followed back.", url}); return; }
+    catch(e){ if(e && e.name==="AbortError") return; }
+  }
+  copyInvite();
+}
+async function copyInvite(){
+  const btn=document.getElementById("copyInvite");
+  try{ await navigator.clipboard.writeText(inviteLink()); if(btn) btn.textContent="Copied"; }
+  catch(e){ if(btn) btn.textContent="Couldn't copy"; }
+}
+
+function renderAll(){ renderGate(); renderStep2(); renderInvite(); }
 
 /* ---------- events ---------- */
 document.addEventListener("visibilitychange", ()=>{
@@ -850,6 +894,8 @@ document.addEventListener("click", e=>{
   if(t.id==="suSubmit"){ submitSignup(); return; }
   if(t.id==="retryBadge"){ claimFailed=false; renderStep2(); return; }
   if(t.id==="shareBadge"){ shareBadge(); return; }
+  if(t.id==="shareInvite"){ shareInvite(); return; }
+  if(t.id==="copyInvite"){ copyInvite(); return; }
   if(t.id==="startQueue"){ e.preventDefault(); started=true; renderStep2(); return; }
   if(t.id==="showAll"){ boardOpen=true; renderBoard(); return; }
   if(t.id==="showTop"){ boardOpen=false; boardQuery=""; renderBoard(); document.getElementById("leaderboard").scrollIntoView({block:"start"}); return; }
