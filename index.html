@@ -782,8 +782,8 @@ function boardOrder(){
   if(i>=0 && i<TOP_N && list.length>TOP_N){ const [host]=list.splice(i,1); list.splice(TOP_N,0,host); }
   return list;
 }
-/* medals for the top three, only when they've earned a badge (a rank alone isn't an achievement) */
-const MEDALS=["🥇","🥈","🥉"];
+/* medals for the top five, only when they've earned a badge (a rank alone isn't an achievement) */
+const MEDALS=["🥇","🥈","🥉","🏅","🎖️"];
 const RANKED=10;
 let boardOpen=false, boardQuery="";
 
@@ -798,7 +798,7 @@ function boardRow(p,rank){
   const m=state.marks[p.handle];
   const label=p.handle===myHandle?"You":m==="followed"?"Following":m==="already"?"Following":"";
   const isNew=state.visited&&!state.seen.includes(p.handle);
-  const medal = rank<=3 && p.badgeAt ? MEDALS[rank-1] : "";
+  const medal = rank<=MEDALS.length && p.badgeAt ? MEDALS[rank-1] : "";
   const shownRank = rank<=RANKED ? rank : "";   /* only the top ten get a number */
   return `<li${medal?' class="medalist"':''}><span class="rank"${medal?` aria-label="Rank ${rank}"`:''}>${medal||shownRank}</span><span class="who">
     <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
