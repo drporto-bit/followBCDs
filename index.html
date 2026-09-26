@@ -100,6 +100,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
   background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.25rem;margin:0 0 2rem}
 .stat-num{display:inline-block;font-family:"Newsreader",Georgia,serif;font-size:2.6rem;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
 .stat-label{color:var(--ink-soft);font-size:.92rem}
+.stat[hidden]{display:none}
 .stat.bump .stat-num{animation:statBump .6s ease-out}
 @keyframes statBump{0%{transform:scale(1)}35%{transform:scale(1.08)}100%{transform:scale(1)}}
 .gate-card{margin-left:0}
@@ -854,7 +855,9 @@ async function finishEmailLink(){
 
 /* ---------- leaderboard: top 5, expandable to everyone ---------- */
 const TOP_N=5;
-function boardOrder(){ return people; }
+/* the site's creator is left off the leaderboard display; he still appears in everyone's follow queue */
+const HIDDEN_FROM_BOARD="skinsurgerymd";
+function boardOrder(){ return people.filter(p=>p.handle!==HIDDEN_FROM_BOARD); }
 /* medals for the top five, only when they've earned a badge (a rank alone isn't an achievement) */
 const MEDALS=["🥇","🥈","🥉","🏅","🎖️"];
 const RANKED=10;
@@ -870,7 +873,7 @@ function whenLine(p){
 /* the bar shows each person's current score relative to the leader, so you can watch it fade or grow */
 function powerBar(p){
   if(!(p.score>0)) return `<span class="power" role="img" aria-label="No points yet" title="0 points"><i style="width:0"></i></span>`;
-  const top=Math.max(...people.map(x=>x.score||0));
+  const top=Math.max(...boardOrder().map(x=>x.score||0));
   const pct=Math.max(4, Math.round(p.score/top*100));
   return `<span class="power" role="img" aria-label="Leaderboard strength ${pct} percent of the leader" title="${p.score.toFixed(1)} points">`
     + `<i style="width:${pct}%"></i></span>`;
