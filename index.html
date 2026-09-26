@@ -828,7 +828,7 @@ function whenLine(p){
 }
 /* the bar shows each person's current score relative to the leader, so you can watch it fade or grow */
 function powerBar(p){
-  if(!(p.score>0)) return "";
+  if(!(p.score>0)) return `<span class="power" role="img" aria-label="No points yet" title="0 points"><i style="width:0"></i></span>`;
   const top=Math.max(...people.map(x=>x.score||0));
   const pct=Math.max(4, Math.round(p.score/top*100));
   return `<span class="power" role="img" aria-label="Leaderboard strength ${pct} percent of the leader" title="${p.score.toFixed(1)} points">`
