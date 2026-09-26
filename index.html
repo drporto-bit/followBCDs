@@ -806,14 +806,7 @@ async function finishEmailLink(){
 
 /* ---------- leaderboard: top 5, expandable to everyone ---------- */
 const TOP_N=5;
-/* the site's creator never takes a top-5 spot, so the showcase is always other colleagues */
-const HOST_HANDLE="skinsurgerymd";
-function boardOrder(){
-  const list=people.slice();
-  const i=list.findIndex(p=>p.handle===HOST_HANDLE);
-  if(i>=0 && i<TOP_N && list.length>TOP_N){ const [host]=list.splice(i,1); list.splice(TOP_N,0,host); }
-  return list;
-}
+function boardOrder(){ return people; }
 /* medals for the top five, only when they've earned a badge (a rank alone isn't an achievement) */
 const MEDALS=["🥇","🥈","🥉","🏅","🎖️"];
 const RANKED=10;
