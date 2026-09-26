@@ -834,7 +834,7 @@ function boardRow(p,rank){
   const medal = rank<=MEDALS.length && p.score>0 ? MEDALS[rank-1] : "";
   const shownRank = rank<=RANKED ? rank : "";   /* only the top ten get a number */
   return `<li${medal?' class="medalist"':''}><span class="rank"${medal?` aria-label="Rank ${rank}"`:''}>${medal||shownRank}</span><span class="who">
-    <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
+    <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener"${p.handle!==myHandle&&!m?` data-open="${esc(p.handle)}"`:""}>${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
     <span class="ig">@${esc(p.handle)}</span>${powerBar(p)}${whenLine(p)}</span>
     <span class="state ${label&&label!=="You"?'is-done':''}">${label}</span></li>`;
 }
@@ -943,7 +943,11 @@ document.addEventListener("click", e=>{
   if(t.id==="showAll"){ if(user){ boardOpen=true; renderBoard(); } return; }
   if(t.id==="showTop"){ boardOpen=false; boardQuery=""; renderBoard(); document.getElementById("leaderboard").scrollIntoView({block:"start"}); return; }
   if(t.dataset.mark){ mark(t.dataset.handle,t.dataset.mark); return; }
-  if(t.dataset.open){ const h=t.dataset.open; setTimeout(()=>mark(h,"followed"),400); }
+  if(t.dataset.open){
+    const h=t.dataset.open, fromBoard=!!t.closest("#leaderboard");
+    if(h===myHandle || state.marks[h]) return;
+    setTimeout(()=>{ mark(h,"followed"); if(fromBoard){ lastDone=null; animateNext=false; renderStep2(); } },400);
+  }
 });
 function resetList(){
   if(!confirm("This clears which colleagues you've marked, here and in your saved progress. Your Instagram follows aren't touched.")) return;
