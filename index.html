@@ -208,7 +208,7 @@ footer a{color:var(--ink-soft)}
 <section class="step" id="leaderboard">
   <div class="step-head"><h2 class="step-title">Leaderboard</h2>
     <button type="button" class="info" data-info="noteLb" aria-expanded="false" aria-label="How the leaderboard is ordered">i</button></div>
-  <p class="step-note lb-note" id="noteLb" hidden>The leaderboard is the order everyone else follows in, so the higher you are, the more followers you get. Rankings come from points that fade a little every day: each colleague you recruit is worth 3 points and loses half its value over 30 days, and your badge is worth 1 point and loses half over 14 days. Before you earn a badge, following colleagues earns partial credit, up to half a badge, based on how much of the list you've followed. The bar under each name shows current strength compared with the leader. Recruit colleagues and refresh your badge by following newcomers to keep your bar full. Colleagues without points yet are listed newest first.</p>
+  <p class="step-note lb-note" id="noteLb" hidden>The leaderboard is the order everyone else follows in, so the higher you are, the more followers you get. Rankings come from points that fade a little every day: your badge is worth 1 point and loses half its value over 14 days, and each colleague you recruit adds 0.2 points and loses half over 30 days. Before you earn a badge, following colleagues earns partial credit, up to half a badge, based on how much of the list you've followed. The bar under each name shows current strength compared with the leader. Recruit colleagues and refresh your badge by following newcomers to keep your bar full. Colleagues without points yet are listed newest first.</p>
   <div id="board"><div class="empty">Loading…</div></div>
 </section>
 
@@ -289,7 +289,7 @@ function applyBoard(){
 }
 
 /* ---------- ranking score: points that fade continuously from the day they're earned ---------- */
-const RECRUIT_POINTS=3, RECRUIT_HALF_LIFE_DAYS=30;
+const RECRUIT_POINTS=0.2, RECRUIT_HALF_LIFE_DAYS=30;
 const BADGE_POINTS=1,   BADGE_HALF_LIFE_DAYS=14;
 /* following colleagues earns partial credit, up to half a badge, fading from the last time it went up */
 const FOLLOW_POINTS_MAX=0.5;
