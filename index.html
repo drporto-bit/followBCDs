@@ -96,6 +96,12 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
 .msg{color:var(--ink-soft);font-size:.9rem;margin:.9rem 0 0}
 #gate{margin-bottom:2.25rem}
+.stat{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;padding:.9rem 1.1rem;margin:-1rem 0 2rem}
+.stat-num{font-family:"Newsreader",Georgia,serif;font-size:2.1rem;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.stat-label{color:var(--ink-soft);font-size:.92rem}
+.stat.bump .stat-num{animation:statBump .6s ease-out}
+@keyframes statBump{0%{transform:scale(1)}35%{transform:scale(1.08)}100%{transform:scale(1)}}
 .gate-card{margin-left:0}
 .gate-title{font-family:"Newsreader",Georgia,serif;font-weight:400;font-size:1.4rem;line-height:1.2;margin:0 0 .35rem}
 .gate-status{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;
@@ -177,6 +183,11 @@ footer a{color:var(--ink-soft)}
 
 <h1>BCD Instagram Directory</h1>
 <p class="sub">A fun way to follow your Board-Certified Dermatologist colleagues on Instagram, boosting our profession’s collective online stature. List your account, follow and recruit others, and climb the leaderboard to earn more followers. Check back frequently to follow new accounts and defend your leaderboard position!</p>
+
+<div class="stat" id="stat" hidden>
+  <span class="stat-num" id="statNum">0</span>
+  <span class="stat-label" id="statLabel">follows exchanged between board-certified dermatologists</span>
+</div>
 
 <div id="banner"></div>
 
@@ -262,6 +273,7 @@ let board = {};          /* handle -> {at: Timestamp, c: number, v: number} */
 let refs = {};           /* handle -> number of verified colleagues they recruited (written by the sync script) */
 let recruitTimes = {};   /* handle -> when each of those recruits signed up, in ms (written by the sync script) */
 let followStats = {};    /* handle -> {n: colleagues marked, at: when that last went up} (written by the sync script) */
+let followsTotal = 0;    /* follows recorded across every account (written by the sync script) */
 let people = [];
 let directoryLoaded = false;
 
@@ -272,6 +284,7 @@ async function loadDirectory(){
   refs = (bs.data()||{}).r || {};
   recruitTimes = (bs.data()||{}).rt || {};
   followStats = (bs.data()||{}).f || {};
+  setFollowsTotal((bs.data()||{}).ft);
   applyBoard();
   directoryLoaded = true;
 }
@@ -310,6 +323,40 @@ function scoreOf(p){
   times.forEach(t=>{ s += RECRUIT_POINTS*fade(Number(t),RECRUIT_HALF_LIFE_DAYS); });
   return s;
 }
+
+/* ---------- live "follows exchanged" counter ---------- */
+let shownTotal = 0, localFollows = 0, statTimer = null;
+function setFollowsTotal(v){
+  if(typeof v!=="number" || !(v>=0)) return;
+  if(v!==followsTotal){ followsTotal=v; localFollows=0; }   /* the server total now includes this visit's follows */
+  renderStat();
+}
+function renderStat(){
+  const box=document.getElementById("stat"); if(!box) return;
+  const target=followsTotal+localFollows;
+  if(!target){ box.hidden=true; return; }
+  box.hidden=false;
+  document.getElementById("statLabel").textContent =
+    `follows exchanged between ${roster.count||""} board-certified dermatologists`.replace("  "," ");
+  const num=document.getElementById("statNum");
+  const from=shownTotal, to=target;
+  if(from===to){ num.textContent=to.toLocaleString("en-US"); return; }
+  shownTotal=to;
+  if(from>0){ box.classList.remove("bump"); void box.offsetWidth; box.classList.add("bump"); }
+  const start=performance.now(), dur=from?500:1200;
+  cancelAnimationFrame(statTimer);
+  const step=now=>{
+    const k=Math.min(1,(now-start)/dur), eased=1-Math.pow(1-k,3);
+    num.textContent=Math.round(from+(to-from)*eased).toLocaleString("en-US");
+    if(k<1) statTimer=requestAnimationFrame(step);
+  };
+  statTimer=requestAnimationFrame(step);
+}
+async function refreshStat(){
+  if(document.visibilityState!=="visible") return;
+  try{ const bs=await getDoc(doc(db,"public","board")); setFollowsTotal((bs.data()||{}).ft); }catch(e){}
+}
+setInterval(refreshStat, 60000);
 
 /* ---------- account ---------- */
 let user = null;          /* signed-in Firebase user */
@@ -465,6 +512,7 @@ function mark(handle,value){
   if(who) lastDone={name:withTitle(who.name),value};
   animateNext=true;
   if(!state.marks[handle] && value==="followed"){ followsToday(); state.dayCount++; }
+  if(!state.marks[handle] && user){ localFollows++; renderStat(); }
   state.marks[handle]=value;
   if(!state.seen.includes(handle)) state.seen.push(handle);
   save(state); renderStep2(); queuePush();
@@ -905,6 +953,7 @@ function renderAll(){ renderGate(); renderStep2(); renderInvite(); }
 /* ---------- events ---------- */
 document.addEventListener("visibilitychange", ()=>{
   if(document.visibilityState==="hidden"){ if(pushTimer) pushAccount(); return; }
+  refreshStat();
   if(animateNext && started) renderStep2();
 });
 document.addEventListener("input", e=>{
