@@ -116,6 +116,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .roster{list-style:none;margin:1.5rem 0 0 2.1rem;padding:0;border-top:1px solid var(--line)}
 .lb-note{margin-left:0}
 .roster .recruits{color:var(--accent)}
+.power{display:block;width:7.5rem;max-width:60%;height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin:.35rem 0 .2rem}
+.power i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),#E0A24A)}
 .invite-link{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem;word-break:break-all;
   background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.6rem .75rem;margin:.9rem 0 0}
 #inviteBox .actions .primary{flex:1 1 auto;width:auto}
@@ -206,7 +208,7 @@ footer a{color:var(--ink-soft)}
 <section class="step" id="leaderboard">
   <div class="step-head"><h2 class="step-title">Leaderboard</h2>
     <button type="button" class="info" data-info="noteLb" aria-expanded="false" aria-label="How the leaderboard is ordered">i</button></div>
-  <p class="step-note lb-note" id="noteLb" hidden>The leaderboard is the order everyone else follows in. Badge holders who've recruited colleagues come first, most recruits at the top. Then other badge holders, most recent badge first. Then colleagues who've recruited but don't have a badge yet, and then everyone else, newest sign-ups first. Follow everyone and share your invite link to move up.</p>
+  <p class="step-note lb-note" id="noteLb" hidden>The leaderboard is the order everyone else follows in, so the higher you are, the more followers you get. Rankings come from points that fade a little every day: each colleague you recruit is worth 3 points and loses half its value over 30 days, and your badge is worth 1 point and loses half over 14 days. Before you earn a badge, following colleagues earns partial credit, up to half a badge, based on how much of the list you've followed. The bar under each name shows current strength compared with the leader. Recruit colleagues and refresh your badge by following newcomers to keep your bar full. Colleagues without points yet are listed newest first.</p>
   <div id="board"><div class="empty">Loading…</div></div>
 </section>
 
@@ -258,6 +260,8 @@ save(state);
 let roster = {members:[],handles:[],count:0};
 let board = {};          /* handle -> {at: Timestamp, c: number, v: number} */
 let refs = {};           /* handle -> number of verified colleagues they recruited (written by the sync script) */
+let recruitTimes = {};   /* handle -> when each of those recruits signed up, in ms (written by the sync script) */
+let followStats = {};    /* handle -> {n: colleagues marked, at: when that last went up} (written by the sync script) */
 let people = [];
 let directoryLoaded = false;
 
@@ -266,6 +270,8 @@ async function loadDirectory(){
   roster = rs.data() || {members:[],handles:[],count:0};
   board = (bs.data()||{}).b || {};
   refs = (bs.data()||{}).r || {};
+  recruitTimes = (bs.data()||{}).rt || {};
+  followStats = (bs.data()||{}).f || {};
   applyBoard();
   directoryLoaded = true;
 }
@@ -273,13 +279,37 @@ function applyBoard(){
   people = (roster.members||[]).map(m=>({
     name:m.n, handle:m.h, signedAt:m.t||0,
     badgeAt: board[m.h] && board[m.h].at ? board[m.h].at.toMillis() : 0,
-    refs: Number(refs[m.h]||0)
+    refs: Number(refs[m.h]||0),
+    recruits: Array.isArray(recruitTimes[m.h]) ? recruitTimes[m.h] : [],
+    follows: followStats[m.h] || null
   }))
-  .sort((a,b)=>(tier(a)-tier(b))||(b.refs-a.refs)||(b.badgeAt-a.badgeAt)||(b.signedAt-a.signedAt));
+  .map(p=>Object.assign(p,{score:scoreOf(p)}))
+  /* highest score first; anyone with no score yet goes after, newest sign-up first */
+  .sort((a,b)=>(b.score-a.score)||(b.signedAt-a.signedAt));
 }
-/* 0: badge + recruits (most recruits first)   1: badge, no recruits (newest badge first)
-   2: recruits, no badge (most recruits first)  3: everyone else (newest sign-up first) */
-function tier(p){ return p.badgeAt ? (p.refs?0:1) : (p.refs?2:3); }
+
+/* ---------- ranking score: points that fade continuously from the day they're earned ---------- */
+const RECRUIT_POINTS=3, RECRUIT_HALF_LIFE_DAYS=30;
+const BADGE_POINTS=1,   BADGE_HALF_LIFE_DAYS=14;
+/* following colleagues earns partial credit, up to half a badge, fading from the last time it went up */
+const FOLLOW_POINTS_MAX=0.5;
+const DAY_MS=86400000;
+function fade(since, halfLifeDays){ return Math.pow(0.5, Math.max(0,(Date.now()-since)/DAY_MS)/halfLifeDays); }
+function scoreOf(p){
+  const badge = p.badgeAt ? BADGE_POINTS*fade(p.badgeAt,BADGE_HALF_LIFE_DAYS) : 0;
+  let following = 0;
+  if(p.follows && p.follows.n && roster.count>1 && p.follows.at){
+    const share = Math.min(1, p.follows.n/(roster.count-1 || 1));
+    const at = typeof p.follows.at.toMillis==="function" ? p.follows.at.toMillis() : Number(p.follows.at);
+    following = FOLLOW_POINTS_MAX*share*fade(at,BADGE_HALF_LIFE_DAYS);
+  }
+  /* a badge replaces following credit rather than adding to it, so following alone never beats a fresh badge */
+  let s = Math.max(badge, following);
+  /* recruit dates come from the sync script; if they haven't arrived yet, count recruits as recent */
+  const times = p.recruits.length ? p.recruits : Array(p.refs).fill(Date.now());
+  times.forEach(t=>{ s += RECRUIT_POINTS*fade(Number(t),RECRUIT_HALF_LIFE_DAYS); });
+  return s;
+}
 
 /* ---------- account ---------- */
 let user = null;          /* signed-in Firebase user */
@@ -381,6 +411,8 @@ async function claimBadge(){
   const bs = await getDoc(doc(db,"public","board"));
   board = (bs.data()||{}).b || {};
   refs = (bs.data()||{}).r || refs;
+  recruitTimes = (bs.data()||{}).rt || recruitTimes;
+  followStats = (bs.data()||{}).f || followStats;
   applyBoard();
   if(!badgeCurrent()) throw new Error("Badge still not current after saving");  /* never retry in a loop */
 }
@@ -794,15 +826,23 @@ function whenLine(p){
   return (p.refs ? `<span class="when recruits">Recruited ${p.refs} BCD${p.refs===1?"":"s"}</span>` : "")
        + (p.badgeAt ? `<span class="when">Badge earned ${fmtWhen(p.badgeAt)}</span>` : "");
 }
+/* the bar shows each person's current score relative to the leader, so you can watch it fade or grow */
+function powerBar(p){
+  if(!(p.score>0)) return "";
+  const top=Math.max(...people.map(x=>x.score||0));
+  const pct=Math.max(4, Math.round(p.score/top*100));
+  return `<span class="power" role="img" aria-label="Leaderboard strength ${pct} percent of the leader" title="${p.score.toFixed(1)} points">`
+    + `<i style="width:${pct}%"></i></span>`;
+}
 function boardRow(p,rank){
   const m=state.marks[p.handle];
   const label=p.handle===myHandle?"You":m==="followed"?"Following":m==="already"?"Following":"";
   const isNew=state.visited&&!state.seen.includes(p.handle);
-  const medal = rank<=MEDALS.length && p.badgeAt ? MEDALS[rank-1] : "";
+  const medal = rank<=MEDALS.length && p.score>0 ? MEDALS[rank-1] : "";
   const shownRank = rank<=RANKED ? rank : "";   /* only the top ten get a number */
   return `<li${medal?' class="medalist"':''}><span class="rank"${medal?` aria-label="Rank ${rank}"`:''}>${medal||shownRank}</span><span class="who">
     <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener">${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
-    <span class="ig">@${esc(p.handle)}</span>${whenLine(p)}</span>
+    <span class="ig">@${esc(p.handle)}</span>${powerBar(p)}${whenLine(p)}</span>
     <span class="state ${label&&label!=="You"?'is-done':''}">${label}</span></li>`;
 }
 function renderBoard(){
