@@ -125,6 +125,10 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .roster .recruits{color:var(--accent)}
 .power{display:block;width:7.5rem;max-width:60%;height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin:.35rem 0 .2rem}
 .power i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),#E0A24A)}
+.badge-summary{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.badge-summary .done-line .badge-mark{margin-left:0}
+.badge-summary button{padding:.45rem .8rem;font-size:.88rem}
+.badge-open{margin-top:1rem}
 .invite-nudge{margin-top:1.25rem;padding-top:1.1rem;border-top:1px solid var(--line)}
 .invite-nudge-title{font-family:"Newsreader",Georgia,serif;font-size:1.15rem;margin:0}
 .invite-nudge .actions .primary{flex:1 1 auto;width:auto}
@@ -593,6 +597,7 @@ function renderStep2(){
 
 /* ---------- step 3: badge ---------- */
 let badgeBlob=null;
+let badgeOpen=false;   /* the badge image is tucked away until asked for */
 
 function renderStep3(left){
   const box=document.getElementById("step3");
@@ -629,20 +634,26 @@ function renderStep3(left){
     return;
   }
   n3.className="step-num is-done";
+  const rec=Number(refs[myHandle]||0);
+  const earned=new Date(board[myHandle].at.toMillis()).toLocaleDateString("en-US",{month:"short",day:"numeric"});
   box.innerHTML=`<div class="card">
-      <canvas id="badge" class="badge" width="1080" height="1080" role="img"
-        aria-label="${esc(withTitle(me().name))} followed every colleague in the BCD Instagram Directory${Number(refs[myHandle]||0)?` and recruited ${Number(refs[myHandle])} BCD${Number(refs[myHandle])===1?"":"s"}`:""}"></canvas>
-      <div class="actions">
-        <button type="button" class="primary" id="shareBadge">Save or share badge</button>
+      <div class="badge-summary">
+        <p class="done-line">${badgeMark()} Badge earned ${earned}${rec?` · Recruited ${rec} BCD${rec===1?"":"s"}`:""}</p>
+        <button type="button" id="toggleBadge" class="ghost" aria-expanded="${badgeOpen}">${badgeOpen?"Hide badge":"View your badge"}</button>
       </div>
-      <p class="step-note" style="margin:.9rem 0 0">You followed everyone on this list! This will be manually verified. You’ve earned your badge and will be prioritized first to your colleagues who join this site. Congratulations!</p>
+      <p class="step-note" style="margin:.6rem 0 0">You followed everyone on this list! This will be manually verified. You’ve earned your badge and will be prioritized first to your colleagues who join this site. Congratulations!</p>
+      ${badgeOpen?`<div class="badge-open">
+        <canvas id="badge" class="badge" width="1080" height="1080" role="img"
+          aria-label="${esc(withTitle(me().name))} followed every colleague in the BCD Instagram Directory${rec?` and recruited ${rec} BCD${rec===1?"":"s"}`:""}"></canvas>
+        <div class="actions"><button type="button" class="primary" id="shareBadge">Save or share badge</button></div>
+      </div>`:""}
       <div class="invite-nudge">
         <p class="invite-nudge-title">You're on the board! Recruit a colleague to climb higher.</p>
         <p class="msg" style="margin:.3rem 0 0">Every BCD who joins through your link moves you up the leaderboard.</p>
         <div class="actions"><button type="button" class="primary" id="nudgeShare">Share your invite link</button><button type="button" id="nudgeCopy">Copy link</button></div>
       </div>
     </div>`;
-  drawBadge();
+  if(badgeOpen) drawBadge();
 }
 
 function badgeMark(){
@@ -1007,6 +1018,7 @@ document.addEventListener("click", e=>{
   if(t.id==="suSubmit"){ submitSignup(); return; }
   if(t.id==="retryBadge"){ claimFailed=false; renderStep2(); return; }
   if(t.id==="shareBadge"){ shareBadge(); return; }
+  if(t.id==="toggleBadge"){ badgeOpen=!badgeOpen; renderStep2(); return; }
   if(t.id==="shareInvite"||t.id==="nudgeShare"){ shareInvite(t); return; }
   if(t.id==="reset"){ resetList(); return; }
   if(t.id==="copyInvite"||t.id==="nudgeCopy"){ copyInvite(t); return; }
