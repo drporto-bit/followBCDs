@@ -129,6 +129,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .badge-summary .done-line .badge-mark{margin-left:0}
 .badge-summary button{padding:.45rem .8rem;font-size:.88rem}
 .badge-open{margin-top:1rem}
+.badge-stats{margin:.3rem 0 0;color:var(--ink-soft);font-size:.9rem}
+.badge-stats strong{color:var(--ink);font-variant-numeric:tabular-nums}
 .invite-nudge{margin-top:1.25rem;padding-top:1.1rem;border-top:1px solid var(--line)}
 .invite-nudge-title{font-family:"Newsreader",Georgia,serif;font-size:1.15rem;margin:0}
 .invite-nudge .actions .primary{flex:1 1 auto;width:auto}
@@ -635,10 +637,14 @@ function renderStep3(left){
   }
   n3.className="step-num is-done";
   const rec=Number(refs[myHandle]||0);
+  const followed=people.filter(p=>p.handle!==myHandle && state.marks[p.handle]).length;
   const earned=new Date(board[myHandle].at.toMillis()).toLocaleDateString("en-US",{month:"short",day:"numeric"});
   box.innerHTML=`<div class="card">
       <div class="badge-summary">
-        <p class="done-line">${badgeMark()} Badge earned ${earned}${rec?` · Recruited ${rec} BCD${rec===1?"":"s"}`:""}</p>
+        <div>
+          <p class="done-line">${badgeMark()} Badge earned ${earned}</p>
+          <p class="badge-stats"><strong>${followed}</strong> colleague${followed===1?"":"s"} followed · <strong>${rec}</strong> BCD${rec===1?"":"s"} recruited</p>
+        </div>
         <button type="button" id="toggleBadge" class="ghost" aria-expanded="${badgeOpen}">${badgeOpen?"Hide badge":"View your badge"}</button>
       </div>
       <p class="step-note" style="margin:.6rem 0 0">You followed everyone on this list! This will be manually verified. You’ve earned your badge and will be prioritized first to your colleagues who join this site. Congratulations!</p>
