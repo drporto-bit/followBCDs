@@ -156,6 +156,8 @@ footer button{padding:.45rem .7rem;font-size:.85rem}
 .linkish:hover{background:none;color:var(--ink)}
 footer a{color:var(--ink-soft)}
 .credit{margin-top:1.5rem}
+.legal{color:var(--ink-soft);font-size:.78rem;margin:.9rem 0 0}
+.legal a{color:var(--ink-soft)}
 .badge-mark{display:inline-flex;align-items:center;justify-content:center;width:.8em;height:.8em;min-width:14px;min-height:14px;
   border-radius:50%;background:var(--accent);color:#fff;margin-left:.35em;vertical-align:.02em}
 .badge-mark svg{width:70%;height:70%}
@@ -227,6 +229,7 @@ footer a{color:var(--ink-soft)}
 
 <footer>
   <p class="credit">Made by Dr. Dennis Porto of <a href="https://www.skincare.md/">skincare.md</a></p>
+  <p><a href="/terms.html">Terms of Use</a> · <a href="/privacy.html">Privacy Policy</a></p>
 </footer>
 
 </div>
@@ -735,6 +738,7 @@ function renderGate(){
       </div>
       ${authMsg?`<p class="msg">${authMsg}</p>`:""}
       <p class="msg">Already on the list? Sign in with the email you signed up with and you'll be matched to your listing.</p>
+      <p class="legal">By signing in, you agree to our <a href="/terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
     </div>`;
     return;
   }
@@ -783,6 +787,7 @@ function renderGate(){
     <button type="button" class="secondary" id="followOnly">Just follow colleagues</button>
     <p class="msg">For colleagues without a professional Instagram, or who'd rather not be listed. You can follow everyone in the directory without adding yourself, and add yourself later.</p>`}
     <p class="msg">Already signed up with a different email? <a href="#" id="signOutLink">Sign out</a> and sign in with that address instead.</p>
+    <p class="legal">By continuing, you agree to our <a href="/terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
   </div>`;
 }
 
