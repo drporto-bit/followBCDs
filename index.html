@@ -125,6 +125,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .roster .recruits{color:var(--accent)}
 .power{display:block;width:7.5rem;max-width:60%;height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin:.35rem 0 .2rem}
 .power i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),#E0A24A)}
+.invite-nudge{margin-top:1.25rem;padding-top:1.1rem;border-top:1px solid var(--line)}
+.invite-nudge-title{font-family:"Newsreader",Georgia,serif;font-size:1.15rem;margin:0}
+.invite-nudge .actions .primary{flex:1 1 auto;width:auto}
 .invite-link{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem;word-break:break-all;
   background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.6rem .75rem;margin:.9rem 0 0}
 #inviteBox .actions .primary{flex:1 1 auto;width:auto}
@@ -205,17 +208,17 @@ footer a{color:var(--ink-soft)}
   <div id="step2"><div class="empty">Loading the list…</div></div>
 </section>
 
+<section class="step" id="invite">
+  <div class="step-head"><span class="step-num" id="num4">2</span><h2 class="step-title">Recruit colleagues</h2></div>
+  <div id="inviteBox"></div>
+</section>
+
 <section class="step">
-  <div class="step-head"><span class="step-num" id="num3">2</span><h2 class="step-title">Earn your badge</h2>
+  <div class="step-head"><span class="step-num" id="num3">3</span><h2 class="step-title">Earn your badge</h2>
     <button type="button" class="info" data-info="note3" aria-expanded="false" aria-label="What the badge gets you">i</button></div>
   <p class="step-lead">Follow everyone on the list to get a badge and prioritization on the list so you get the most followers.</p>
   <p class="step-note" id="note3" hidden>Once you've followed every colleague, your badge appears here and you move to the front of everyone else's follow queue, most recent badges first, so you pick up follows from colleagues working through the list. When new colleagues are verified, follow them to earn a fresh badge with a new date and move back to the front.</p>
   <div id="step3"></div>
-</section>
-
-<section class="step" id="invite">
-  <div class="step-head"><span class="step-num" id="num4">3</span><h2 class="step-title">Recruit colleagues</h2></div>
-  <div id="inviteBox"></div>
 </section>
 </div>
 
@@ -549,7 +552,7 @@ function renderStep2(){
     html += `<div class="note">${fresh.length} new ${fresh.length===1?"colleague has":"colleagues have"} been added since your last visit.</div>`;
   }
   if(queue.length===0){
-    html += `<div class="empty">You've been through everyone. Your badge is in Step 2.</div>`;
+    html += `<div class="empty">You've been through everyone. Your badge is in Step 3.</div>`;
   } else if(!started){
     const isReturning = done>0;
     html += `<div class="card">
@@ -628,11 +631,16 @@ function renderStep3(left){
   n3.className="step-num is-done";
   box.innerHTML=`<div class="card">
       <canvas id="badge" class="badge" width="1080" height="1080" role="img"
-        aria-label="${esc(withTitle(me().name))} followed every colleague in the BCD Instagram Directory"></canvas>
+        aria-label="${esc(withTitle(me().name))} followed every colleague in the BCD Instagram Directory${Number(refs[myHandle]||0)?` and recruited ${Number(refs[myHandle])} BCD${Number(refs[myHandle])===1?"":"s"}`:""}"></canvas>
       <div class="actions">
         <button type="button" class="primary" id="shareBadge">Save or share badge</button>
       </div>
       <p class="step-note" style="margin:.9rem 0 0">You followed everyone on this list! This will be manually verified. You’ve earned your badge and will be prioritized first to your colleagues who join this site. Congratulations!</p>
+      <div class="invite-nudge">
+        <p class="invite-nudge-title">You're on the board! Recruit a colleague to climb higher.</p>
+        <p class="msg" style="margin:.3rem 0 0">Every BCD who joins through your link moves you up the leaderboard.</p>
+        <div class="actions"><button type="button" class="primary" id="nudgeShare">Share your invite link</button><button type="button" id="nudgeCopy">Copy link</button></div>
+      </div>
     </div>`;
   drawBadge();
 }
@@ -678,10 +686,16 @@ async function drawBadge(){
 
   const n=entry.c;
   const date=new Date(entry.at.toMillis()).toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  const recruited=Number(refs[myHandle]||0);
+  const y0 = recruited ? 796 : 820;   /* make room for the recruit line */
   x.font=`500 32px ${sans}`; x.fillStyle=P.accent;
-  x.fillText(`${n} board-certified dermatologist${n===1?"":"s"}`,540,820);
+  x.fillText(`${n} board-certified dermatologist${n===1?"":"s"}`,540,y0);
+  if(recruited){
+    x.font=`500 32px ${sans}`; x.fillStyle=P.accent;
+    x.fillText(`Recruited ${recruited} BCD${recruited===1?"":"s"}`,540,y0+46);
+  }
   x.font=`500 40px ${serif}`; x.fillStyle=P.ink;
-  x.fillText(`As of ${date}`,540,878);
+  x.fillText(`As of ${date}`,540,recruited ? y0+104 : 878);
 
   x.font=`500 30px ${sans}`; x.fillStyle=P.accent;
   x.fillText("ig.dermatolo.gy",540,960);
@@ -942,16 +956,16 @@ function renderInvite(){
       : `<p class="msg">Recruit counts and leaderboard credit are for colleagues listed in the directory.</p>`}
   </div>`;
 }
-async function shareInvite(){
+async function shareInvite(btn){
   const url=inviteLink();
   if(navigator.share){
     try{ await navigator.share({title:"BCD Instagram Directory", text:"Join the BCD Instagram Directory to follow board-certified dermatologists and get followed back.", url}); return; }
     catch(e){ if(e && e.name==="AbortError") return; }
   }
-  copyInvite();
+  copyInvite(btn && btn.id==="nudgeShare" ? document.getElementById("nudgeCopy") : null);
 }
-async function copyInvite(){
-  const btn=document.getElementById("copyInvite");
+async function copyInvite(btn){
+  btn=btn||document.getElementById("copyInvite");
   try{ await navigator.clipboard.writeText(inviteLink()); if(btn) btn.textContent="Copied"; }
   catch(e){ if(btn) btn.textContent="Couldn't copy"; }
 }
@@ -993,9 +1007,9 @@ document.addEventListener("click", e=>{
   if(t.id==="suSubmit"){ submitSignup(); return; }
   if(t.id==="retryBadge"){ claimFailed=false; renderStep2(); return; }
   if(t.id==="shareBadge"){ shareBadge(); return; }
-  if(t.id==="shareInvite"){ shareInvite(); return; }
+  if(t.id==="shareInvite"||t.id==="nudgeShare"){ shareInvite(t); return; }
   if(t.id==="reset"){ resetList(); return; }
-  if(t.id==="copyInvite"){ copyInvite(); return; }
+  if(t.id==="copyInvite"||t.id==="nudgeCopy"){ copyInvite(t); return; }
   if(t.id==="startQueue"){ e.preventDefault(); started=true; renderStep2(); return; }
   if(t.id==="showAll"){ if(user){ boardOpen=true; renderBoard(); } return; }
   if(t.id==="showTop"){ boardOpen=false; boardQuery=""; renderBoard(); document.getElementById("leaderboard").scrollIntoView({block:"start"}); return; }
