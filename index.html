@@ -101,6 +101,20 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .stat-num{display:inline-block;font-family:"Newsreader",Georgia,serif;font-size:2.6rem;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
 .stat-label{color:var(--ink-soft);font-size:.92rem}
 .stat[hidden]{display:none}
+.activity{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.9rem 1.1rem;margin:0 0 2rem}
+@keyframes actIn{from{opacity:0;transform:translateY(-10px) scale(.98);background:var(--accent-soft)}60%{opacity:1;transform:none;background:var(--accent-soft)}to{background:transparent}}
+.activity li.act-new{animation:actIn 1.4s ease-out}
+.activity li{transition:opacity .3s}
+.activity[hidden]{display:none}
+.activity-title{display:flex;align-items:center;gap:.5rem;margin:0 0 .4rem;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft)}
+.live-dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--done);box-shadow:0 0 0 0 rgba(46,107,79,.5);animation:livePulse 2s infinite}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(46,107,79,.45)}70%{box-shadow:0 0 0 .5rem rgba(46,107,79,0)}100%{box-shadow:0 0 0 0 rgba(46,107,79,0)}}
+.activity ul{list-style:none;margin:0;padding:0}
+.activity li{display:flex;gap:.6rem;align-items:baseline;padding:.4rem 0;border-top:1px solid var(--line);font-size:.92rem}
+.activity li:first-child{border-top:0}
+.activity .act-icon{flex:0 0 1.2rem;text-align:center}
+.activity .act-text{flex:1 1 auto;min-width:0}
+.activity .act-when{color:var(--ink-soft);font-size:.8rem;white-space:nowrap}
 .stat.bump .stat-num{animation:statBump .6s ease-out}
 @keyframes statBump{0%{transform:scale(1)}35%{transform:scale(1.08)}100%{transform:scale(1)}}
 .gate-card{margin-left:0}
@@ -235,6 +249,11 @@ footer a{color:var(--ink-soft)}
   <div id="board"><div class="empty">Loading…</div></div>
 </section>
 
+<div class="activity" id="activity" hidden>
+  <p class="activity-title"><span class="live-dot" aria-hidden="true"></span>Recent activity</p>
+  <ul id="activityList" aria-live="off"></ul>
+</div>
+
 
 <footer>
   <p class="credit">Made by Dr. Dennis Porto of <a href="https://www.skincare.md/">skincare.md</a></p>
@@ -299,8 +318,59 @@ async function loadDirectory(){
   followStats = (bs.data()||{}).f || {};
   setFollowsTotal((bs.data()||{}).ft);
   applyBoard();
+  renderActivity();
   directoryLoaded = true;
 }
+/* ---------- recent activity: the latest real event from five different colleagues ---------- */
+function timeAgo(ms){
+  const m=Math.max(0,Math.round((Date.now()-ms)/60000));
+  if(m<1) return "just now";
+  if(m<60) return m+"m ago";
+  const h=Math.round(m/60); if(h<24) return h+"h ago";
+  const d=Math.round(h/24); return d===1?"yesterday":d+"d ago";
+}
+const ACT_POOL=20, ACT_SHOWN=3, ACT_EVERY_MS=3500;
+let actQueue=[], actNext=0, actTimer=null, actSig="";
+function actItem(e,fresh){
+  return `<li${fresh?' class="act-new"':''}><span class="act-icon" aria-hidden="true">${e.icon}</span>
+    <span class="act-text"><strong>${esc(withTitle(e.name))}</strong> ${e.text}</span><span class="act-when">${timeAgo(e.at)}</span></li>`;
+}
+function renderActivity(){
+  const box=document.getElementById("activity"); if(!box) return;
+  const events=[];
+  boardOrder().forEach(p=>{
+    if(p.badgeAt) events.push({h:p.handle,name:p.name,at:p.badgeAt,icon:"🏅",text:"earned a badge"});
+    (p.recruits||[]).forEach(t=>events.push({h:p.handle,name:p.name,at:Number(t),icon:"🤝",text:"recruited a colleague"}));
+    if(p.signedAt) events.push({h:p.handle,name:p.name,at:p.signedAt,icon:"👋",text:"joined the directory"});
+  });
+  events.sort((a,b)=>b.at-a.at);
+  const seen=new Set(), pick=[];
+  for(const e of events){ if(seen.has(e.h)) continue; seen.add(e.h); pick.push(e); if(pick.length===ACT_POOL) break; }
+  if(!pick.length){ box.hidden=true; return; }
+  box.hidden=false;
+  const sig=pick.map(e=>e.h+":"+e.at).join("|");
+  if(sig===actSig) return;            /* nothing new: keep the rotation going instead of restarting it */
+  actSig=sig;
+  /* play the pool from older to newer, each new one popping in at the top; times shown are always real */
+  actQueue=pick.slice().reverse();
+  const list=document.getElementById("activityList");
+  const still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  clearInterval(actTimer);
+  if(still || actQueue.length<=ACT_SHOWN){
+    list.innerHTML=pick.slice(0,ACT_SHOWN).map(e=>actItem(e,false)).join("");
+    return;
+  }
+  const start=actQueue.slice(0,ACT_SHOWN).reverse();
+  list.innerHTML=start.map(e=>actItem(e,false)).join("");
+  actNext=ACT_SHOWN;
+  actTimer=setInterval(()=>{
+    if(document.visibilityState!=="visible") return;
+    const e=actQueue[actNext % actQueue.length]; actNext++;
+    list.insertAdjacentHTML("afterbegin", actItem(e,true));
+    while(list.children.length>ACT_SHOWN) list.lastElementChild.remove();
+  }, ACT_EVERY_MS);
+}
+
 function applyBoard(){
   people = (roster.members||[]).map(m=>({
     name:m.n, handle:m.h, signedAt:m.t||0,
@@ -367,7 +437,12 @@ function renderStat(){
 }
 async function refreshStat(){
   if(document.visibilityState!=="visible") return;
-  try{ const bs=await getDoc(doc(db,"public","board")); setFollowsTotal((bs.data()||{}).ft); }catch(e){}
+  try{
+    const bs=await getDoc(doc(db,"public","board")), d=bs.data()||{};
+    setFollowsTotal(d.ft);
+    board=d.b||board; refs=d.r||refs; recruitTimes=d.rt||recruitTimes; followStats=d.f||followStats;
+    applyBoard(); renderActivity();
+  }catch(e){}
 }
 setInterval(refreshStat, 60000);
 
