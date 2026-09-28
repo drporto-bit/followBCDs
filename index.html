@@ -333,7 +333,7 @@ const ACT_POOL=20, ACT_SHOWN=3, ACT_EVERY_MS=3500;
 let actQueue=[], actNext=0, actTimer=null, actSig="";
 function actItem(e,fresh){
   return `<li${fresh?' class="act-new"':''}><span class="act-icon" aria-hidden="true">${e.icon}</span>
-    <span class="act-text"><strong>${esc(withTitle(e.name))}</strong> ${e.text}</span><span class="act-when">${timeAgo(e.at)}</span></li>`;
+    <span class="act-text"><strong>${esc(withTitle(e.name))}</strong> ${e.text}</span></li>`;
 }
 function renderActivity(){
   const box=document.getElementById("activity"); if(!box) return;
