@@ -139,12 +139,22 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .roster .recruits{color:var(--accent)}
 .power{display:block;width:7.5rem;max-width:60%;height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin:.35rem 0 .2rem}
 .power i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),#E0A24A)}
-.badge-summary{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
-.badge-summary .done-line .badge-mark{margin-left:0}
-.badge-summary button{padding:.45rem .8rem;font-size:.88rem}
-.badge-open{margin-top:1rem}
-.badge-stats{margin:.3rem 0 0;color:var(--ink-soft);font-size:.9rem}
-.badge-stats strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.badge-open{margin-top:1.1rem;padding-top:1.1rem;border-top:1px solid var(--line)}
+.energy-head{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 .45rem}
+.energy-label{font-family:"Newsreader",Georgia,serif;font-size:1.15rem}
+.energy-pct{font-variant-numeric:tabular-nums;color:var(--ink-soft);font-size:.95rem}
+.energy-bar{height:.95rem;border-radius:.5rem;background:var(--line);overflow:hidden}
+.energy-bar i{display:block;height:100%;width:0;border-radius:.5rem;background:linear-gradient(90deg,var(--accent),#E0A24A);
+  transition:width .9s cubic-bezier(.2,.7,.3,1);box-shadow:0 0 .8rem rgba(224,162,74,.45)}
+.energy-note{margin:.55rem 0 0;color:var(--ink-soft);font-size:.88rem}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1.1rem;padding-top:1.1rem;border-top:1px solid var(--line)}
+.stat-cell{min-width:0}
+.stat-label{margin:0;color:var(--ink-soft);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
+.stat-value{margin:.15rem 0 0;font-family:"Newsreader",Georgia,serif;font-size:1.45rem;line-height:1.15;font-variant-numeric:tabular-nums}
+.stat-value.is-good{color:var(--done)}
+.stat-value.is-warn{color:#B4541F}
+.stat-sub{margin:.1rem 0 .55rem;color:var(--ink-soft);font-size:.82rem}
+.stat-cell button{padding:.4rem .7rem;font-size:.85rem}
 .tt-btn{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--line);border-radius:8px;background:var(--surface);
   color:var(--ink);padding:.6rem .9rem;text-decoration:none;font:inherit}
 .tt-btn:hover{background:var(--accent-soft)}
@@ -155,9 +165,6 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .tt-line{display:flex;align-items:center;gap:.35rem;margin:.35rem 0 0;font-size:.85rem;color:var(--ink-soft)}
 .tt-edit{display:flex;gap:.4rem;align-items:center;margin-top:.5rem;flex-wrap:wrap}
 .tt-edit .text-in{flex:1 1 10rem;width:auto}
-.invite-nudge{margin-top:1.25rem;padding-top:1.1rem;border-top:1px solid var(--line)}
-.invite-nudge-title{font-family:"Newsreader",Georgia,serif;font-size:1.15rem;margin:0}
-.invite-nudge .actions .primary{flex:1 1 auto;width:auto}
 .invite-link{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem;word-break:break-all;
   background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.6rem .75rem;margin:.9rem 0 0}
 #inviteBox .actions .primary{flex:1 1 auto;width:auto}
@@ -244,10 +251,10 @@ footer a{color:var(--ink-soft)}
 </section>
 
 <section class="step">
-  <div class="step-head"><span class="step-num" id="num3">3</span><h2 class="step-title">Earn your badge</h2>
-    <button type="button" class="info" data-info="note3" aria-expanded="false" aria-label="What the badge gets you">i</button></div>
-  <p class="step-lead">Follow everyone on the list to get a badge and prioritization on the list so you get the most followers.</p>
-  <p class="step-note" id="note3" hidden>Once you've followed every colleague, your badge appears here and you move to the front of everyone else's follow queue, most recent badges first, so you pick up follows from colleagues working through the list. When new colleagues are verified, follow them to earn a fresh badge with a new date and move back to the front.</p>
+  <div class="step-head"><span class="step-num" id="num3">3</span><h2 class="step-title">Return soon to follow new colleagues</h2>
+    <button type="button" class="info" data-info="note3" aria-expanded="false" aria-label="How the energy bar works">i</button></div>
+  <p class="step-lead">Your energy bar drains a little every day. Keep it full to stay near the top of everyone's list.</p>
+  <p class="step-note" id="note3" hidden>Following every colleague, including the new ones who join, earns and refreshes your badge. Each BCD you recruit adds more. Both fade over time, so returning to follow newcomers keeps your bar full. The fuller it is, the higher you sit on everyone's follow list, and the more followers you get.</p>
   <div id="step3"></div>
 </section>
 </div>
@@ -465,7 +472,7 @@ async function refreshStat(){
     setFollowsTotal(d.ft);
     if(state.ttp){ await loadDirectory(); }
     board=d.b||board; refs=d.r||refs; recruitTimes=d.rt||recruitTimes; followStats=d.f||followStats;
-    applyBoard(); renderActivity();
+    applyBoard(); renderActivity(); updateEnergy();
   }catch(e){}
 }
 setInterval(refreshStat, 60000);
@@ -733,26 +740,40 @@ function renderStep2(){
 let badgeBlob=null;
 let badgeOpen=false;   /* the badge image is tucked away until asked for */
 
+/* ---------- energy bar: current strength relative to the leader ---------- */
+function energyPct(){
+  const m=me(); if(!m) return 0;
+  const top=Math.max(0,...boardOrder().map(p=>p.score||0)), mine=m.score||0;
+  if(!(top>0) || !(mine>0)) return 0;
+  return Math.max(3, Math.min(100, Math.round(mine/top*100)));
+}
+function updateEnergy(){
+  const i=document.querySelector("#step3 .energy-bar i"); if(!i) return;
+  const pct=energyPct();
+  i.style.width=pct+"%"; i.dataset.w=pct;
+  const t=document.querySelector("#step3 .energy-pct"); if(t) t.textContent=pct+"%";
+  const bar=document.querySelector("#step3 .energy-bar"); if(bar) bar.setAttribute("aria-label","Energy "+pct+" percent");
+}
+
 function renderStep3(left){
   const box=document.getElementById("step3");
   const n3=document.getElementById("num3");
   n3.className="step-num";
-  if(!people.length){ box.innerHTML=`<div class="empty">Your badge unlocks once there are colleagues to follow.</div>`; return; }
-  if(left>0){
-    box.innerHTML=`<div class="empty">${left} ${left===1?"colleague":"colleagues"} to go. Your badge unlocks once you've been through everyone.</div>`;
-    return;
-  }
-  if(!authKnown || (user && !accountReady)){
-    box.innerHTML=`<div class="empty">Loading your badge…</div>`; return;
-  }
-  if(!user){ box.innerHTML=`<div class="empty">Sign in to earn your badge.</div>`; return; }
+  if(!people.length){ box.innerHTML=`<div class="empty">Your energy bar starts once there are colleagues to follow.</div>`; return; }
+  if(!authKnown || (user && !accountReady)){ box.innerHTML=`<div class="empty">Loading…</div>`; return; }
+  if(!user){ box.innerHTML=`<div class="empty">Sign in to see your energy bar.</div>`; return; }
   if(!myHandle){
     box.innerHTML = (!signup && account && account.followOnly)
-      ? `<div class="empty">You've followed everyone. Badges, check marks and a spot at the front of the list are for colleagues listed in the directory. Add yourself at the top anytime.</div>`
-      : `<div class="empty">You've followed everyone. Your badge unlocks as soon as your TBCD membership is verified.</div>`;
+      ? `<div class="empty">Energy bars, badges and leaderboard spots are for colleagues listed in the directory. Add yourself at the top anytime.</div>`
+      : `<div class="empty">Your energy bar starts as soon as your TBCD membership is verified.</div>`;
     return;
   }
-  if(!badgeCurrent()){
+  if(!me()){ box.innerHTML=`<div class="empty">Loading…</div>`; return; }
+  const others=people.filter(p=>p.handle!==myHandle);
+  if(typeof left!=="number") left=others.filter(p=>!state.marks[p.handle]).length;
+
+  /* everyone followed but the badge isn't current yet: create it (as before) */
+  if(left===0 && !badgeCurrent()){
     if(claimFailed){
       box.innerHTML=`<div class="empty">Your badge didn't save. <div class="actions"><button type="button" id="retryBadge">Try again</button></div></div>`;
       return;
@@ -767,31 +788,49 @@ function renderStep3(left){
     }
     return;
   }
-  n3.className="step-num is-done";
-  const rec=Number(refs[myHandle]||0);
-  const followed=people.filter(p=>p.handle!==myHandle && state.marks[p.handle]).length;
-  const earned=new Date(board[myHandle].at.toMillis()).toLocaleDateString("en-US",{month:"short",day:"numeric"});
+
+  const current=badgeCurrent(), entry=board[myHandle];
+  const rec=Number(refs[myHandle]||0), total=others.length, done=total-left;
+  const pct=energyPct();
+  let badgeValue, badgeSub, badgeCls="";
+  if(current){
+    const earned=new Date(entry.at.toMillis()).toLocaleDateString("en-US",{month:"short",day:"numeric"});
+    badgeValue="✓ Current"; badgeSub=`Earned ${earned}`; badgeCls=" is-good";
+    n3.className="step-num is-done";
+  } else if(entry){
+    badgeValue="Needs refresh"; badgeSub=`Follow ${left} new colleague${left===1?"":"s"}`; badgeCls=" is-warn";
+  } else {
+    badgeValue=`${done} of ${total}`; badgeSub="colleagues followed";
+  }
   box.innerHTML=`<div class="card">
-      <div class="badge-summary">
-        <div>
-          <p class="done-line">${badgeMark()} Badge earned ${earned}</p>
-          <p class="badge-stats"><strong>${followed}</strong> colleague${followed===1?"":"s"} followed · <strong>${rec}</strong> BCD${rec===1?"":"s"} recruited</p>
-        </div>
-        <button type="button" id="toggleBadge" class="ghost" aria-expanded="${badgeOpen}">${badgeOpen?"Hide badge":"View your badge"}</button>
+      <div class="energy">
+        <div class="energy-head"><span class="energy-label">⚡ Energy</span><span class="energy-pct">${pct}%</span></div>
+        <div class="energy-bar" role="img" aria-label="Energy ${pct} percent"><i data-w="${pct}" style="width:0"></i></div>
+        <p class="energy-note">Follow new colleagues and recruit BCDs to keep it full. A fuller bar means more followers.</p>
       </div>
-      <p class="step-note" style="margin:.6rem 0 0">You followed everyone on this list! This will be manually verified. You’ve earned your badge and will be prioritized first to your colleagues who join this site. Congratulations!</p>
-      ${badgeOpen?`<div class="badge-open">
+      <div class="stat-grid">
+        <div class="stat-cell">
+          <p class="stat-label">Badge</p>
+          <p class="stat-value${badgeCls}">${badgeValue}</p>
+          <p class="stat-sub">${badgeSub}</p>
+          ${current?`<button type="button" id="toggleBadge" class="ghost" aria-expanded="${badgeOpen}">${badgeOpen?"Hide badge":"View badge"}</button>`:""}
+        </div>
+        <div class="stat-cell">
+          <p class="stat-label">BCDs recruited</p>
+          <p class="stat-value">${rec}</p>
+          <p class="stat-sub">Each one adds energy</p>
+          <button type="button" id="nudgeShare">Share invite link</button>
+        </div>
+      </div>
+      ${current&&badgeOpen?`<div class="badge-open">
         <canvas id="badge" class="badge" width="1080" height="1080" role="img"
           aria-label="${esc(withTitle(me().name))} followed every colleague in the BCD Social Club${rec?` and recruited ${rec} BCD${rec===1?"":"s"}`:""}"></canvas>
         <div class="actions"><button type="button" class="primary" id="shareBadge">Save or share badge</button></div>
+        <p class="step-note" style="margin:.9rem 0 0">You followed everyone on this list! This will be manually verified. You’ve earned your badge and will be prioritized first to your colleagues who join this site. Congratulations!</p>
       </div>`:""}
-      <div class="invite-nudge">
-        <p class="invite-nudge-title">You're on the board! Recruit a colleague to climb higher.</p>
-        <p class="msg" style="margin:.3rem 0 0">Every BCD who joins through your link moves you up the leaderboard.</p>
-        <div class="actions"><button type="button" class="primary" id="nudgeShare">Share your invite link</button><button type="button" id="nudgeCopy">Copy link</button></div>
-      </div>
     </div>`;
-  if(badgeOpen) drawBadge();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ const i=box.querySelector(".energy-bar i"); if(i) i.style.width=i.dataset.w+"%"; }));
+  if(current&&badgeOpen) drawBadge();
 }
 
 function badgeMark(){
@@ -1123,12 +1162,14 @@ async function shareInvite(btn){
     try{ await navigator.share({title:"BCD Social Club", text:"Join the BCD Social Club to follow board-certified dermatologists and get followed back.", url}); return; }
     catch(e){ if(e && e.name==="AbortError") return; }
   }
-  copyInvite(btn && btn.id==="nudgeShare" ? document.getElementById("nudgeCopy") : null);
+  copyInvite(btn && btn.id==="nudgeShare" ? btn : null);
 }
 async function copyInvite(btn){
   btn=btn||document.getElementById("copyInvite");
+  const old=btn?btn.textContent:"";
   try{ await navigator.clipboard.writeText(inviteLink()); if(btn) btn.textContent="Copied"; }
   catch(e){ if(btn) btn.textContent="Couldn't copy"; }
+  if(btn) setTimeout(()=>{ btn.textContent=old; },2000);
 }
 
 function renderAll(){ renderGate(); renderStep2(); renderInvite(); }
@@ -1171,7 +1212,7 @@ document.addEventListener("click", e=>{
   if(t.id==="toggleBadge"){ badgeOpen=!badgeOpen; renderStep2(); return; }
   if(t.id==="shareInvite"||t.id==="nudgeShare"){ shareInvite(t); return; }
   if(t.id==="reset"){ resetList(); return; }
-  if(t.id==="copyInvite"||t.id==="nudgeCopy"){ copyInvite(t); return; }
+  if(t.id==="copyInvite"){ copyInvite(t); return; }
   if(t.id==="startQueue"){ e.preventDefault(); started=true; renderStep2(); return; }
   if(t.id==="showAll"){ if(user){ boardOpen=true; renderBoard(); } return; }
   if(t.id==="showTop"){ boardOpen=false; boardQuery=""; renderBoard(); document.getElementById("leaderboard").scrollIntoView({block:"start"}); return; }
