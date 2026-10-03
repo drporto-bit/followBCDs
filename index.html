@@ -163,6 +163,16 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .tt-mini svg{width:.95rem;height:.95rem}
 .tt-mini.is-done{color:var(--done)}
 .tt-line{display:flex;align-items:center;gap:.35rem;margin:.35rem 0 0;font-size:.85rem;color:var(--ink-soft)}
+.gate-main{flex:1 1 16rem;min-width:0}
+.tt-line{flex-wrap:wrap}
+.tt-panel{margin-top:.7rem;padding-top:.6rem;border-top:1px solid var(--line)}
+.tt-progress{margin:0;color:var(--ink-soft);font-size:.85rem}
+.tt-progress strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.tt-list{list-style:none;margin:.4rem 0 0;padding:0;max-height:20rem;overflow-y:auto}
+.tt-list li{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-top:1px solid var(--line)}
+.tt-list .who{flex:1 1 auto;min-width:0;font-size:.92rem}
+.tt-list .who small{display:block;color:var(--ink-soft);font-size:.8rem}
+.tt-list .tt-btn{padding:.4rem .7rem;font-size:.85rem;white-space:nowrap}
 .tt-edit{display:flex;gap:.4rem;align-items:center;margin-top:.5rem;flex-wrap:wrap}
 .tt-edit .text-in{flex:1 1 10rem;width:auto}
 .invite-link{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem;word-break:break-all;
@@ -652,11 +662,33 @@ function colorFor(handle){
   return i;
 }
 
+/* everyone with a TikTok handle (except you), for easy following */
+let ttListOpen=false;
+function ttMembers(){ const mine=currentTT(); return people.filter(p=>p.tt && p.tt!==mine); }
+function ttListLink(){
+  const n=ttMembers().length;
+  return `<button type="button" id="ttList" class="linkish" aria-expanded="${ttListOpen}">${ttListOpen?"Hide":"See"} TikTok members (${n})</button>`;
+}
+function ttPanel(){
+  if(!ttListOpen) return "";
+  const all=ttMembers();
+  if(!all.length) return `<div class="tt-panel"><p class="msg" style="margin:0">No colleagues have added a TikTok yet. Add yours to be first.</p></div>`;
+  const followed=p=>!!(state.tmarks&&state.tmarks[p.tt]);
+  const done=all.filter(followed).length;
+  /* not-yet-followed first, then the ones you've done; each group keeps the leaderboard order */
+  const rows=all.filter(p=>!followed(p)).concat(all.filter(followed));
+  return `<div class="tt-panel">
+    <p class="tt-progress"><strong>${done}</strong> of ${all.length} followed on TikTok</p>
+    <ul class="tt-list">${rows.map(p=>`<li><span class="who">${esc(withTitle(p.name))}<small>@${esc(p.tt)}</small></span>
+      <a class="tt-btn${followed(p)?" is-done":""}" href="https://www.tiktok.com/@${encodeURIComponent(p.tt)}" target="_blank" rel="noopener" data-ttopen="${esc(p.tt)}">${TT_ICON}${followed(p)?"Followed ✓":"Follow"}</a></li>`).join("")}</ul>
+  </div>`;
+}
 function markTT(tt){
   if(!tt || tt===currentTT() || (state.tmarks||{})[tt]) return;
   state.tmarks = state.tmarks || {};
   state.tmarks[tt] = "followed";
   save(state); renderStep2(); renderBoard(); queuePush();
+  if(ttListOpen) renderGate();
 }
 function mark(handle,value){
   const who=people.find(p=>p.handle===handle);
@@ -951,10 +983,10 @@ function renderGate(){
     const ttPart = editingTT
       ? `<div class="tt-edit"><input type="text" id="ttIn" class="text-in" placeholder="@yourtiktok" autocomplete="off" autocapitalize="none" spellcheck="false" value="${esc(tt?"@"+tt:"")}" aria-label="Your TikTok handle">
            <button type="button" id="ttSave">Save</button><button type="button" id="ttCancel" class="ghost">Cancel</button></div>${ttMsg?`<p class="msg warn">${ttMsg}</p>`:""}`
-      : tt ? `<p class="tt-line">${TT_ICON} @${esc(tt)} · <button type="button" id="ttEdit" class="linkish">Edit</button></p>`
-           : `<p class="tt-line"><button type="button" id="ttEdit" class="linkish">${TT_ICON} Add your TikTok (optional)</button></p>`;
+      : (tt ? `<p class="tt-line">${TT_ICON} @${esc(tt)} · <button type="button" id="ttEdit" class="linkish">Edit</button> · ${ttListLink()}</p>`
+            : `<p class="tt-line"><button type="button" id="ttEdit" class="linkish">${TT_ICON} Add your TikTok (optional)</button> · ${ttListLink()}</p>`) + ttPanel();
     box.innerHTML=`<div class="gate-status">
-      <div><p class="done-line">✓ You're on the list as ${esc(withTitle(who.name))}</p>${ttPart}</div>
+      <div class="gate-main"><p class="done-line">✓ You're on the list as ${esc(withTitle(who.name))}</p>${ttPart}</div>
       <button type="button" id="signOut" class="ghost">Sign out</button></div>`;
     return;
   }
@@ -963,6 +995,7 @@ function renderGate(){
     box.innerHTML=`<div class="card gate-card">
       <p class="done-line">✓ Signed in to follow colleagues</p>
       <p class="msg">You're not listed in the directory. You can add yourself anytime.</p>
+      <p class="tt-line">${TT_ICON} ${ttListLink()}</p>${ttPanel()}
       <div class="actions"><button type="button" id="addMe">Add me to the directory</button><button type="button" id="signOut" class="ghost">Sign out</button></div>
     </div>`;
     return;
@@ -972,6 +1005,7 @@ function renderGate(){
     box.innerHTML=`<div class="card gate-card">
       <p class="done-line">✓ Submitted as ${esc(withTitle(signup.name))}, @${esc(signup.handle)}${signup.tiktok?` · TikTok @${esc(signup.tiktok)}`:""}</p>
       <p class="msg">You'll appear on the list once your TBCD membership is verified. Verification is often done the same day. In the meantime, start following your colleagues below.</p>
+      <p class="tt-line">${TT_ICON} ${ttListLink()}</p>${ttPanel()}
       <div class="actions"><button type="button" id="editSignup">Edit</button><button type="button" id="signOut" class="ghost">Sign out</button></div>
     </div>`;
     return;
@@ -1217,6 +1251,7 @@ document.addEventListener("click", e=>{
   if(t.id==="showAll"){ if(user){ boardOpen=true; renderBoard(); } return; }
   if(t.id==="showTop"){ boardOpen=false; boardQuery=""; renderBoard(); document.getElementById("leaderboard").scrollIntoView({block:"start"}); return; }
   if(t.dataset.ttopen){ const h=t.dataset.ttopen; setTimeout(()=>markTT(h),400); return; }
+  if(t.id==="ttList"){ ttListOpen=!ttListOpen; renderGate(); return; }
   if(t.id==="ttEdit"){ editingTT=true; ttMsg=""; renderGate(); const i=document.getElementById("ttIn"); if(i) i.focus(); return; }
   if(t.id==="ttCancel"){ editingTT=false; ttMsg=""; renderGate(); return; }
   if(t.id==="ttSave"){ saveTT(); return; }
@@ -1300,7 +1335,7 @@ getRedirectResult(auth).catch(e=>{ console.error(e); authMsg=GOOGLE_FAILED; rend
 
 onAuthStateChanged(auth, async u=>{
   user=u; authKnown=true; account=null; myHandle=null; accountReady=!u; accountLoaded=false;
-  signup=null; editingSignup=false; signupMsg="";
+  signup=null; editingSignup=false; signupMsg=""; ttListOpen=false;
   renderAll();
   if(!u) return;
   try{
