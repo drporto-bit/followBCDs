@@ -6,7 +6,7 @@
 <title>BCD Social Club</title>
 <meta name="description" content="An exclusive community for board-certified dermatologists to follow and support each other on Instagram and TikTok. Recruit colleagues, follow them back, and climb the leaderboard to earn more followers.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://ig.dermatolo.gy/">
+<meta property="og:url" content="https://bcd.dermatolo.gy/">
 <meta property="og:title" content="BCD Social Club">
 <meta property="og:description" content="An exclusive community for board-certified dermatologists to support each other online. Follow colleagues, recruit others, and climb the leaderboard to earn more followers.">
 <meta property="og:image" content="https://ig.dermatolo.gy/og.png">
@@ -227,7 +227,7 @@ footer a{color:var(--ink-soft)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","name":"BCD Social Club","url":"https://ig.dermatolo.gy/",
+{"@context":"https://schema.org","@type":"WebSite","name":"BCD Social Club","url":"https://bcd.dermatolo.gy/",
  "creator":{"@type":"Person","name":"Dennis Porto, MD","jobTitle":"Board-certified dermatologist","url":"https://www.skincare.md/"}}
 </script>
 </head>
@@ -308,6 +308,9 @@ const fbApp = initializeApp({
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
 
+/* the address we advertise. The site itself is served from ig.dermatolo.gy, and bcd forwards there, so links built from
+   this one still work. (Sign-in emails deliberately keep using the address the page is actually on.) */
+const SITE_URL = "https://bcd.dermatolo.gy";
 const STORE_KEY = "derm-follow-v1";
 const EMAIL_KEY = STORE_KEY + ":signin-email";
 const REF_KEY = STORE_KEY + ":ref";
@@ -918,7 +921,7 @@ async function drawBadge(){
   x.fillText(`As of ${date}`,540,recruited ? y0+104 : 878);
 
   x.font=`500 30px ${sans}`; x.fillStyle=P.accent;
-  x.fillText("ig.dermatolo.gy",540,960);
+  x.fillText("bcd.dermatolo.gy",540,960);
 
   c.toBlob(b=>{ badgeBlob=b; },"image/png");
 }
@@ -1173,7 +1176,7 @@ function renderBoardRows(){
 
 function inviteLink(){
   /* listed members get a personal link that counts recruits; everyone else shares the site itself */
-  return myHandle ? location.origin+"/?ref="+encodeURIComponent(myHandle) : location.origin+"/";
+  return myHandle ? SITE_URL+"/?ref="+encodeURIComponent(myHandle) : SITE_URL+"/";
 }
 function renderInvite(){
   const box=document.getElementById("inviteBox"), num=document.getElementById("num4");
@@ -1291,7 +1294,7 @@ function renderBanner(){
   } else if(!isPhone){
     b.innerHTML = `<p class="banner-head"><strong>This works best on your phone.</strong>
         <button type="button" class="info" data-info="whyPhone" aria-expanded="false" aria-label="Why">i</button></p>
-      <p class="url-line">${location.origin+location.pathname}</p>
+      <p class="url-line">${SITE_URL}</p>
       <p><button type="button" id="copyUrl">Copy this link</button></p>
       <p class="step-note" id="whyPhone" hidden style="margin:.6rem 0 0">On a phone, tapping a colleague's name opens their profile directly in the Instagram app, so following is one tap. On a computer you'd have to log in to Instagram in the browser first, and every profile opens in a new tab.</p>`;
   } else {
@@ -1301,7 +1304,7 @@ function renderBanner(){
 document.addEventListener("click", async e=>{
   const copyBtn = e.target.closest("#copyUrl");
   if(!copyBtn) return;
-  try{ await navigator.clipboard.writeText(location.origin+location.pathname); copyBtn.textContent="Copied"; }
+  try{ await navigator.clipboard.writeText(SITE_URL); copyBtn.textContent="Copied"; }
   catch(err){ copyBtn.textContent="Couldn't copy. Try again."; }
 });
 
