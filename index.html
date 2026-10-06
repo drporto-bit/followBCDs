@@ -44,7 +44,12 @@ body{margin:0;background:var(--paper);color:var(--ink);
   font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5}
 .wrap{max-width:38rem;margin:0 auto;padding:2rem 1.15rem 4rem}
 h1{font-family:"Newsreader",Georgia,serif;font-weight:400;font-size:1.9rem;line-height:1.15;margin:0 0 .4rem;letter-spacing:-.01em}
-.sub{color:var(--ink-soft);margin:0 0 2.25rem;font-size:.95rem}
+.title-row{display:flex;align-items:center;gap:.7rem;margin:0 0 .15rem}
+.title-row h1{margin:0}
+.site-addr{display:inline-block;font-size:1.25rem;font-weight:600;color:var(--accent);text-decoration:none;letter-spacing:.01em;margin:0 0 1.6rem}
+.site-addr:hover{text-decoration:underline}
+.sub{color:var(--ink-soft);margin:-.8rem 0 1.6rem;font-size:.95rem}
+.sub[hidden]{display:none}
 .step{margin-bottom:2.25rem}
 .step-head{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.6rem}
 .step-num{width:1.5rem;height:1.5rem;flex:0 0 auto;border-radius:50%;background:var(--accent);color:#fff;
@@ -234,8 +239,9 @@ footer a{color:var(--ink-soft)}
 <body>
 <div class="wrap">
 
-<h1>BCD Social Club</h1>
-<p class="sub">This is a community exclusive to board-certified dermatologists (BCDs) who are committed to supporting our profession online. This community helps us organize our social media so that we can easily follow and engage with each other across platforms, thereby boosting the stature of our community. Access to this community is gated to BCDs and those who are the most supportive (eg, follow all of their colleagues and refer other colleagues) are rewarded for their effort with platform prioritization so they earn the most followers, creating a virtuous cycle.</p>
+<div class="title-row"><h1>BCD Social Club</h1><button class="info" type="button" data-info="noteAbout" aria-expanded="false" aria-label="About this community">i</button></div>
+<a class="site-addr" href="https://bcd.dermatolo.gy">bcd.dermatolo.gy</a>
+<p class="sub" id="noteAbout" hidden>This is a community exclusive to board-certified dermatologists (BCDs) who are committed to supporting our profession online. This community helps us organize our social media so that we can easily follow and engage with each other across platforms, thereby boosting the stature of our community. Access to this community is gated to BCDs and those who are the most supportive (eg, follow all of their colleagues and refer other colleagues) are rewarded for their effort with platform prioritization so they earn the most followers, creating a virtuous cycle.</p>
 
 <div class="stat" id="stat" hidden>
   <span class="stat-num" id="statNum">0</span>
