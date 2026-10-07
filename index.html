@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>BCD Social Club</title>
-<meta name="description" content="An exclusive community for board-certified dermatologists to follow and support each other on Instagram and TikTok. Recruit colleagues, follow them back, and climb the leaderboard to earn more followers.">
+<meta name="description" content="An exclusive community for board-certified dermatologists to follow and support each other on Instagram, TikTok and YouTube. Recruit colleagues, follow them back, and climb the leaderboard to earn more followers.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bcd.dermatolo.gy/">
 <meta property="og:title" content="BCD Social Club">
@@ -257,7 +257,7 @@ footer a{color:var(--ink-soft)}
   <div class="step-head"><span class="step-num" id="num2">1</span><h2 class="step-title">Follow your colleagues</h2>
     <button type="button" class="info" data-info="note2" aria-expanded="false" aria-label="How this step works">i</button></div>
   <p class="step-lead">We help you add one colleague at a time (max of 50 per day per Instagram rules).</p>
-  <p class="step-note" id="note2" hidden>Tap the purple button to open that dermatologist's profile, follow them on Instagram, then come back here. If you've added your own TikTok, you'll also get a separate card for each colleague who's on TikTok. The next colleague is already waiting, and nobody you've followed comes up twice. Instagram and TikTok temporarily block accounts that follow too many people at once, so stop around 50 in a sitting and pick it up another day. Your place is saved to your account, so you can continue on any device. For best performance, do this process on the phone that is logged into your professional accounts (Instagram and/or TikTok).</p>
+  <p class="step-note" id="note2" hidden>Tap the purple button to open that dermatologist's profile, follow them on Instagram, then come back here. If you've added your own TikTok or YouTube, you'll also get a separate card for each colleague who's on that platform. The next colleague is already waiting, and nobody you've followed comes up twice. Instagram, TikTok and YouTube temporarily block accounts that follow too many people at once, so stop around 50 in a sitting and pick it up another day. Your place is saved to your account, so you can continue on any device. For best performance, do this process on the phone that is logged into your professional accounts (Instagram, TikTok and/or YouTube).</p>
   <div id="step2"><div class="empty">Loading the list…</div></div>
 </section>
 
@@ -270,7 +270,7 @@ footer a{color:var(--ink-soft)}
   <div class="step-head"><span class="step-num" id="num3">3</span><h2 class="step-title">Return soon to follow new colleagues</h2>
     <button type="button" class="info" data-info="note3" aria-expanded="false" aria-label="How the energy bar works">i</button></div>
   <p class="step-lead">Your energy bar drains a little every day. Keep it full to stay near the top of everyone's list.</p>
-  <p class="step-note" id="note3" hidden>Following every colleague, including the new ones who join, earns and refreshes your badge. Each BCD you recruit adds more. Following colleagues on TikTok adds a small bonus. All of it fades over time, so returning to follow newcomers keeps your bar full. The fuller it is, the higher you sit on everyone's follow list, and the more followers you get.</p>
+  <p class="step-note" id="note3" hidden>Following every colleague, including the new ones who join, earns and refreshes your badge. Each BCD you recruit adds more. Following colleagues on TikTok or YouTube adds a small bonus. All of it fades over time, so returning to follow newcomers keeps your bar full. The fuller it is, the higher you sit on everyone's follow list, and the more followers you get.</p>
   <div id="step3"></div>
 </section>
 </div>
@@ -324,8 +324,8 @@ const DAILY_LIMIT = 50;
 
 /* ---------- on-phone state (same format as the previous version, so nobody loses their place) ---------- */
 function load(){
-  try{ return Object.assign({marks:{},tmarks:{},seen:[],visited:false,submitted:false,agreed:false}, JSON.parse(localStorage.getItem(STORE_KEY))||{}); }
-  catch(e){ return {marks:{},tmarks:{},seen:[],visited:false,submitted:false,agreed:false}; }
+  try{ return Object.assign({marks:{},tmarks:{},ymarks:{},seen:[],visited:false,submitted:false,agreed:false}, JSON.parse(localStorage.getItem(STORE_KEY))||{}); }
+  catch(e){ return {marks:{},tmarks:{},ymarks:{},seen:[],visited:false,submitted:false,agreed:false}; }
 }
 function save(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){} }
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
@@ -348,7 +348,7 @@ let directoryLoaded = false;
 async function loadDirectory(){
   const [rs, bs] = await Promise.all([getDoc(doc(db,"public","roster")), getDoc(doc(db,"public","board"))]);
   roster = rs.data() || {members:[],handles:[],count:0};
-  setTimeout(confirmTT,0);
+  setTimeout(()=>{ confirmTT(); confirmYT(); },0);
   board = (bs.data()||{}).b || {};
   refs = (bs.data()||{}).r || {};
   recruitTimes = (bs.data()||{}).rt || {};
@@ -422,7 +422,7 @@ function renderActivity(){
 
 function applyBoard(){
   people = (roster.members||[]).map(m=>({
-    name:m.n, handle:m.h, tt:m.tt||"", signedAt:m.t||0,
+    name:m.n, handle:m.h, tt:m.tt||"", yt:m.yt||"", signedAt:m.t||0,
     badgeAt: board[m.h] && board[m.h].at ? board[m.h].at.toMillis() : 0,
     refs: Number(refs[m.h]||0),
     recruits: Array.isArray(recruitTimes[m.h]) ? recruitTimes[m.h] : [],
@@ -438,8 +438,8 @@ const RECRUIT_POINTS=0.2, RECRUIT_HALF_LIFE_DAYS=14;
 const BADGE_POINTS=1,   BADGE_HALF_LIFE_DAYS=14;
 /* following colleagues earns partial credit, up to half a badge, fading from the last time it went up */
 const FOLLOW_POINTS_MAX=0.5;
-/* following colleagues on TikTok earns a small bonus: never more than half a recruit, scaled by how many members are on TikTok (full credit at 20+) */
-const TT_POINTS_MAX=0.1, TT_FULL_LIST=20;
+/* following colleagues on TikTok earns a small bonus: never more than 0.15 together (under a recruit), scaled by how many members are on TikTok (full credit at 20+) */
+const TT_POINTS_MAX=0.075, YT_POINTS_MAX=0.075, TT_FULL_LIST=20;
 const DAY_MS=86400000;
 function fade(since, halfLifeDays){ return Math.pow(0.5, Math.max(0,(Date.now()-since)/DAY_MS)/halfLifeDays); }
 function scoreOf(p){
@@ -455,16 +455,18 @@ function scoreOf(p){
   /* recruit dates come from the sync script; if they haven't arrived yet, count recruits as recent */
   const times = p.recruits.length ? p.recruits : Array(p.refs).fill(Date.now());
   times.forEach(t=>{ s += RECRUIT_POINTS*fade(Number(t),RECRUIT_HALF_LIFE_DAYS); });
-  /* TikTok bonus: share of the TikTok list followed, scaled by list size, fading from the last time it went up */
-  const ttTotal=(roster.tthandles||[]).length;
-  if(p.follows && p.follows.tn && p.follows.tat && ttTotal>1){
-    const others=ttTotal-(p.tt?1:0);
-    if(others>0){
-      const share=Math.min(1, p.follows.tn/others), reach=Math.min(1, ttTotal/TT_FULL_LIST);
-      const tat=typeof p.follows.tat.toMillis==="function" ? p.follows.tat.toMillis() : Number(p.follows.tat);
-      s += TT_POINTS_MAX*share*reach*fade(tat,BADGE_HALF_LIFE_DAYS);
+  /* TikTok and YouTube bonuses: share of that platform's list followed, scaled by list size, fading from the last time it went up */
+  [["tthandles","tn","tat","tt",TT_POINTS_MAX],["ythandles","yn","yat","yt",YT_POINTS_MAX]].forEach(([lk,nk,ak,fk,max])=>{
+    const total=(roster[lk]||[]).length;
+    if(p.follows && p.follows[nk] && p.follows[ak] && total>1){
+      const others=total-(p[fk]?1:0);
+      if(others>0){
+        const share=Math.min(1, p.follows[nk]/others), reach=Math.min(1, total/TT_FULL_LIST);
+        const at=typeof p.follows[ak].toMillis==="function" ? p.follows[ak].toMillis() : Number(p.follows[ak]);
+        s += max*share*reach*fade(at,BADGE_HALF_LIFE_DAYS);
+      }
     }
-  }
+  });
   return s;
 }
 
@@ -501,7 +503,7 @@ async function refreshStat(){
   try{
     const bs=await getDoc(doc(db,"public","board")), d=bs.data()||{};
     setFollowsTotal(d.ft);
-    if(state.ttp){ await loadDirectory(); }
+    if(state.ttp||state.ytp){ await loadDirectory(); }
     board=d.b||board; refs=d.r||refs; recruitTimes=d.rt||recruitTimes; followStats=d.f||followStats;
     applyBoard(); renderActivity(); updateEnergy();
   }catch(e){}
@@ -518,12 +520,16 @@ let accountLoaded = false; /* saved progress has been merged in; only then is it
 let restoredCount = 0;
 let authMsg = "";
 let pushTimer = null;
-let editingTT = false, ttMsg = "";
+let editingTT = false, ttMsg = "", editingYT = false, ytMsg = "";
 /* Listed members' TikTok handle lives in the sheet (and so in the roster). A change made here is kept in
    state.ttp and sent with every save until the roster shows it, so the sync script can't miss it. */
 function currentTT(){ return state.ttp ? state.ttp.v : (me() ? (me().tt||"") : ""); }
 function confirmTT(){
   if(state.ttp && me() && (me().tt||"")===state.ttp.v){ delete state.ttp; save(state); }
+}
+function currentYT(){ return state.ytp ? state.ytp.v : (me() ? (me().yt||"") : ""); }
+function confirmYT(){
+  if(state.ytp && me() && (me().yt||"")===state.ytp.v){ delete state.ytp; save(state); }
 }
 let signup = null;        /* their pending sign-up, if they submitted one on this page */
 let editingSignup = false;
@@ -544,6 +550,8 @@ async function loadAccount(u){
   restoredCount = n;
   state.tmarks = state.tmarks || {};
   Object.entries((account&&account.tmarks)||{}).forEach(([h,v])=>{ if(!state.tmarks[h]) state.tmarks[h]= v==="a"?"already":"followed"; });
+  state.ymarks = state.ymarks || {};
+  Object.entries((account&&account.ymarks)||{}).forEach(([h,v])=>{ if(!state.ymarks[h]) state.ymarks[h]= v==="a"?"already":"followed"; });
   accountLoaded = true;
   /* link to a listing when the verified email matches a sign-up */
   myHandle = null;
@@ -553,7 +561,7 @@ async function loadAccount(u){
       if(e.exists()) myHandle = e.data().h;
     }catch(err){ /* not on the list yet */ }
   }
-  applyBoard(); confirmTT();
+  applyBoard(); confirmTT(); confirmYT();
   if(!myHandle){
     try{ const sd = await getDoc(doc(db,"signups",u.uid)); signup = sd.exists() ? sd.data() : null; }
     catch(err){ signup = null; }
@@ -573,6 +581,7 @@ function accountData(){
     h: myHandle || null,
     marks,
     tmarks: ttMarks(),
+    ymarks: ytMarks(),
     followOnly: !!(account && account.followOnly) && !myHandle,
     createdAt: account && account.createdAt ? account.createdAt : serverTimestamp(),
     updatedAt: serverTimestamp()
@@ -582,11 +591,19 @@ function accountData(){
   const tt = currentTT();
   if(tt && myHandle) data.tt = tt;
   if(state.ttp && myHandle) data.ttp = true;      /* tells the sync script to copy this into the sheet */
+  const yt = currentYT();
+  if(yt && myHandle) data.yt = yt;
+  if(state.ytp && myHandle) data.ytp = true;
   return data;
 }
 function ttMarks(){
   const valid = new Set(roster.tthandles||[]), mine = currentTT(), out = {};
   Object.entries(state.tmarks||{}).forEach(([h,v])=>{ if(valid.has(h) && h!==mine) out[h] = v==="already" ? "a" : "f"; });
+  return out;
+}
+function ytMarks(){
+  const valid = new Set(roster.ythandles||[]), mine = currentYT(), out = {};
+  Object.entries(state.ymarks||{}).forEach(([h,v])=>{ if(valid.has(h) && h!==mine) out[h] = v==="already" ? "a" : "f"; });
   return out;
 }
 async function pushAccount(){
@@ -646,6 +663,13 @@ function cleanTT(raw){
   return /^[a-z0-9._]{2,24}$/.test(h) && !h.endsWith(".") ? h : "";
 }
 const TT_ICON='<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M15.5 3c.3 2.4 1.9 4.2 4.5 4.5v3.1c-1.6 0-3.1-.5-4.4-1.4v6.2a5.6 5.6 0 1 1-5.6-5.6c.3 0 .6 0 .9.1v3.2a2.5 2.5 0 1 0 1.6 2.3V3h3z"/></svg>';
+/* YouTube handles: 3-30 letters, numbers, underscores, hyphens and periods */
+function cleanYT(raw){
+  let h=String(raw||"").trim().replace(/^.*youtube\.com\/(@|c\/|user\/)?/i,"").replace(/^@/,"");
+  h=h.split(/[/?#\s]/)[0].toLowerCase().replace(/[^a-z0-9._-]/g,"");
+  return /^[a-z0-9._-]{3,30}$/.test(h) ? h : "";
+}
+const YT_ICON='<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3L10 15z"/></svg>';
 function cleanHandle(raw){
   let h=String(raw||"").trim().replace(/^.*instagram\.com\//i,"").replace(/^@/,"");
   h=h.split(/[/?#\s]/)[0];
@@ -694,6 +718,16 @@ function markTT(tt,value){
   state.tmarks[tt] = value||"followed";
   save(state); renderStep2(); renderBoard(); queuePush();
 }
+function viewerYT(){ return currentYT() || (signup && signup.youtube) || ""; }
+function markYT(yt,value){
+  if(!yt || !viewerYT() || yt===viewerYT() || (state.ymarks||{})[yt]) return;
+  const who=people.find(p=>p.yt===yt);
+  if(who) lastDone={name:withTitle(who.name),value:value||"followed",platform:"YouTube"};
+  animateNext=true;
+  state.ymarks = state.ymarks || {};
+  state.ymarks[yt] = value||"followed";
+  save(state); renderStep2(); renderBoard(); queuePush();
+}
 function mark(handle,value){
   const who=people.find(p=>p.handle===handle);
   if(who) lastDone={name:withTitle(who.name),value};
@@ -715,15 +749,18 @@ function renderStep2(){
     return;
   }
   const list=people.filter(p=>p.handle!==myHandle);   /* you don't follow yourself */
-  const myTT=viewerTT();
+  const myTT=viewerTT(), myYT=viewerYT();
   const igQueue=list.filter(p=>!state.marks[p.handle]);
   /* TikTok cards only for members with their own TikTok; each colleague's TikTok is its own card, right after their Instagram one */
   const ttAll=myTT?list.filter(p=>p.tt && p.tt!==myTT):[];
   const ttDone=ttAll.filter(p=>(state.tmarks||{})[p.tt]).length;
+  const ytAll=myYT?list.filter(p=>p.yt && p.yt!==myYT):[];
+  const ytDone=ytAll.filter(p=>(state.ymarks||{})[p.yt]).length;
   const queue=[];
   list.forEach(p=>{
     if(!state.marks[p.handle]) queue.push({p,kind:"ig"});
     if(myTT && p.tt && p.tt!==myTT && !(state.tmarks||{})[p.tt]) queue.push({p,kind:"tt"});
+    if(myYT && p.yt && p.yt!==myYT && !(state.ymarks||{})[p.yt]) queue.push({p,kind:"yt"});
   });
   const fresh=state.visited?list.filter(p=>!state.seen.includes(p.handle)).map(p=>p.handle):[];
   const done=list.length-igQueue.length;
@@ -760,18 +797,21 @@ function renderStep2(){
     const ci=colorFor(p.handle);
     const slide=animateNext && document.visibilityState==="visible";
     if(slide) animateNext=false;
-    const isTT = kind==="tt";
-    const cDone = isTT ? ttDone : done, cTotal = isTT ? ttAll.length : list.length;
+    const isTT = kind==="tt", isYT = kind==="yt";
+    const cDone = isTT ? ttDone : isYT ? ytDone : done, cTotal = isTT ? ttAll.length : isYT ? ytAll.length : list.length;
     html += `<div class="card${slide?" card-in":""}">
-      <p class="counter">${cDone} of ${cTotal} ${isTT?"followed on TikTok":"done"}<span class="bar"><i style="width:${cTotal?Math.round(cDone/cTotal*100):0}%"></i></span></p>
+      <p class="counter">${cDone} of ${cTotal} ${isTT?"followed on TikTok":isYT?"followed on YouTube":"done"}<span class="bar"><i style="width:${cTotal?Math.round(cDone/cTotal*100):0}%"></i></span></p>
       <div class="who-row">
         <span class="avatar" style="background:${AVATAR_COLORS[ci]}" aria-hidden="true">${esc(initials(p.name))}</span>
         <div><p class="person-name">${esc(withTitle(p.name))}${p.badgeAt?badgeMark():""}</p>
-        <p class="handle">${isTT?`${TT_ICON} @${esc(p.tt)}`:`@${esc(p.handle)}`}</p></div>
+        <p class="handle">${isTT?`${TT_ICON} @${esc(p.tt)}`:isYT?`${YT_ICON} @${esc(p.yt)}`:`@${esc(p.handle)}`}</p></div>
       </div>
       ${p.badgeAt?`<p class="badge-line">${badgeMark()}Followed everyone on the list</p>`:""}
       <div class="actions">
-        ${isTT
+        ${isYT
+          ? `<a class="primary" href="https://www.youtube.com/@${encodeURIComponent(p.yt)}" target="_blank" rel="noopener" data-ytopen="${esc(p.yt)}">Open @${esc(p.yt)} on YouTube</a>
+        <button type="button" data-ytmark="already" data-yt="${esc(p.yt)}">Already subscribed</button>`
+          : isTT
           ? `<a class="primary" href="https://www.tiktok.com/@${encodeURIComponent(p.tt)}" target="_blank" rel="noopener" data-ttopen="${esc(p.tt)}">Open @${esc(p.tt)} on TikTok</a>
         <button type="button" data-ttmark="already" data-tt="${esc(p.tt)}">Already following</button>`
           : `<a class="primary" href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener" data-open="${esc(p.handle)}">Open @${esc(p.handle)} on Instagram</a>
@@ -997,14 +1037,19 @@ function renderGate(){
   const who=me();
   if(who){
     frost(false);
-    const tt=currentTT();
+    const tt=currentTT(), yt=currentYT();
     const ttPart = editingTT
       ? `<div class="tt-edit"><input type="text" id="ttIn" class="text-in" placeholder="@yourtiktok" autocomplete="off" autocapitalize="none" spellcheck="false" value="${esc(tt?"@"+tt:"")}" aria-label="Your TikTok handle">
            <button type="button" id="ttSave">Save</button><button type="button" id="ttCancel" class="ghost">Cancel</button></div>${ttMsg?`<p class="msg warn">${ttMsg}</p>`:""}`
       : (tt ? `<p class="tt-line">${TT_ICON} @${esc(tt)} · <button type="button" id="ttEdit" class="linkish">Edit</button></p>`
             : `<p class="tt-line"><button type="button" id="ttEdit" class="linkish">${TT_ICON} Add your TikTok (optional)</button></p>`);
+    const ytPart = editingYT
+      ? `<div class="tt-edit"><input type="text" id="ytIn" class="text-in" placeholder="@yourchannel" autocomplete="off" autocapitalize="none" spellcheck="false" value="${esc(yt?"@"+yt:"")}" aria-label="Your YouTube handle">
+           <button type="button" id="ytSave">Save</button><button type="button" id="ytCancel" class="ghost">Cancel</button></div>${ytMsg?`<p class="msg warn">${ytMsg}</p>`:""}`
+      : (yt ? `<p class="tt-line">${YT_ICON} @${esc(yt)} · <button type="button" id="ytEdit" class="linkish">Edit</button></p>`
+            : `<p class="tt-line"><button type="button" id="ytEdit" class="linkish">${YT_ICON} Add your YouTube (optional)</button></p>`);
     box.innerHTML=`<div class="gate-status">
-      <div class="gate-main"><p class="done-line">✓ You're on the list as ${esc(withTitle(who.name))}</p>${ttPart}</div>
+      <div class="gate-main"><p class="done-line">✓ You're on the list as ${esc(withTitle(who.name))}</p>${ttPart}${ytPart}</div>
       <button type="button" id="signOut" class="ghost">Sign out</button></div>`;
     return;
   }
@@ -1020,7 +1065,7 @@ function renderGate(){
   if(signup && !editingSignup){
     frost(false);
     box.innerHTML=`<div class="card gate-card">
-      <p class="done-line">✓ Submitted as ${esc(withTitle(signup.name))}, @${esc(signup.handle)}${signup.tiktok?` · TikTok @${esc(signup.tiktok)}`:""}</p>
+      <p class="done-line">✓ Submitted as ${esc(withTitle(signup.name))}, @${esc(signup.handle)}${signup.tiktok?` · TikTok @${esc(signup.tiktok)}`:""}${signup.youtube?` · YouTube @${esc(signup.youtube)}`:""}</p>
       <p class="msg">You'll appear on the list once your TBCD membership is verified. Verification is often done the same day. In the meantime, start following your colleagues below.</p>
       <div class="actions"><button type="button" id="editSignup">Edit</button><button type="button" id="signOut" class="ghost">Sign out</button></div>
     </div>`;
@@ -1037,6 +1082,8 @@ function renderGate(){
       <input type="text" id="suHandle" class="text-in" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@yourhandle" value="${esc(s.handle?"@"+s.handle:"")}"></label>
     <label class="field"><span>Your TikTok handle (optional)</span>
       <input type="text" id="suTT" class="text-in" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@yourtiktok" value="${esc(s.tiktok?"@"+s.tiktok:"")}"></label>
+    <label class="field"><span>Your YouTube handle (optional)</span>
+      <input type="text" id="suYT" class="text-in" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@yourchannel" value="${esc(s.youtube?"@"+s.youtube:"")}"></label>
     ${signup?"":`<label class="agree" style="margin-top:1rem"><input type="checkbox" id="suAgree">
       <span>I agree to follow my colleagues on this list, not just add myself. <em>(required)</em></span></label>`}
     <div class="actions">
@@ -1063,10 +1110,14 @@ async function submitSignup(){
   const rawTT=(document.getElementById("suTT")||{value:""}).value.trim(), tiktok=cleanTT(rawTT);
   if(rawTT && !tiktok){ signupMsg="Enter your TikTok handle like @yourhandle, or leave it blank."; renderGate(); return; }
   if(tiktok && people.some(p=>p.tt===tiktok)){ signupMsg="That TikTok handle is already listed for another member."; renderGate(); return; }
+  const rawYT=(document.getElementById("suYT")||{value:""}).value.trim(), youtube=cleanYT(rawYT);
+  if(rawYT && !youtube){ signupMsg="Enter your YouTube handle like @yourchannel, or leave it blank."; renderGate(); return; }
+  if(youtube && people.some(p=>p.yt===youtube)){ signupMsg="That YouTube handle is already listed for another member."; renderGate(); return; }
   const btn=document.getElementById("suSubmit"); if(btn){ btn.disabled=true; btn.textContent="Saving…"; }
   const data={ name, handle, email:user.email, pending:true,
     createdAt: signup&&signup.createdAt ? signup.createdAt : serverTimestamp(), updatedAt: serverTimestamp() };
   if(tiktok) data.tiktok=tiktok;
+  if(youtube) data.youtube=youtube;
   try{
     await setDoc(doc(db,"signups",user.uid), data);
     signup=Object.assign({},data,{createdAt: signup&&signup.createdAt ? signup.createdAt : new Date()});
@@ -1154,7 +1205,7 @@ function boardRow(p,rank){
   const medal = rank<=MEDALS.length && p.score>0 ? MEDALS[rank-1] : "";
   const shownRank = rank<=RANKED ? rank : "";   /* only the top ten get a number */
   return `<li${medal?' class="medalist"':''}><span class="rank"${medal?` aria-label="Rank ${rank}"`:''}>${medal||shownRank}</span><span class="who">
-    <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener"${p.handle!==myHandle&&!m?` data-open="${esc(p.handle)}"`:""}>${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${p.tt?`<a class="tt-mini${state.tmarks&&state.tmarks[p.tt]?" is-done":""}" href="https://www.tiktok.com/@${encodeURIComponent(p.tt)}" target="_blank" rel="noopener" data-ttopen="${esc(p.tt)}" aria-label="TikTok @${esc(p.tt)}" title="On TikTok">${TT_ICON}</a>`:""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
+    <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener"${p.handle!==myHandle&&!m?` data-open="${esc(p.handle)}"`:""}>${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${p.tt?`<a class="tt-mini${state.tmarks&&state.tmarks[p.tt]?" is-done":""}" href="https://www.tiktok.com/@${encodeURIComponent(p.tt)}" target="_blank" rel="noopener" data-ttopen="${esc(p.tt)}" aria-label="TikTok @${esc(p.tt)}" title="On TikTok">${TT_ICON}</a>`:""}${p.yt?`<a class="tt-mini${state.ymarks&&state.ymarks[p.yt]?" is-done":""}" href="https://www.youtube.com/@${encodeURIComponent(p.yt)}" target="_blank" rel="noopener" data-ytopen="${esc(p.yt)}" aria-label="YouTube @${esc(p.yt)}" title="On YouTube">${YT_ICON}</a>`:""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
     <span class="ig">@${esc(p.handle)}</span>${powerBar(p)}${whenLine(p)}</span>
     <span class="state ${label&&label!=="You"?'is-done':''}">${label}</span></li>`;
 }
@@ -1267,6 +1318,11 @@ document.addEventListener("click", e=>{
   if(t.id==="showAll"){ if(user){ boardOpen=true; renderBoard(); } return; }
   if(t.id==="showTop"){ boardOpen=false; boardQuery=""; renderBoard(); document.getElementById("leaderboard").scrollIntoView({block:"start"}); return; }
   if(t.dataset.ttopen){ const h=t.dataset.ttopen; setTimeout(()=>markTT(h),400); return; }
+  if(t.dataset.ytopen){ const h=t.dataset.ytopen; setTimeout(()=>markYT(h),400); return; }
+  if(t.dataset.ytmark){ markYT(t.dataset.yt,t.dataset.ytmark); return; }
+  if(t.id==="ytEdit"){ editingYT=true; ytMsg=""; renderGate(); const i=document.getElementById("ytIn"); if(i) i.focus(); return; }
+  if(t.id==="ytCancel"){ editingYT=false; ytMsg=""; renderGate(); return; }
+  if(t.id==="ytSave"){ saveYT(); return; }
   if(t.dataset.ttmark){ markTT(t.dataset.tt,t.dataset.ttmark); return; }
   if(t.id==="ttEdit"){ editingTT=true; ttMsg=""; renderGate(); const i=document.getElementById("ttIn"); if(i) i.focus(); return; }
   if(t.id==="ttCancel"){ editingTT=false; ttMsg=""; renderGate(); return; }
@@ -1287,9 +1343,18 @@ async function saveTT(){
   await pushAccount();
   renderStep2(); renderBoard();
 }
+async function saveYT(){
+  const raw=(document.getElementById("ytIn").value||"").trim(), v=cleanYT(raw);
+  if(raw && !v){ ytMsg="Enter your YouTube handle like @yourchannel, or leave it blank to remove it."; renderGate(); return; }
+  if(v && people.some(p=>p.yt===v && p.handle!==myHandle)){ ytMsg="That YouTube handle is already listed for another member."; renderGate(); return; }
+  state.ytp={v}; save(state); editingYT=false; ytMsg="";
+  renderGate();
+  await pushAccount();
+  renderStep2(); renderBoard();
+}
 function resetList(){
   if(!confirm("This clears which colleagues you've marked, here and in your saved progress. Your Instagram follows aren't touched.")) return;
-  Object.assign(state,{marks:{},tmarks:{},seen:people.map(p=>p.handle),visited:true});
+  Object.assign(state,{marks:{},tmarks:{},ymarks:{},seen:people.map(p=>p.handle),visited:true});
   save(state); restoredCount=0; started=false; renderStep2(); pushAccount();
 }
 
