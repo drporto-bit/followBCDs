@@ -270,7 +270,7 @@ footer a{color:var(--ink-soft)}
   <div class="step-head"><span class="step-num" id="num3">3</span><h2 class="step-title">Return soon to follow new colleagues</h2>
     <button type="button" class="info" data-info="note3" aria-expanded="false" aria-label="How the energy bar works">i</button></div>
   <p class="step-lead">Your energy bar drains a little every day. Keep it full to stay near the top of everyone's list.</p>
-  <p class="step-note" id="note3" hidden>Following every colleague, including the new ones who join, earns and refreshes your badge. Each BCD you recruit adds more. Both fade over time, so returning to follow newcomers keeps your bar full. The fuller it is, the higher you sit on everyone's follow list, and the more followers you get.</p>
+  <p class="step-note" id="note3" hidden>Following every colleague, including the new ones who join, earns and refreshes your badge. Each BCD you recruit adds more. Following colleagues on TikTok adds a small bonus. All of it fades over time, so returning to follow newcomers keeps your bar full. The fuller it is, the higher you sit on everyone's follow list, and the more followers you get.</p>
   <div id="step3"></div>
 </section>
 </div>
@@ -438,6 +438,8 @@ const RECRUIT_POINTS=0.2, RECRUIT_HALF_LIFE_DAYS=14;
 const BADGE_POINTS=1,   BADGE_HALF_LIFE_DAYS=14;
 /* following colleagues earns partial credit, up to half a badge, fading from the last time it went up */
 const FOLLOW_POINTS_MAX=0.5;
+/* following colleagues on TikTok earns a small bonus: never more than half a recruit, scaled by how many members are on TikTok (full credit at 20+) */
+const TT_POINTS_MAX=0.1, TT_FULL_LIST=20;
 const DAY_MS=86400000;
 function fade(since, halfLifeDays){ return Math.pow(0.5, Math.max(0,(Date.now()-since)/DAY_MS)/halfLifeDays); }
 function scoreOf(p){
@@ -453,6 +455,16 @@ function scoreOf(p){
   /* recruit dates come from the sync script; if they haven't arrived yet, count recruits as recent */
   const times = p.recruits.length ? p.recruits : Array(p.refs).fill(Date.now());
   times.forEach(t=>{ s += RECRUIT_POINTS*fade(Number(t),RECRUIT_HALF_LIFE_DAYS); });
+  /* TikTok bonus: share of the TikTok list followed, scaled by list size, fading from the last time it went up */
+  const ttTotal=(roster.tthandles||[]).length;
+  if(p.follows && p.follows.tn && p.follows.tat && ttTotal>1){
+    const others=ttTotal-(p.tt?1:0);
+    if(others>0){
+      const share=Math.min(1, p.follows.tn/others), reach=Math.min(1, ttTotal/TT_FULL_LIST);
+      const tat=typeof p.follows.tat.toMillis==="function" ? p.follows.tat.toMillis() : Number(p.follows.tat);
+      s += TT_POINTS_MAX*share*reach*fade(tat,BADGE_HALF_LIFE_DAYS);
+    }
+  }
   return s;
 }
 
