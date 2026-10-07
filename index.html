@@ -257,7 +257,7 @@ footer a{color:var(--ink-soft)}
   <div class="step-head"><span class="step-num" id="num2">1</span><h2 class="step-title">Follow your colleagues</h2>
     <button type="button" class="info" data-info="note2" aria-expanded="false" aria-label="How this step works">i</button></div>
   <p class="step-lead">We help you add one colleague at a time (max of 50 per day per Instagram rules).</p>
-  <p class="step-note" id="note2" hidden>Tap the purple button to open that dermatologist's profile, follow them on Instagram, then come back here. If they're on TikTok too, there's a TikTok button you can tap as well; it's optional and doesn't change your badge. The next colleague is already waiting, and nobody you've handled comes up twice. Instagram temporarily blocks accounts that follow too many people at once, so stop around 50 in a sitting and pick it up another day. Your place is saved to your account, so you can continue on any device.</p>
+  <p class="step-note" id="note2" hidden>Tap the purple button to open that dermatologist's profile, follow them on Instagram, then come back here. If you've added your own TikTok, you'll also get a separate card for each colleague who's on TikTok. Those are optional and don't change your badge. The next colleague is already waiting, and nobody you've handled comes up twice. Instagram temporarily blocks accounts that follow too many people at once, so stop around 50 in a sitting and pick it up another day. Your place is saved to your account, so you can continue on any device.</p>
   <div id="step2"><div class="empty">Loading the list…</div></div>
 </section>
 
@@ -683,33 +683,16 @@ function colorFor(handle){
   return i;
 }
 
-/* everyone with a TikTok handle (except you), for easy following */
-let ttListOpen=false;
-function ttMembers(){ const mine=currentTT(); return people.filter(p=>p.tt && p.tt!==mine); }
-function ttListLink(){
-  const n=ttMembers().length;
-  return `<button type="button" id="ttList" class="linkish" aria-expanded="${ttListOpen}">${ttListOpen?"Hide":"See"} TikTok members (${n})</button>`;
-}
-function ttPanel(){
-  if(!ttListOpen) return "";
-  const all=ttMembers();
-  if(!all.length) return `<div class="tt-panel"><p class="msg" style="margin:0">No colleagues have added a TikTok yet. Add yours to be first.</p></div>`;
-  const followed=p=>!!(state.tmarks&&state.tmarks[p.tt]);
-  const done=all.filter(followed).length;
-  /* not-yet-followed first, then the ones you've done; each group keeps the leaderboard order */
-  const rows=all.filter(p=>!followed(p)).concat(all.filter(followed));
-  return `<div class="tt-panel">
-    <p class="tt-progress"><strong>${done}</strong> of ${all.length} followed on TikTok</p>
-    <ul class="tt-list">${rows.map(p=>`<li><span class="who">${esc(withTitle(p.name))}<small>@${esc(p.tt)}</small></span>
-      <a class="tt-btn${followed(p)?" is-done":""}" href="https://www.tiktok.com/@${encodeURIComponent(p.tt)}" target="_blank" rel="noopener" data-ttopen="${esc(p.tt)}">${TT_ICON}${followed(p)?"Followed ✓":"Follow"}</a></li>`).join("")}</ul>
-  </div>`;
-}
-function markTT(tt){
-  if(!tt || tt===currentTT() || (state.tmarks||{})[tt]) return;
+/* your own TikTok (a pending sign-up counts too); TikTok prompts only appear for members who have one */
+function viewerTT(){ return currentTT() || (signup && signup.tiktok) || ""; }
+function markTT(tt,value){
+  if(!tt || !viewerTT() || tt===viewerTT() || (state.tmarks||{})[tt]) return;   /* TikTok follows are for members who have their own TikTok */
+  const who=people.find(p=>p.tt===tt);
+  if(who) lastDone={name:withTitle(who.name),value:value||"followed",platform:"TikTok"};
+  animateNext=true;
   state.tmarks = state.tmarks || {};
-  state.tmarks[tt] = "followed";
+  state.tmarks[tt] = value||"followed";
   save(state); renderStep2(); renderBoard(); queuePush();
-  if(ttListOpen) renderGate();
 }
 function mark(handle,value){
   const who=people.find(p=>p.handle===handle);
@@ -732,10 +715,19 @@ function renderStep2(){
     return;
   }
   const list=people.filter(p=>p.handle!==myHandle);   /* you don't follow yourself */
-  const queue=list.filter(p=>!state.marks[p.handle]);
+  const myTT=viewerTT();
+  const igQueue=list.filter(p=>!state.marks[p.handle]);
+  /* TikTok cards only for members with their own TikTok; each colleague's TikTok is its own card, right after their Instagram one */
+  const ttAll=myTT?list.filter(p=>p.tt && p.tt!==myTT):[];
+  const ttDone=ttAll.filter(p=>(state.tmarks||{})[p.tt]).length;
+  const queue=[];
+  list.forEach(p=>{
+    if(!state.marks[p.handle]) queue.push({p,kind:"ig"});
+    if(myTT && p.tt && p.tt!==myTT && !(state.tmarks||{})[p.tt]) queue.push({p,kind:"tt"});
+  });
   const fresh=state.visited?list.filter(p=>!state.seen.includes(p.handle)).map(p=>p.handle):[];
-  const done=list.length-queue.length;
-  document.getElementById("num2").className = "step-num" + (queue.length===0?" is-done":"");
+  const done=list.length-igQueue.length;
+  document.getElementById("num2").className = "step-num" + (igQueue.length===0?" is-done":"");
 
   let html="";
   if(restoredCount){
@@ -758,27 +750,32 @@ function renderStep2(){
         <a class="primary" href="#" id="startQueue">${isReturning?`Continue &mdash; ${queue.length} left`:`Start following colleagues`}</a>
       </div></div>`;
   } else {
-    const p=queue[0];
+    const p=queue[0].p, kind=queue[0].kind;
     if(lastDone){
+      const on=lastDone.platform?` on ${lastDone.platform}`:"";
       html += `<p class="done-line just">✓ ${lastDone.value==="already"
-        ?`${esc(lastDone.name)} marked as already following`
-        :`Followed ${esc(lastDone.name)}`}</p>`;
+        ?`${esc(lastDone.name)} marked as already following${on}`
+        :`Followed ${esc(lastDone.name)}${on}`}</p>`;
     }
     const ci=colorFor(p.handle);
     const slide=animateNext && document.visibilityState==="visible";
     if(slide) animateNext=false;
+    const isTT = kind==="tt";
+    const cDone = isTT ? ttDone : done, cTotal = isTT ? ttAll.length : list.length;
     html += `<div class="card${slide?" card-in":""}">
-      <p class="counter">${done} of ${list.length} done<span class="bar"><i style="width:${Math.round(done/list.length*100)}%"></i></span></p>
+      <p class="counter">${cDone} of ${cTotal} ${isTT?"followed on TikTok":"done"}<span class="bar"><i style="width:${cTotal?Math.round(cDone/cTotal*100):0}%"></i></span></p>
       <div class="who-row">
         <span class="avatar" style="background:${AVATAR_COLORS[ci]}" aria-hidden="true">${esc(initials(p.name))}</span>
         <div><p class="person-name">${esc(withTitle(p.name))}${p.badgeAt?badgeMark():""}</p>
-        <p class="handle">@${esc(p.handle)}</p></div>
+        <p class="handle">${isTT?`${TT_ICON} @${esc(p.tt)}`:`@${esc(p.handle)}`}</p></div>
       </div>
       ${p.badgeAt?`<p class="badge-line">${badgeMark()}Followed everyone on the list</p>`:""}
       <div class="actions">
-        <a class="primary" href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener" data-open="${esc(p.handle)}">Open @${esc(p.handle)} on Instagram</a>
-        <button type="button" data-mark="already" data-handle="${esc(p.handle)}">Already following</button>
-        ${p.tt?`<a class="tt-btn${state.tmarks&&state.tmarks[p.tt]?" is-done":""}" href="https://www.tiktok.com/@${encodeURIComponent(p.tt)}" target="_blank" rel="noopener" data-ttopen="${esc(p.tt)}">${TT_ICON}${state.tmarks&&state.tmarks[p.tt]?"On TikTok ✓":"Open on TikTok"}</a>`:""}
+        ${isTT
+          ? `<a class="primary" href="https://www.tiktok.com/@${encodeURIComponent(p.tt)}" target="_blank" rel="noopener" data-ttopen="${esc(p.tt)}">Open @${esc(p.tt)} on TikTok</a>
+        <button type="button" data-ttmark="already" data-tt="${esc(p.tt)}">Already following</button>`
+          : `<a class="primary" href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener" data-open="${esc(p.handle)}">Open @${esc(p.handle)} on Instagram</a>
+        <button type="button" data-mark="already" data-handle="${esc(p.handle)}">Already following</button>`}
       </div></div>`;
   }
   if(user && done>0){
@@ -786,7 +783,7 @@ function renderStep2(){
   }
   box.innerHTML=html;
   renderBoard();
-  renderStep3(queue.length);
+  renderStep3(igQueue.length);
 }
 
 /* ---------- step 3: badge ---------- */
@@ -1004,8 +1001,8 @@ function renderGate(){
     const ttPart = editingTT
       ? `<div class="tt-edit"><input type="text" id="ttIn" class="text-in" placeholder="@yourtiktok" autocomplete="off" autocapitalize="none" spellcheck="false" value="${esc(tt?"@"+tt:"")}" aria-label="Your TikTok handle">
            <button type="button" id="ttSave">Save</button><button type="button" id="ttCancel" class="ghost">Cancel</button></div>${ttMsg?`<p class="msg warn">${ttMsg}</p>`:""}`
-      : (tt ? `<p class="tt-line">${TT_ICON} @${esc(tt)} · <button type="button" id="ttEdit" class="linkish">Edit</button> · ${ttListLink()}</p>`
-            : `<p class="tt-line"><button type="button" id="ttEdit" class="linkish">${TT_ICON} Add your TikTok (optional)</button> · ${ttListLink()}</p>`) + ttPanel();
+      : (tt ? `<p class="tt-line">${TT_ICON} @${esc(tt)} · <button type="button" id="ttEdit" class="linkish">Edit</button></p>`
+            : `<p class="tt-line"><button type="button" id="ttEdit" class="linkish">${TT_ICON} Add your TikTok (optional)</button></p>`);
     box.innerHTML=`<div class="gate-status">
       <div class="gate-main"><p class="done-line">✓ You're on the list as ${esc(withTitle(who.name))}</p>${ttPart}</div>
       <button type="button" id="signOut" class="ghost">Sign out</button></div>`;
@@ -1016,7 +1013,6 @@ function renderGate(){
     box.innerHTML=`<div class="card gate-card">
       <p class="done-line">✓ Signed in to follow colleagues</p>
       <p class="msg">You're not listed in the directory. You can add yourself anytime.</p>
-      <p class="tt-line">${TT_ICON} ${ttListLink()}</p>${ttPanel()}
       <div class="actions"><button type="button" id="addMe">Add me to the directory</button><button type="button" id="signOut" class="ghost">Sign out</button></div>
     </div>`;
     return;
@@ -1026,7 +1022,6 @@ function renderGate(){
     box.innerHTML=`<div class="card gate-card">
       <p class="done-line">✓ Submitted as ${esc(withTitle(signup.name))}, @${esc(signup.handle)}${signup.tiktok?` · TikTok @${esc(signup.tiktok)}`:""}</p>
       <p class="msg">You'll appear on the list once your TBCD membership is verified. Verification is often done the same day. In the meantime, start following your colleagues below.</p>
-      <p class="tt-line">${TT_ICON} ${ttListLink()}</p>${ttPanel()}
       <div class="actions"><button type="button" id="editSignup">Edit</button><button type="button" id="signOut" class="ghost">Sign out</button></div>
     </div>`;
     return;
@@ -1272,7 +1267,7 @@ document.addEventListener("click", e=>{
   if(t.id==="showAll"){ if(user){ boardOpen=true; renderBoard(); } return; }
   if(t.id==="showTop"){ boardOpen=false; boardQuery=""; renderBoard(); document.getElementById("leaderboard").scrollIntoView({block:"start"}); return; }
   if(t.dataset.ttopen){ const h=t.dataset.ttopen; setTimeout(()=>markTT(h),400); return; }
-  if(t.id==="ttList"){ ttListOpen=!ttListOpen; renderGate(); return; }
+  if(t.dataset.ttmark){ markTT(t.dataset.tt,t.dataset.ttmark); return; }
   if(t.id==="ttEdit"){ editingTT=true; ttMsg=""; renderGate(); const i=document.getElementById("ttIn"); if(i) i.focus(); return; }
   if(t.id==="ttCancel"){ editingTT=false; ttMsg=""; renderGate(); return; }
   if(t.id==="ttSave"){ saveTT(); return; }
@@ -1356,7 +1351,7 @@ getRedirectResult(auth).catch(e=>{ console.error(e); authMsg=GOOGLE_FAILED; rend
 
 onAuthStateChanged(auth, async u=>{
   user=u; authKnown=true; account=null; myHandle=null; accountReady=!u; accountLoaded=false;
-  signup=null; editingSignup=false; signupMsg=""; ttListOpen=false;
+  signup=null; editingSignup=false; signupMsg="";
   renderAll();
   if(!u) return;
   try{
