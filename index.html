@@ -670,6 +670,7 @@ function cleanYT(raw){
   return /^[a-z0-9._-]{3,30}$/.test(h) ? h : "";
 }
 const YT_ICON='<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3L10 15z"/></svg>';
+const IG_ICON='<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>';
 function cleanHandle(raw){
   let h=String(raw||"").trim().replace(/^.*instagram\.com\//i,"").replace(/^@/,"");
   h=h.split(/[/?#\s]/)[0];
@@ -1205,7 +1206,7 @@ function boardRow(p,rank){
   const medal = rank<=MEDALS.length && p.score>0 ? MEDALS[rank-1] : "";
   const shownRank = rank<=RANKED ? rank : "";   /* only the top ten get a number */
   return `<li${medal?' class="medalist"':''}><span class="rank"${medal?` aria-label="Rank ${rank}"`:''}>${medal||shownRank}</span><span class="who">
-    <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener"${p.handle!==myHandle&&!m?` data-open="${esc(p.handle)}"`:""}>${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}${p.tt?`<a class="tt-mini${state.tmarks&&state.tmarks[p.tt]?" is-done":""}" href="https://www.tiktok.com/@${encodeURIComponent(p.tt)}" target="_blank" rel="noopener" data-ttopen="${esc(p.tt)}" aria-label="TikTok @${esc(p.tt)}" title="On TikTok">${TT_ICON}</a>`:""}${p.yt?`<a class="tt-mini${state.ymarks&&state.ymarks[p.yt]?" is-done":""}" href="https://www.youtube.com/@${encodeURIComponent(p.yt)}" target="_blank" rel="noopener" data-ytopen="${esc(p.yt)}" aria-label="YouTube @${esc(p.yt)}" title="On YouTube">${YT_ICON}</a>`:""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
+    <a href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener"${p.handle!==myHandle&&!m?` data-open="${esc(p.handle)}"`:""}>${esc(withTitle(p.name))}</a>${p.badgeAt?badgeMark():""}<a class="tt-mini${state.marks&&state.marks[p.handle]?" is-done":""}" href="https://instagram.com/${encodeURIComponent(p.handle)}" target="_blank" rel="noopener"${p.handle!==myHandle&&!m?` data-open="${esc(p.handle)}"`:""} aria-label="Instagram @${esc(p.handle)}" title="On Instagram">${IG_ICON}</a>${p.tt?`<a class="tt-mini${state.tmarks&&state.tmarks[p.tt]?" is-done":""}" href="https://www.tiktok.com/@${encodeURIComponent(p.tt)}" target="_blank" rel="noopener" data-ttopen="${esc(p.tt)}" aria-label="TikTok @${esc(p.tt)}" title="On TikTok">${TT_ICON}</a>`:""}${p.yt?`<a class="tt-mini${state.ymarks&&state.ymarks[p.yt]?" is-done":""}" href="https://www.youtube.com/@${encodeURIComponent(p.yt)}" target="_blank" rel="noopener" data-ytopen="${esc(p.yt)}" aria-label="YouTube @${esc(p.yt)}" title="On YouTube">${YT_ICON}</a>`:""}${isNew?'<span class="new-dot" title="New since your last visit"></span>':''}
     <span class="ig">@${esc(p.handle)}</span>${powerBar(p)}${whenLine(p)}</span>
     <span class="state ${label&&label!=="You"?'is-done':''}">${label}</span></li>`;
 }
